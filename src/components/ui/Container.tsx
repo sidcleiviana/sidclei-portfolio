@@ -1,4 +1,4 @@
-import type { ElementType, ReactNode } from "react";
+import type { ComponentPropsWithoutRef, ElementType, ReactNode } from "react";
 
 type ContainerSize = "default" | "wide" | "prose";
 
@@ -7,6 +7,13 @@ const MAX: Record<ContainerSize, string> = {
   wide: "max-w-[var(--container-wide)]",
   prose: "max-w-[var(--container-prose)]",
 };
+
+type Props = {
+  as?: ElementType;
+  size?: ContainerSize;
+  children: ReactNode;
+  className?: string;
+} & Omit<ComponentPropsWithoutRef<"div">, "className" | "children">;
 
 /**
  * Horizontal page gutter + max measure. `prose` is the reading width used on
@@ -17,15 +24,12 @@ export function Container({
   size = "default",
   children,
   className = "",
-}: {
-  as?: ElementType;
-  size?: ContainerSize;
-  children: ReactNode;
-  className?: string;
-}) {
+  ...rest
+}: Props) {
   return (
     <Tag
       className={`mx-auto w-full px-5 sm:px-6 lg:px-8 ${MAX[size]} ${className}`}
+      {...rest}
     >
       {children}
     </Tag>

@@ -13,11 +13,20 @@ const DEFAULT_HEADINGS: Record<string, string> = {
   learningBlock: "Aprendizados",
 };
 
+/** Blocks that are punctuation, not sections — never in the table of contents. */
+const NON_SECTION_BLOCKS = new Set([
+  "richTextBlock",
+  "imageBlock",
+  "calloutBlock",
+]);
+
 /**
  * The label a block contributes to the table of contents, or null when the
- * block has no heading (rich text, images, callouts) and should not appear.
+ * block is inline punctuation (rich text, images, callouts) rather than a
+ * navigable section (Sprint §11).
  */
 export function blockHeading(block: ContentBlock): string | null {
+  if (NON_SECTION_BLOCKS.has(block._type)) return null;
   const b = block as Record<string, unknown>;
   const explicit =
     (typeof b.heading === "string" && b.heading.trim()) ||

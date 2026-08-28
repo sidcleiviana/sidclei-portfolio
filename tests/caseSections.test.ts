@@ -28,10 +28,14 @@ describe("blockHeading", () => {
       "Decisões técnicas"
     );
   });
-  it("returns null for headingless blocks", () => {
+  it("keeps inline-punctuation blocks out of the TOC, even with a title", () => {
     expect(blockHeading(block({ _type: "richTextBlock" }))).toBeNull();
     expect(blockHeading(block({ _type: "imageBlock" }))).toBeNull();
-    expect(blockHeading(block({ _type: "calloutBlock" }))).toBeNull();
+    expect(
+      blockHeading(
+        block({ _type: "calloutBlock", title: "Observação" } as never)
+      )
+    ).toBeNull();
   });
 });
 
