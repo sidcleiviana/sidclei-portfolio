@@ -2,13 +2,11 @@ import { revalidateTag } from "next/cache";
 import { type NextRequest, NextResponse } from "next/server";
 import { parseBody } from "next-sanity/webhook";
 
-import { CACHE_TAGS } from "@/sanity/fetch";
 import { revalidateSecret } from "@/sanity/env";
-
-type WebhookPayload = {
-  _type?: string;
-  slug?: string | { current?: string };
-};
+import {
+  type RevalidatePayload,
+  tagsForWebhookPayload,
+} from "@/sanity/revalidate";
 
 /**
  * On-demand revalidation endpoint for the Sanity GROQ-powered webhook
@@ -18,7 +16,10 @@ type WebhookPayload = {
  *   { "_type": _type, "slug": slug.current }
  *
  * The signature is verified with `parseBody` — unauthenticated requests are
- * rejected (Sprint §33, §49).
+ * rejected (Sprint §33, §49). `parseBody`'s built-in 3s wait for Content Lake
+ * eventual consistency is disabled: revalidation is idempotent and the next
+ * request re-fetches anyway, so blocking the webhook is not worth it here
+ * (documented in docs/decisions/ADR-003).
  */
 export async function POST(req: NextRequest) {
   if (!revalidateSecret) {
@@ -28,43 +29,26 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { isValidSignature, body } = await parseBody<WebhookPayload>(
+    const { isValidSignature, body } = await parseBody<RevalidatePayload>(
       req,
-      revalidateSecret
+      revalidateSecret,
+      false
     );
 
-    if (!isValidSignature) {
-      return new NextResponse("Invalid signature", { status: 401 });
+    if (isValidSignature !== true) {
+      return new NextResponse("Invalid or missing signature", { status: 401 });
     }
 
     if (!body?._type) {
       return new NextResponse("Missing _type in payload", { status: 400 });
     }
 
-    const tags = new Set<string>();
-    const slug = typeof body.slug === "string" ? body.slug : body.slug?.current;
-
-    switch (body._type) {
-      case "project":
-        tags.add(CACHE_TAGS.projects);
-        if (slug) tags.add(`${CACHE_TAGS.project}:${slug}`);
-        break;
-      case "profile":
-        tags.add(CACHE_TAGS.profile);
-        break;
-      case "siteSettings":
-        tags.add(CACHE_TAGS.siteSettings);
-        break;
-      default:
-        // skills, technologies, experiences… surface inside project projections.
-        tags.add(CACHE_TAGS.projects);
-    }
-
+    const tags = tagsForWebhookPayload(body);
     for (const tag of tags) revalidateTag(tag);
 
     return NextResponse.json({
       revalidated: true,
-      tags: [...tags],
+      tags,
       now: Date.now(),
     });
   } catch (error) {

@@ -21,11 +21,19 @@ do Sanity.**
 - Tags: `projects`, `project:<slug>`, `profile`, `siteSettings`
   (`CACHE_TAGS`).
 - `POST /api/revalidate` (`src/app/api/revalidate/route.ts`):
-  1. valida a assinatura HMAC com `parseBody(req, SANITY_REVALIDATE_SECRET)`;
+  1. valida a assinatura HMAC com `parseBody(req, SANITY_REVALIDATE_SECRET, false)`;
   2. lê `_type` e `slug` do payload;
-  3. mapeia para tags e chama `revalidateTag`.
+  3. mapeia para tags (`tagsForWebhookPayload`, puro e testado) e chama `revalidateTag`.
 - Sem `SANITY_REVALIDATE_SECRET`, o endpoint responde **503** (nunca revalida
-  a partir de request não autenticado).
+  a partir de request não autenticado). Assinatura ausente ou inválida → **401**.
+- O 3º argumento `false` desliga a espera de 3s do `parseBody` por
+  consistência eventual do Content Lake: a revalidação é idempotente e a
+  próxima requisição refaz o fetch de qualquer forma; bloquear o webhook não
+  compensa para um portfólio. Se algum dia observarmos leitura stale logo após
+  publicar, é só voltar para o default (`true`).
+- Verificado localmente (Sprint 0.1) com assinatura HMAC real
+  (`tests/revalidateWebhook.test.ts`): sem assinatura → 401; assinatura
+  inválida → 401; assinatura válida → 200 + tags corretas; sem secret → 503.
 - Rotas de projeto são dinâmicas com `generateStaticParams` (slugs do CMS) +
   `dynamicParams` on → projeto novo ganha `/projects/<slug>` sob demanda, sem
   build.
