@@ -1,32 +1,42 @@
 import { SanityImage } from "@/components/content/SanityImage";
+import { TextLink } from "@/components/ui/TextLink";
 import type { GalleryBlock, VideoBlock } from "@/sanity/types";
 
-import { BlockSection } from "./shared";
+import { BlockShell, Figure } from "./BlockShell";
 
 export function Gallery({ block }: { block: GalleryBlock }) {
-  const images = block.images?.filter((image) => image?.asset) ?? [];
+  const images = (block.images ?? []).filter((image) => image?.asset);
   if (!images.length) return null;
+
+  // 1 image → full column; 2 → side by side; 3+ → responsive grid. No carousel.
+  const cols =
+    images.length === 1
+      ? "grid-cols-1"
+      : images.length === 2
+        ? "grid-cols-1 sm:grid-cols-2"
+        : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
+  const sizes =
+    images.length === 1
+      ? "(min-width: 900px) 52rem, 100vw"
+      : "(min-width: 640px) 26rem, 100vw";
+
   return (
-    <BlockSection heading={block.heading} wide>
-      <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <BlockShell heading={block.heading} width="wide">
+      <ul className={`grid gap-4 ${cols}`}>
         {images.map((image, index) => (
           <li key={image.asset?._ref ?? index}>
-            <figure className="space-y-1">
+            <Figure caption={image.caption}>
               <SanityImage
                 image={image}
-                sizes="(min-width: 640px) 384px, 100vw"
-                className="w-full rounded-md"
+                sizes={sizes}
+                ratio={4 / 3}
+                className="border-border w-full rounded-md border object-cover"
               />
-              {image.caption ? (
-                <figcaption className="text-fg-muted text-xs">
-                  {image.caption}
-                </figcaption>
-              ) : null}
-            </figure>
+            </Figure>
           </li>
         ))}
       </ul>
-    </BlockSection>
+    </BlockShell>
   );
 }
 
@@ -56,8 +66,8 @@ export function Video({ block }: { block: VideoBlock }) {
   const isFile = /\.(mp4|webm|ogg)$/i.test(block.url);
 
   return (
-    <BlockSection heading={block.title} wide>
-      <div className="border-border overflow-hidden rounded-md border">
+    <BlockShell heading={block.title} width="wide">
+      <div className="border-border bg-bg-subtle overflow-hidden rounded-md border">
         {embed ? (
           <iframe
             src={embed}
@@ -72,19 +82,14 @@ export function Video({ block }: { block: VideoBlock }) {
             <source src={block.url} />
           </video>
         ) : (
-          <a
-            href={block.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent block p-4 underline underline-offset-2"
-          >
-            Assistir ao vídeo
-          </a>
+          <p className="p-4 text-sm">
+            <TextLink href={block.url}>Assistir ao vídeo</TextLink>
+          </p>
         )}
       </div>
       {block.caption ? (
         <p className="text-fg-muted mt-2 text-sm">{block.caption}</p>
       ) : null}
-    </BlockSection>
+    </BlockShell>
   );
 }

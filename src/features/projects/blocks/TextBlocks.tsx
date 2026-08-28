@@ -1,5 +1,6 @@
 import { PortableText } from "@/components/content/PortableText";
 import { SanityImage } from "@/components/content/SanityImage";
+import { TextLink } from "@/components/ui/TextLink";
 import type {
   ArchitectureBlock,
   CalloutBlock,
@@ -9,110 +10,115 @@ import type {
   RichTextBlock,
 } from "@/sanity/types";
 
-import { BlockSection } from "./shared";
+import { BlockShell, Figure } from "./BlockShell";
 
 export function RichText({ block }: { block: RichTextBlock }) {
+  if (!block.body?.length) return null;
   return (
-    <BlockSection>
+    <BlockShell>
       <PortableText value={block.body} />
-    </BlockSection>
+    </BlockShell>
   );
 }
 
 export function Image({ block }: { block: ImageBlock }) {
   if (!block.image?.asset) return null;
   return (
-    <BlockSection wide={block.wide}>
-      <figure className="space-y-2">
+    <BlockShell width={block.wide ? "wide" : "prose"}>
+      <Figure caption={block.image.caption}>
         <SanityImage
           image={block.image}
-          sizes="(min-width: 768px) 768px, 100vw"
-          className="w-full rounded-md"
+          sizes="(min-width: 900px) 52rem, 100vw"
+          className="border-border w-full rounded-md border"
         />
-        {block.image.caption ? (
-          <figcaption className="text-fg-muted text-sm">
-            {block.image.caption}
-          </figcaption>
-        ) : null}
-      </figure>
-    </BlockSection>
+      </Figure>
+    </BlockShell>
   );
 }
 
 export function Architecture({ block }: { block: ArchitectureBlock }) {
+  const hasBody = Boolean(block.description?.length);
+  const hasDiagram = Boolean(block.diagram?.asset);
+  if (!hasBody && !hasDiagram) return null;
   return (
-    <BlockSection heading={block.heading ?? "Arquitetura"} wide>
-      {block.description ? <PortableText value={block.description} /> : null}
-      {block.diagram?.asset ? (
+    <BlockShell heading={block.heading ?? "Arquitetura"} width="wide">
+      {hasBody ? <PortableText value={block.description} /> : null}
+      {hasDiagram ? (
         <SanityImage
           image={block.diagram}
-          sizes="(min-width: 768px) 768px, 100vw"
-          className="border-border mt-4 w-full rounded-md border"
+          sizes="(min-width: 900px) 52rem, 100vw"
+          className={`border-border w-full rounded-md border ${hasBody ? "mt-6" : ""}`}
         />
       ) : null}
-    </BlockSection>
+    </BlockShell>
   );
 }
 
 export function Learning({ block }: { block: LearningBlock }) {
-  const takeaways = block.takeaways?.filter(Boolean) ?? [];
+  const takeaways = (block.takeaways ?? []).filter(Boolean);
+  const hasBody = Boolean(block.body?.length);
+  if (!hasBody && !takeaways.length) return null;
   return (
-    <BlockSection heading={block.heading ?? "Aprendizados"}>
-      {block.body ? <PortableText value={block.body} /> : null}
+    <BlockShell heading={block.heading ?? "Aprendizados"}>
+      {hasBody ? <PortableText value={block.body} /> : null}
       {takeaways.length ? (
-        <ul className="mt-3 list-disc space-y-1 pl-6">
+        <ul className={`space-y-2 ${hasBody ? "mt-4" : ""}`}>
           {takeaways.map((item) => (
-            <li key={item}>{item}</li>
+            <li key={item} className="flex gap-2.5 text-[0.975rem] leading-7">
+              <span
+                aria-hidden
+                className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-accent)]"
+              />
+              {item}
+            </li>
           ))}
         </ul>
       ) : null}
-    </BlockSection>
+    </BlockShell>
   );
 }
 
-const TONE_CLASS: Record<string, string> = {
-  info: "border-accent/40",
-  success: "border-emerald-500/40",
-  warning: "border-amber-500/50",
-  note: "border-border",
-};
-
 export function Callout({ block }: { block: CalloutBlock }) {
+  if (!block.body?.length && !block.title) return null;
+  // One neutral language; only "warning" shifts the left border (Sprint §22).
+  const border =
+    block.tone === "warning"
+      ? "border-l-amber-500/60"
+      : "border-l-[var(--color-accent)]";
   return (
-    <BlockSection>
+    <BlockShell>
       <aside
-        className={`bg-surface rounded-md border-l-2 p-4 ${
-          TONE_CLASS[block.tone ?? "info"] ?? TONE_CLASS.info
-        }`}
+        className={`border-border bg-bg-subtle rounded-md border border-l-2 px-4 py-3.5 ${border}`}
       >
         {block.title ? (
-          <p className="mb-1 font-semibold">{block.title}</p>
+          <p className="mb-1 text-sm font-semibold">{block.title}</p>
         ) : null}
-        <PortableText value={block.body} />
+        <div className="text-fg-muted text-sm">
+          <PortableText value={block.body} />
+        </div>
       </aside>
-    </BlockSection>
+    </BlockShell>
   );
 }
 
 export function Links({ block }: { block: LinksBlock }) {
-  const links = block.links?.filter((link) => link?.url) ?? [];
+  const links = (block.links ?? [])
+    .filter((l) => l?.url)
+    .map((l) => ({
+      key: l._key ?? (l.url as string),
+      url: l.url as string,
+      label: l.label || (l.url as string),
+    }));
   if (!links.length) return null;
   return (
-    <BlockSection heading={block.heading}>
-      <ul className="space-y-2">
+    <BlockShell heading={block.heading}>
+      <ul className="space-y-2 text-[0.975rem]">
         {links.map((link) => (
-          <li key={link._key ?? link.url}>
-            <a
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-accent underline underline-offset-2"
-            >
-              {link.label || link.url}
-            </a>
+          <li key={link.key}>
+            <TextLink href={link.url}>{link.label}</TextLink>
           </li>
         ))}
       </ul>
-    </BlockSection>
+    </BlockShell>
   );
 }

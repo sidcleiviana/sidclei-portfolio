@@ -8,72 +8,88 @@ import type {
   TimelineBlock,
 } from "@/sanity/types";
 
-import { BlockSection } from "./shared";
+import { BlockShell, Figure } from "./BlockShell";
 
 export function MetricGrid({ block }: { block: MetricGridBlock }) {
   const metrics = block.metrics ?? [];
   if (!metrics.length) return null;
   return (
-    <BlockSection heading={block.heading} wide>
+    <BlockShell heading={block.heading ?? "Resultados"} width="wide">
       <MetricList metrics={metrics} />
-    </BlockSection>
+    </BlockShell>
   );
 }
 
 export function BeforeAfter({ block }: { block: BeforeAfterBlock }) {
   const sides = [
-    { key: "before", label: "Antes", data: block.before },
-    { key: "after", label: "Depois", data: block.after },
+    { key: "before", fallback: "Antes", data: block.before },
+    { key: "after", fallback: "Depois", data: block.after },
   ] as const;
-  if (!block.before && !block.after) return null;
+  const usable = sides.filter(
+    ({ data }) => data?.label || data?.description || data?.image?.asset
+  );
+  if (!usable.length) return null;
+
   return (
-    <BlockSection heading={block.heading} wide>
+    <BlockShell heading={block.heading} width="wide">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {sides.map(({ key, label, data }) => (
-          <div key={key} className="border-border rounded-md border p-4">
-            <p className="text-fg-muted text-xs font-semibold tracking-wide uppercase">
-              {data?.label ?? label}
+        {usable.map(({ key, fallback, data }) => (
+          <div
+            key={key}
+            className="border-border bg-surface rounded-md border p-4"
+          >
+            <p className="text-fg-muted font-mono text-xs font-medium tracking-[0.14em] uppercase">
+              {data?.label ?? fallback}
             </p>
             {data?.image?.asset ? (
-              <SanityImage
-                image={data.image}
-                sizes="(min-width: 640px) 384px, 100vw"
-                className="mt-2 w-full rounded"
-              />
+              <Figure className="mt-3" caption={null}>
+                <SanityImage
+                  image={data.image}
+                  sizes="(min-width: 640px) 24rem, 100vw"
+                  ratio={4 / 3}
+                  className="border-border w-full rounded border object-cover"
+                />
+              </Figure>
             ) : null}
             {data?.description ? (
-              <p className="mt-2 text-sm leading-6">{data.description}</p>
+              <p className="text-fg-muted mt-3 text-sm leading-6">
+                {data.description}
+              </p>
             ) : null}
           </div>
         ))}
       </div>
-    </BlockSection>
+    </BlockShell>
   );
 }
 
 export function Timeline({ block }: { block: TimelineBlock }) {
-  const entries = block.entries ?? [];
+  const entries = (block.entries ?? []).filter((e) => e?.title);
   if (!entries.length) return null;
   return (
-    <BlockSection heading={block.heading}>
-      <ol className="border-border space-y-4 border-l pl-5">
+    <BlockShell heading={block.heading ?? "Processo"}>
+      <ol className="border-border space-y-5 border-l pl-6">
         {entries.map((entry) => (
           <li key={entry._key} className="relative">
             <span
               aria-hidden
-              className="bg-accent absolute top-1.5 -left-[1.4rem] h-2 w-2 rounded-full"
+              className="absolute top-1.5 -left-[1.6rem] h-2.5 w-2.5 rounded-full border-2 border-[var(--color-bg)] bg-[var(--color-accent)]"
             />
             {entry.date ? (
-              <p className="text-fg-muted text-xs font-medium">{entry.date}</p>
+              <p className="text-fg-muted font-mono text-xs font-medium">
+                {entry.date}
+              </p>
             ) : null}
             <p className="font-medium">{entry.title}</p>
             {entry.description ? (
-              <p className="text-fg-muted text-sm">{entry.description}</p>
+              <p className="text-fg-muted mt-0.5 text-sm">
+                {entry.description}
+              </p>
             ) : null}
           </li>
         ))}
       </ol>
-    </BlockSection>
+    </BlockShell>
   );
 }
 
@@ -82,20 +98,24 @@ export function TechnicalDecisions({
 }: {
   block: TechnicalDecisionsBlock;
 }) {
-  const decisions = block.decisions ?? [];
+  const decisions = (block.decisions ?? []).filter(
+    (d) => d?.question || d?.rationale?.length
+  );
   if (!decisions.length) return null;
   return (
-    <BlockSection heading={block.heading ?? "Decisões técnicas"}>
-      <dl className="space-y-6">
+    <BlockShell heading={block.heading ?? "Decisões técnicas"}>
+      <dl className="space-y-7">
         {decisions.map((decision) => (
           <div key={decision._key}>
-            <dt className="font-medium">{decision.question}</dt>
-            <dd className="text-fg-muted mt-1">
+            {decision.question ? (
+              <dt className="text-fg font-medium">{decision.question}</dt>
+            ) : null}
+            <dd className="text-fg-muted mt-1.5">
               <PortableText value={decision.rationale} />
             </dd>
           </div>
         ))}
       </dl>
-    </BlockSection>
+    </BlockShell>
   );
 }
