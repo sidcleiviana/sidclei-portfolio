@@ -10,6 +10,24 @@ apenas a operação técnica.
 
 ---
 
+## Produção
+
+- **Site:** <https://sidclei-portfolio.vercel.app>
+- **Studio:** <https://sidclei-portfolio.vercel.app/studio>
+- **Repositório:** <https://github.com/sidcleiviana/sidclei-portfolio> (público)
+- **Hosting:** Vercel (`sidclei-portfolio`), com Git Integration —
+  `push` na branch `main` dispara deploy automático.
+- **CMS:** Sanity (`portifolio-sidclei`, dataset `production`). Publicar no
+  Studio dispara um webhook GROQ → `/api/revalidate` → `revalidateTag` na
+  Vercel, sem novo deploy.
+
+```
+GitHub (main)  ──push──►  Vercel  ──build/deploy──►  https://sidclei-portfolio.vercel.app
+Sanity Studio  ──publish──►  webhook  ──►  /api/revalidate  ──►  revalidateTag (ISR)
+```
+
+---
+
 ## Stack
 
 | Camada           | Escolha                                    |

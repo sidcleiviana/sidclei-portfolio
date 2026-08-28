@@ -1117,3 +1117,24 @@ filtro (slug privado → `notFound()`). Validação de schema impede `private` +
   `docs/homologation-checklist.md`.
 - Comandos oficiais adicionados: `pnpm typegen`, `pnpm typegen:check`.
 - `src/sanity/sanity.types.ts` é gerado — **não editar à mão**.
+
+---
+
+## Atualização — Sprint 0.2 (produção)
+
+- **Repositório:** GitHub `sidcleiviana/sidclei-portfolio` — **público**, branch
+  `main`. Histórico das Sprints 0 / 0.1 preservado. Auditoria de segredos:
+  nada sensível na árvore nem no histórico; `.env.local` e `.vercel`
+  git-ignored; `.env.example` sem valores.
+- **Hosting:** Vercel, projeto `sidclei-portfolio`, **Git Integration ligada**
+  (`push` em `main` → deploy automático; sem GitHub Actions). Produção:
+  `https://sidclei-portfolio.vercel.app`.
+- **Env na Vercel:** `NEXT_PUBLIC_SANITY_PROJECT_ID`,
+  `NEXT_PUBLIC_SANITY_DATASET`, `NEXT_PUBLIC_SANITY_API_VERSION`,
+  `NEXT_PUBLIC_SITE_URL` (Config); `SANITY_REVALIDATE_SECRET` (Secret).
+  `SANITY_API_READ_TOKEN` não usado — dataset `production` é público p/ leitura.
+- **CMS em produção:** Sanity `portifolio-sidclei` / dataset `production`.
+  CORS: localhost + `https://sidclei-portfolio.vercel.app` (credentials, sem
+  wildcard). Webhook GROQ "Portfolio Revalidation" → `/api/revalidate`
+  (assinado). Criação do webhook é manual (a CLI só abre o navegador).
+- Nenhum ID/token/segredo sensível registrado aqui.

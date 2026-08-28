@@ -1,9 +1,50 @@
-# Homologação ponta a ponta (Sprint 0.1)
+# Homologação ponta a ponta
 
-Estes são os passos que exigem **login no Sanity** e/ou **deploy HTTPS** e por
-isso não foram executados automaticamente. Toda a lógica testável localmente já
-está coberta (`pnpm test`), incluindo a validação de assinatura do webhook com
-HMAC real.
+## Sprint 0.2 — status de produção (2026-08-28)
+
+**Feito automaticamente:**
+
+- [x] GitHub: `sidcleiviana/sidclei-portfolio` (público, `main`, histórico preservado).
+- [x] Vercel: projeto `sidclei-portfolio`, Git Integration conectada, deploy de
+      produção **verde** → <https://sidclei-portfolio.vercel.app>.
+- [x] Env vars na Vercel (Production/Preview/Development). Secret como Secret.
+- [x] Smoke tests de produção: `/` `/projects` `/projects/automacao-de-processos`
+      → 200; slug inexistente → 404; `/robots.txt` `/sitemap.xml` `/studio` → 200;
+      `sitemap.xml` já usa a URL de produção.
+- [x] Confidencialidade em produção: doc `visibility: private` temporário criado
+      via CLI → **não** aparece em `/`, `/projects`, `sitemap.xml`; slug → 404;
+      sem vazamento de campos no HTML/RSC. Doc removido após o teste.
+- [x] `/api/revalidate` em produção: sem assinatura → 401, assinatura inválida →
+      401, `GET` → 405.
+- [x] CORS Sanity: produção adicionada (`--credentials`), localhost preservado.
+
+**Pendente (1 passo manual — limitação da CLI):**
+
+- [ ] **Criar o webhook GROQ no Sanity.** `sanity hook create` nesta versão só
+      abre o navegador, e a Management API não aceita webhooks GROQ via script.
+      Em <https://www.sanity.io/organizations/oyd8gg9s0/project/m8gh03bf/api/webhooks/new>:
+      - Name: `Portfolio Revalidation`
+      - URL: `https://sidclei-portfolio.vercel.app/api/revalidate`
+      - Dataset: `production`
+      - Trigger on: **Create, Update, Delete**
+      - Filter: _(vazio)_
+      - Projection: `{"_type": _type, "slug": slug.current}`
+      - HTTP method: `POST`
+      - API version: `v2021-06-07`
+      - Secret: **copie de `.env.local` › `SANITY_REVALIDATE_SECRET`** (não cole em chat)
+      - Include drafts: **off**
+- [ ] Publicar uma pequena alteração no Studio (ex.: `shortDescription` de
+      "Automação de processos") → confirmar que chega em
+      `https://sidclei-portfolio.vercel.app/projects/automacao-de-processos`
+      sem `git push` nem deploy manual.
+
+---
+
+## Sprint 0.1 — passos locais (contexto)
+
+Estes exigem **login no Sanity** e/ou **deploy HTTPS**. A lógica testável
+localmente já está coberta (`pnpm test`), incluindo a validação de assinatura
+do webhook com HMAC real.
 
 Marque cada item ao concluir.
 

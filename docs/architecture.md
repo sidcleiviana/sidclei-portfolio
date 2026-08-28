@@ -45,6 +45,34 @@ do App Router) habilitado. Um projeto novo publicado no Studio:
 
 Nenhum arquivo `.ts/.tsx/.json` precisa ser criado para um novo projeto.
 
+## Infraestrutura de produção (Sprint 0.2)
+
+```
+GitHub  sidcleiviana/sidclei-portfolio (público, branch main)
+   │  push
+   ▼
+Vercel  projeto "sidclei-portfolio" — Git Integration ligada
+   │  build + deploy automático
+   ▼
+https://sidclei-portfolio.vercel.app   (alias de produção)
+   ▲
+   │ revalidateTag (ISR on-demand)
+Sanity  webhook GROQ "Portfolio Revalidation" → POST /api/revalidate (HMAC)
+```
+
+- **Deploy de código:** `git push origin main` → Vercel cria o deployment. Não
+  há GitHub Actions (a Git Integration da Vercel já cobre `push → deploy`).
+- **Deploy de conteúdo:** publicar no Studio → webhook assinado →
+  `/api/revalidate` → `revalidateTag`. Sem redeploy. Fallback: ISR 60s.
+- **Env vars na Vercel:** `NEXT_PUBLIC_SANITY_PROJECT_ID`,
+  `NEXT_PUBLIC_SANITY_DATASET`, `NEXT_PUBLIC_SANITY_API_VERSION`,
+  `NEXT_PUBLIC_SITE_URL` (Production/Preview/Development, Config);
+  `SANITY_REVALIDATE_SECRET` (Production/Preview, **Secret**).
+  `SANITY_API_READ_TOKEN` não é usado: o dataset `production` é público para
+  leitura. Se for tornado privado, adicionar o token (server-only).
+- **CORS Sanity:** `http://localhost:3000`, `http://localhost:3333`,
+  `https://sidclei-portfolio.vercel.app` (com credentials). Sem wildcards.
+
 ## Segurança e confidencialidade
 
 | Risco                                   | Mitigação                                                                 |
