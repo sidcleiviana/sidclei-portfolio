@@ -18,25 +18,25 @@
       401, `GET` → 405.
 - [x] CORS Sanity: produção adicionada (`--credentials`), localhost preservado.
 
-**Pendente (1 passo manual — limitação da CLI):**
+**Webhook + cadeia de revalidação — VALIDADO:**
 
-- [ ] **Criar o webhook GROQ no Sanity.** `sanity hook create` nesta versão só
-      abre o navegador, e a Management API não aceita webhooks GROQ via script.
-      Em <https://www.sanity.io/organizations/oyd8gg9s0/project/m8gh03bf/api/webhooks/new>:
-      - Name: `Portfolio Revalidation`
-      - URL: `https://sidclei-portfolio.vercel.app/api/revalidate`
-      - Dataset: `production`
-      - Trigger on: **Create, Update, Delete**
-      - Filter: _(vazio)_
-      - Projection: `{"_type": _type, "slug": slug.current}`
-      - HTTP method: `POST`
-      - API version: `v2021-06-07`
-      - Secret: **copie de `.env.local` › `SANITY_REVALIDATE_SECRET`** (não cole em chat)
-      - Include drafts: **off**
-- [ ] Publicar uma pequena alteração no Studio (ex.: `shortDescription` de
-      "Automação de processos") → confirmar que chega em
+- [x] Webhook GROQ **"Portfolio Revalidation"** criado no Sanity (passo manual —
+      `sanity hook create` só abre o navegador; Management API não aceita
+      webhooks GROQ via script). URL `…/api/revalidate`, dataset `production`,
+      triggers create/update/delete, projection `{"_type": _type, "slug": slug.current}`,
+      secret = `SANITY_REVALIDATE_SECRET`.
+- [x] Publicação editorial no Studio (`shortDescription` de "Automação de
+      processos": _"…melhorar…"_ → _"…otimizar…"_) → entrega do webhook
+      **`success` / `200`** → novo valor servido em
       `https://sidclei-portfolio.vercel.app/projects/automacao-de-processos`
-      sem `git push` nem deploy manual.
+      (`<meta name="description">`), **sem `git push` e sem deploy** (nenhum
+      deployment novo na Vercel).
+
+## Se o dataset `production` for tornado privado
+
+- [ ] Criar token **Viewer** e adicionar `SANITY_API_READ_TOKEN` (Secret) na
+      Vercel (Production/Preview) e no `.env.local`. Sem isso, as queries
+      server-side retornam vazio e as páginas mostram estado vazio.
 
 ---
 
