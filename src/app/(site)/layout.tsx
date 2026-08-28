@@ -1,21 +1,27 @@
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
-import { getSiteSettings } from "@/sanity/queries";
+import { getProfile, getSiteSettings } from "@/sanity/queries";
 
 export default async function SiteLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const settings = await getSiteSettings();
+  const [settings, profile] = await Promise.all([
+    getSiteSettings(),
+    getProfile(),
+  ]);
 
   return (
     <div className="flex min-h-dvh flex-col">
+      <a href="#conteudo" className="skip-link">
+        Pular para o conteúdo
+      </a>
       <SiteHeader />
       <main id="conteudo" className="flex-1">
         {children}
       </main>
-      <SiteFooter note={settings?.footerNote} />
+      <SiteFooter profile={profile} note={settings?.footerNote} />
     </div>
   );
 }
