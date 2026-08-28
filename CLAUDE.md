@@ -1139,14 +1139,17 @@ filtro (slug privado → `notFound()`). Validação de schema impede `private` +
   (assinado). Criação do webhook é manual (a CLI só abre o navegador).
 - Nenhum ID/token/segredo sensível registrado aqui.
 
-### Atualização — Sprint 0.2.1 (dataset privado)
+---
+
+## Atualização — Sprint 0.2.1 (dataset privado)
 
 - Dataset `production` alterado para **PRIVATE** (`aclMode: private`). Leitura
-  anônima direta do Content Lake → **401** (comprovado). A confidencialidade
-  deixa de depender apenas do filtro GROQ da aplicação.
+  anônima direta do Content Lake não retorna documentos (query/`doc`/`export`
+  anônimos → vazio; comprovado com marcador único). A confidencialidade deixa
+  de depender apenas do filtro GROQ da aplicação.
 - Leitura server-side autenticada com `SANITY_API_READ_TOKEN` (token
   `portfolio-server-read`, role `viewer`, somente leitura). Aplicado no
   `client` server-side (`src/sanity/client.ts`); `useCdn` só quando anônimo.
-  Nunca no bundle do browser.
+  Nunca no bundle do browser (scan de HTML/RSC/chunks: limpo).
 - Studio e webhook não afetados (autenticação/infra próprias). Imagens em
   `cdn.sanity.io` seguem públicas.
