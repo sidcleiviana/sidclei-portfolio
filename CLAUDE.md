@@ -1182,3 +1182,29 @@ filtro (slug privado → `notFound()`). Validação de schema impede `private` +
 - **Sem regressão:** schemas, TypeGen, referências, visibility, webhook,
   ISR/revalidation, dataset privado, sitemap/robots/canonical intactos.
 - 33 testes (24 → +9: UI primitives, MobileNav). Gates verdes.
+
+---
+
+## Atualização — Sprint 2 (Project Case Study System)
+
+- `/projects/[slug]` agora é um **sistema de case study** modular
+  (`src/features/projects/ProjectCaseStudy.tsx`): header editorial, contribuição,
+  contexto/problema, blocos modulares na ordem do editor, resultados, evidências,
+  meta (skills ≠ technologies), nav anterior/próximo. Toda seção é condicional —
+  projeto enxuto continua elegante; projeto rico continua navegável.
+- **Nenhuma mudança de schema.** TypeGen intacto. Lacunas documentadas em
+  `docs/case-study.md` (sem code block dedicado; sem relação explícita de
+  "projetos relacionados").
+- **Índice do projeto** (`case/ProjectToc`, único client component): derivado das
+  seções que realmente renderizam (`src/domain/caseSections.ts`), só aparece com
+  ≥ 4 seções; `IntersectionObserver` nativo p/ seção ativa, sem biblioteca.
+  Âncoras com `scroll-mt-24`; scroll suave exceto em `prefers-reduced-motion`.
+- **12 block renderers** redesenhados sobre o Design System via `BlockShell`
+  (medidas prose/wide, §10). Callout com **uma** linguagem neutra (§22). Métrica
+  exibida literalmente, sem percentual calculado (§23).
+- **Sandbox dev:** `/dev/case-preview` (fixtures sintéticas, `notFound` em prod,
+  noindex, em `robots.txt`). `src/features/projects/fixtures.ts` — nunca em rota
+  pública.
+- Prev/next derivados só da lista pública → projeto `private` nunca vaza (§26).
+- 45 testes (33 → +12: caseSections, contribution, sparse/rich composition).
+  Gates verdes. Sem regressão de infra (dataset privado, webhook, deploy).
