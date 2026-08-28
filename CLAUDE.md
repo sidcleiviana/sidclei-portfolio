@@ -1153,3 +1153,32 @@ filtro (slug privado → `notFound()`). Validação de schema impede `private` +
   Nunca no bundle do browser (scan de HTML/RSC/chunks: limpo).
 - Studio e webhook não afetados (autenticação/infra próprias). Imagens em
   `cdn.sanity.io` seguem públicas.
+
+---
+
+## Atualização — Sprint 1 (Design System & Interaction Foundation)
+
+- **Fundação visual** estabelecida. Direção: editorial-técnica, um único tema
+  claro (`color-scheme: light`); tokens preparados para tema futuro via
+  `:root[data-theme]` sem tocar componentes. Detalhe: `docs/design-system.md`.
+- **Tokens** centralizados em `src/styles/globals.css` (`@theme`): cor,
+  tipografia (escala + line-heights), radius, sombras discretas, larguras de
+  container, motion (durations/easings). Componentes não hardcodam cor/raio/tempo.
+- **Tipografia:** Inter + JetBrains Mono via `next/font/google` (self-hosted,
+  sem runtime externo). `src/styles/fonts.ts`.
+- **Primitivos de layout** (`src/components/ui/`): `Container` (default/wide/prose),
+  `Section`, `Stack`, `Cluster`, `Grid`, `Divider`.
+- **Componentes:** `Button` (`<button>` real), `ButtonLink` (`next/link`),
+  `TextLink` (externos com `rel`+dica SR), `Badge`, `Card` (variante
+  `interactive` para stretched-link), `Eyebrow`, `SectionHeading`.
+- **Interação (CSS-only, sem biblioteca):** hover discreto, `:focus-visible`
+  em tudo, pressed nos botões, card lift, uma entrada `[data-animate="rise"]`.
+  `prefers-reduced-motion` zera tudo e força estado final.
+- **Header/Footer** reconstruídos: skip link, header sticky com backdrop,
+  `MobileNav` acessível (disclosure: `aria-expanded`/`aria-controls`, Escape,
+  outside-click, `aria-current`). Nav só com rotas que existem (Início/Projetos).
+- **Rotas** `/`, `/projects`, `/projects/[slug]`, `not-found` aplicam a
+  fundação. Blocos de conteúdo continuam funcionando; `BlockSection` alinhado.
+- **Sem regressão:** schemas, TypeGen, referências, visibility, webhook,
+  ISR/revalidation, dataset privado, sitemap/robots/canonical intactos.
+- 33 testes (24 → +9: UI primitives, MobileNav). Gates verdes.
