@@ -27,8 +27,9 @@ export async function generateMetadata({
   const project = await getProjectBySlug(slug);
   if (!project || !isPubliclyVisible(project)) return {};
 
-  const title = project.seo?.title ?? project.title;
-  const description = project.seo?.description ?? project.shortDescription;
+  const title = project.seo?.title ?? project.title ?? "Projeto";
+  const description =
+    project.seo?.description ?? project.shortDescription ?? undefined;
   const ogSource = project.seo?.ogImage ?? project.coverImage;
   const ogImage = urlForImage(ogSource)?.width(1200).height(630).url();
 

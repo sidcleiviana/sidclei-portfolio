@@ -1,6 +1,6 @@
 import type { ComponentType } from "react";
 
-import type { ContentBlock, KnownContentBlock } from "@/sanity/types";
+import type { AnyContentBlock, KnownContentBlock } from "@/sanity/types";
 
 import {
   Architecture,
@@ -49,11 +49,11 @@ export function hasRenderer(type: string): type is KnownContentBlock["_type"] {
   return type in REGISTRY;
 }
 
-export function renderContentBlock(block: ContentBlock) {
+export function renderContentBlock(block: AnyContentBlock) {
   if (hasRenderer(block._type)) {
     // Registry keys and block `_type` are aligned by the `satisfies` check above.
     const Component = REGISTRY[block._type] as ComponentType<{
-      block: ContentBlock;
+      block: AnyContentBlock;
     }>;
     return <Component block={block} />;
   }

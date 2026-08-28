@@ -43,22 +43,25 @@ describe("ProjectCard", () => {
       <ProjectCard
         project={makeProject({
           projectType: "production",
-          period: { startDate: "2023-01", ongoing: true },
+          period: { _type: "dateRange", startDate: "2023-01", ongoing: true },
           technologies: [
             {
               _id: "t1",
               name: "Python",
               slug: "python",
               category: "Linguagem",
+              icon: null,
             },
             {
               _id: "t2",
               name: "Oracle",
               slug: "oracle",
               category: "Banco de dados",
+              icon: null,
             },
           ],
           contribution: {
+            _type: "projectContribution",
             authorship: "team",
             roles: ["Backend", "QA / Testes"],
           },

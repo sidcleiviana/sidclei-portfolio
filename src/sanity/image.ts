@@ -2,16 +2,20 @@ import createImageUrlBuilder from "@sanity/image-url";
 import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 
 import { dataset, projectId } from "./env";
+import type { SanityImage } from "./types";
 
 const builder = createImageUrlBuilder({ projectId, dataset });
 
 /**
  * Build a Sanity CDN URL for an image source. Returns `null` when the source
- * is missing so callers can skip rendering (Sprint §36, §39).
+ * has no asset so callers can skip rendering (Sprint §36, §39).
  */
-export function urlForImage(source: SanityImageSource | null | undefined) {
-  if (!source) return null;
-  return builder.image(source).auto("format").fit("max");
+export function urlForImage(source: SanityImage | null | undefined) {
+  if (!source?.asset?._ref) return null;
+  return builder
+    .image(source as unknown as SanityImageSource)
+    .auto("format")
+    .fit("max");
 }
 
 export function imageDimensions(ref: string | undefined) {

@@ -8,9 +8,7 @@ export const PROJECT_TYPE_LABELS: Record<ProjectType, string> = {
   study: "Estudo",
 };
 
-export function projectTypeLabel(
-  type: ProjectType | string | undefined
-): string {
+export function projectTypeLabel(type?: ProjectType | string | null): string {
   if (!type) return "Projeto";
   return PROJECT_TYPE_LABELS[type as ProjectType] ?? "Projeto";
 }

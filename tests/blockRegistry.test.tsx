@@ -5,7 +5,7 @@ import {
   hasRenderer,
   renderContentBlock,
 } from "@/features/projects/blockRegistry";
-import type { ContentBlock } from "@/sanity/types";
+import type { AnyContentBlock, ContentBlock } from "@/sanity/types";
 
 describe("content block registry", () => {
   it("knows which block types have a renderer", () => {
@@ -38,7 +38,7 @@ describe("content block registry", () => {
   });
 
   it("does not throw on an unknown block type", () => {
-    const block: ContentBlock = {
+    const block: AnyContentBlock = {
       _key: "x1",
       _type: "blockFromAFutureSprint",
       whatever: 123,
@@ -56,12 +56,19 @@ describe("content block registry", () => {
       heading: "Resultados",
       metrics: [
         {
+          _type: "metric",
           _key: "mm1",
           label: "Tempo de processo",
           before: "30 dias",
           after: "10 horas",
         },
-        { _key: "mm2", label: "Usuários", value: "150", unit: "usuários" },
+        {
+          _type: "metric",
+          _key: "mm2",
+          label: "Usuários",
+          value: "150",
+          unit: "usuários",
+        },
       ],
     };
 

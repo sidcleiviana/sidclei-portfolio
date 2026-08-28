@@ -1,4 +1,4 @@
-import type { Authorship, Contribution } from "@/sanity/types";
+import type { Authorship } from "@/sanity/types";
 
 export const AUTHORSHIP_LABELS: Record<Authorship, string> = {
   individual: "Projeto individual",
@@ -6,12 +6,20 @@ export const AUTHORSHIP_LABELS: Record<Authorship, string> = {
   participation: "Participação em projeto maior",
 };
 
-export function authorshipLabel(value?: Authorship | string): string | null {
+/** Structural subset — domain code does not depend on the `_type` tag. */
+type ContributionLike = {
+  authorship?: string | null;
+  roles?: Array<string | null> | null;
+};
+
+export function authorshipLabel(
+  value?: Authorship | string | null
+): string | null {
   if (!value) return null;
   return AUTHORSHIP_LABELS[value as Authorship] ?? null;
 }
 
-export function isTeamProject(contribution?: Contribution | null): boolean {
+export function isTeamProject(contribution?: ContributionLike | null): boolean {
   return (
     contribution?.authorship === "team" ||
     contribution?.authorship === "participation"
@@ -20,8 +28,10 @@ export function isTeamProject(contribution?: Contribution | null): boolean {
 
 /** A short "Backend · QA" summary of the roles, or null when none. */
 export function rolesSummary(
-  contribution?: Contribution | null
+  contribution?: ContributionLike | null
 ): string | null {
-  const roles = contribution?.roles?.filter(Boolean) ?? [];
+  const roles = (contribution?.roles ?? []).filter((role): role is string =>
+    Boolean(role)
+  );
   return roles.length ? roles.join(" · ") : null;
 }
