@@ -102,6 +102,14 @@ h4 {
   text-wrap: balance;
 }
 
+/* Smooth in-page navigation (table of contents). Off under reduced motion via
+   the block further down. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 /* -- interaction language --------------------------------------------------
    Small, purposeful. Colour/border/shadow transitions everywhere; transform
    only where it reads as physical feedback (buttons pressed, cards lifting).
