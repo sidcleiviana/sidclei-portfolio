@@ -1,48 +1,55 @@
-import { groq } from "next-sanity";
+import { defineQuery } from "next-sanity";
 
 import { CACHE_TAGS, sanityFetch } from "../fetch";
 import type { ProjectDetail, ProjectListItem } from "../types";
 
 /**
  * The public gate. A project is only ever exposed when it is published AND its
- * visibility is not "private" (Sprint §20, §57). This lives in the query itself
- * so private content never leaves the CMS, regardless of the UI.
+ * visibility is not "private" (Sprint §20, §57). Inlined into every query so
+ * private content never leaves the CMS, regardless of the UI, and so Sanity
+ * TypeGen can parse each query as a self-contained literal.
  */
-const PUBLIC_FILTER = `_type == "project" && status == "published" && visibility != "private"`;
 
-const listFields = groq`
-  _id,
-  title,
-  "slug": slug.current,
-  shortDescription,
-  projectType,
-  featured,
-  visibility,
-  coverImage,
-  period,
-  contribution,
-  "technologies": technologies[]->{
-    _id, name, "slug": slug.current, category, icon
-  }
-`;
-
-export const projectsListQuery = groq`
-  *[${PUBLIC_FILTER}] | order(
+export const projectsListQuery =
+  defineQuery(`*[_type == "project" && status == "published" && visibility != "private"] | order(
     featured desc,
     coalesce(publishedAt, period.startDate, "") desc,
     title asc
   ) {
-    ${listFields}
-  }
-`;
+    _id,
+    title,
+    "slug": slug.current,
+    shortDescription,
+    projectType,
+    featured,
+    visibility,
+    coverImage,
+    period,
+    contribution,
+    "technologies": technologies[]->{
+      _id, name, "slug": slug.current, category, icon
+    }
+  }`);
 
-export const projectSlugsQuery = groq`
-  *[${PUBLIC_FILTER} && defined(slug.current)].slug.current
-`;
+export const projectSlugsQuery = defineQuery(
+  `*[_type == "project" && status == "published" && visibility != "private" && defined(slug.current)].slug.current`
+);
 
-export const projectBySlugQuery = groq`
-  *[${PUBLIC_FILTER} && slug.current == $slug][0] {
-    ${listFields},
+export const projectBySlugQuery =
+  defineQuery(`*[_type == "project" && status == "published" && visibility != "private" && slug.current == $slug][0] {
+    _id,
+    title,
+    "slug": slug.current,
+    shortDescription,
+    projectType,
+    featured,
+    visibility,
+    coverImage,
+    period,
+    contribution,
+    "technologies": technologies[]->{
+      _id, name, "slug": slug.current, category, icon
+    },
     context,
     problem,
     publishedAt,
@@ -55,8 +62,7 @@ export const projectBySlugQuery = groq`
     "contentBlocks": coalesce(contentBlocks[]{ ... }, []),
     confidentialityNotice,
     seo
-  }
-`;
+  }`);
 
 export function getProjects() {
   return sanityFetch<ProjectListItem[]>({

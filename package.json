@@ -13,6 +13,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
+    "typegen": "sanity schema extract && sanity typegen generate",
+    "typegen:check": "pnpm typegen && git diff --exit-code -- src/sanity/sanity.types.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "format": "prettier --write .",
