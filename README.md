@@ -1,0 +1,119 @@
+# Portfólio Profissional — Sidclei Viana
+
+Plataforma profissional pessoal, modular e orientada por conteúdo. Não é um
+currículo em HTML: é um sistema de conteúdo relacional (projetos, competências,
+tecnologias, experiências, formação) preparado para crescer por anos sem
+alteração de código a cada novo projeto.
+
+A constituição do produto é o [`CLAUDE.md`](./CLAUDE.md). Este README cobre
+apenas a operação técnica.
+
+---
+
+## Stack
+
+| Camada           | Escolha                                    |
+| ---------------- | ------------------------------------------ |
+| Framework        | Next.js 15 (App Router) + React 19         |
+| Linguagem        | TypeScript (strict)                        |
+| Estilo           | Tailwind CSS v4 + CSS variables (tokens)   |
+| CMS              | Sanity v3 (Studio embutido em `/studio`)   |
+| Integração       | `next-sanity` + GROQ                       |
+| Validação        | Zod (quando há contrato de entrada)        |
+| Testes           | Vitest + Testing Library                   |
+| Gerenciador      | pnpm                                       |
+
+Versões exatas: ver `package.json` / `pnpm-lock.yaml`. Resumo em
+[`CLAUDE.md` › TECHNICAL BASELINE](./CLAUDE.md#technical-baseline).
+
+---
+
+## Pré-requisitos
+
+- Node.js `>= 20.11` (ver `.nvmrc`)
+- pnpm (`npm install -g pnpm` ou `corepack enable pnpm`)
+
+## Instalação
+
+```bash
+pnpm install
+cp .env.example .env.local   # e preencha os valores (ver abaixo)
+```
+
+## Comandos
+
+```bash
+pnpm dev         # servidor de desenvolvimento (http://localhost:3000)
+pnpm build       # build de produção
+pnpm start       # serve o build de produção
+pnpm lint        # ESLint (next/core-web-vitals + next/typescript)
+pnpm typecheck   # tsc --noEmit
+pnpm test        # Vitest (run único)
+pnpm test:watch  # Vitest em watch
+pnpm format      # Prettier --write
+```
+
+O Studio fica em `http://localhost:3000/studio`.
+
+---
+
+## Variáveis de ambiente
+
+Copie `.env.example` para `.env.local`. Nomes (nunca versione valores):
+
+| Nome                             | Público? | Uso                                              |
+| -------------------------------- | -------- | ------------------------------------------------ |
+| `NEXT_PUBLIC_SANITY_PROJECT_ID`  | sim      | ID do projeto Sanity                             |
+| `NEXT_PUBLIC_SANITY_DATASET`     | sim      | dataset (ex.: `production`)                      |
+| `NEXT_PUBLIC_SANITY_API_VERSION` | sim      | versão da API (data fixa)                        |
+| `SANITY_API_READ_TOKEN`          | **não**  | leitura de dataset privado (server-side)         |
+| `SANITY_REVALIDATE_SECRET`       | **não**  | assina o webhook de revalidação                  |
+| `NEXT_PUBLIC_SITE_URL`           | sim      | URL base para metadata / canonical / sitemap     |
+
+Sem `NEXT_PUBLIC_SANITY_PROJECT_ID` a aplicação continua compilando e rodando:
+as páginas exibem o estado vazio e `/studio` mostra um aviso de configuração.
+
+---
+
+## Configurar o Sanity
+
+1. Crie um projeto em <https://www.sanity.io/manage> (ou `pnpm dlx sanity@latest init`
+   — escolha "Use existing project" depois de criar, sem sobrescrever schemas).
+2. Preencha `NEXT_PUBLIC_SANITY_PROJECT_ID` e `NEXT_PUBLIC_SANITY_DATASET` em `.env.local`.
+3. Se o dataset for privado, gere um token de leitura em _API → Tokens_ e
+   coloque em `SANITY_API_READ_TOKEN`.
+4. Em _API → CORS origins_, adicione `http://localhost:3000` (e a URL de produção).
+5. `pnpm dev` → acesse `/studio`, faça login, comece a cadastrar conteúdo.
+
+### Publicação sem alterar código
+
+O conteúdo publicado no Studio aparece no site por **ISR + revalidação
+on-demand** (ver [`docs/decisions/ADR-003-content-revalidation.md`](./docs/decisions/ADR-003-content-revalidation.md)).
+
+Configure um webhook em _API → Webhooks_ apontando para
+`https://SEU_DOMINIO/api/revalidate`, método `POST`, com:
+
+- **Secret**: o mesmo valor de `SANITY_REVALIDATE_SECRET`
+- **Projection**: `{ "_type": _type, "slug": slug.current }`
+- **Trigger on**: create, update, delete
+
+Sem webhook, o conteúdo ainda atualiza sozinho pelo TTL do ISR (60s).
+
+---
+
+## Estrutura
+
+Ver [`docs/architecture.md`](./docs/architecture.md) e
+[`docs/content-model.md`](./docs/content-model.md).
+
+```
+sanity/schemaTypes/   schemas do CMS (documents/ + objects/ + objects/blocks/)
+src/sanity/           client, queries GROQ centralizadas, tipos de resultado, imagem
+src/domain/           regras puras (visibilidade, labels, período, contribuição)
+src/features/projects/ cards, lista, registry de content blocks + renderers
+src/components/       ui / layout / content (PortableText, imagem)
+src/app/(site)/       páginas públicas
+src/app/studio/       Sanity Studio embutido
+src/app/api/          route handlers (revalidate)
+tests/                Vitest
+```
