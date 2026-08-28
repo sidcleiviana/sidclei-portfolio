@@ -1,0 +1,25 @@
+import { fileURLToPath } from "node:url";
+
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    environment: "jsdom",
+    setupFiles: ["./tests/setup.ts"],
+    include: ["tests/**/*.test.{ts,tsx}"],
+    css: false,
+  },
+  resolve: {
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "next/image": fileURLToPath(
+        new URL("./tests/mocks/next-image.tsx", import.meta.url)
+      ),
+      "next/link": fileURLToPath(
+        new URL("./tests/mocks/next-link.tsx", import.meta.url)
+      ),
+    },
+  },
+});
