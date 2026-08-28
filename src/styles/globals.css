@@ -175,7 +175,7 @@ h4 {
   font-size: var(--text-sm);
   transform: translateY(-150%);
 }
-.skip-link:focus-visible {
+.skip-link:focus {
   transform: none;
   outline-offset: 2px;
 }
