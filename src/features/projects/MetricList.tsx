@@ -17,14 +17,14 @@ export function MetricList({ metrics }: { metrics: Metric[] }) {
       {usable.map((metric, index) => (
         <div
           key={metric._key ?? index}
-          className="border-border rounded-[var(--radius)] border p-4"
+          className="border-border rounded-md border p-4"
         >
-          <dt className="text-muted text-sm">{metric.label}</dt>
+          <dt className="text-fg-muted text-sm">{metric.label}</dt>
           <dd className="mt-1 text-lg font-semibold tracking-tight">
             {metricValue(metric)}
           </dd>
           {metric.description ? (
-            <p className="text-muted mt-1 text-xs">{metric.description}</p>
+            <p className="text-fg-muted mt-1 text-xs">{metric.description}</p>
           ) : null}
         </div>
       ))}

@@ -1,6 +1,10 @@
 import type { ReactNode } from "react";
 
-/** Consistent spacing + optional heading for every project content block. */
+/**
+ * Consistent measure + heading for every project content block. `wide` blocks
+ * (media, metrics) get more room than prose blocks. Heading style matches the
+ * project detail sub-headings.
+ */
 export function BlockSection({
   heading,
   children,
@@ -12,10 +16,16 @@ export function BlockSection({
 }) {
   return (
     <section
-      className={wide ? "mx-auto w-full max-w-3xl" : "mx-auto w-full max-w-2xl"}
+      className={`mx-auto w-full px-5 sm:px-6 lg:px-8 ${
+        wide
+          ? "max-w-[var(--container-wide)]"
+          : "max-w-[var(--container-prose)]"
+      }`}
     >
       {heading ? (
-        <h2 className="mb-4 text-lg font-semibold tracking-tight">{heading}</h2>
+        <h2 className="text-fg-muted mb-4 font-mono text-xs font-medium tracking-[0.14em] uppercase">
+          {heading}
+        </h2>
       ) : null}
       {children}
     </section>

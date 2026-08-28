@@ -64,7 +64,7 @@ export function renderContentBlock(block: AnyContentBlock) {
     return (
       <div
         data-unknown-block={block._type}
-        className="border-border text-muted rounded border border-dashed p-3 text-xs"
+        className="border-border text-fg-muted rounded border border-dashed p-3 text-xs"
       >
         Bloco sem renderer: <code>{block._type}</code>
       </div>

@@ -27,10 +27,10 @@ export function Image({ block }: { block: ImageBlock }) {
         <SanityImage
           image={block.image}
           sizes="(min-width: 768px) 768px, 100vw"
-          className="w-full rounded-[var(--radius)]"
+          className="w-full rounded-md"
         />
         {block.image.caption ? (
-          <figcaption className="text-muted text-sm">
+          <figcaption className="text-fg-muted text-sm">
             {block.image.caption}
           </figcaption>
         ) : null}
@@ -47,7 +47,7 @@ export function Architecture({ block }: { block: ArchitectureBlock }) {
         <SanityImage
           image={block.diagram}
           sizes="(min-width: 768px) 768px, 100vw"
-          className="border-border mt-4 w-full rounded-[var(--radius)] border"
+          className="border-border mt-4 w-full rounded-md border"
         />
       ) : null}
     </BlockSection>
@@ -81,7 +81,7 @@ export function Callout({ block }: { block: CalloutBlock }) {
   return (
     <BlockSection>
       <aside
-        className={`bg-surface rounded-[var(--radius)] border-l-2 p-4 ${
+        className={`bg-surface rounded-md border-l-2 p-4 ${
           TONE_CLASS[block.tone ?? "info"] ?? TONE_CLASS.info
         }`}
       >

@@ -15,10 +15,10 @@ export function Gallery({ block }: { block: GalleryBlock }) {
               <SanityImage
                 image={image}
                 sizes="(min-width: 640px) 384px, 100vw"
-                className="w-full rounded-[var(--radius)]"
+                className="w-full rounded-md"
               />
               {image.caption ? (
-                <figcaption className="text-muted text-xs">
+                <figcaption className="text-fg-muted text-xs">
                   {image.caption}
                 </figcaption>
               ) : null}
@@ -57,7 +57,7 @@ export function Video({ block }: { block: VideoBlock }) {
 
   return (
     <BlockSection heading={block.title} wide>
-      <div className="border-border overflow-hidden rounded-[var(--radius)] border">
+      <div className="border-border overflow-hidden rounded-md border">
         {embed ? (
           <iframe
             src={embed}
@@ -83,7 +83,7 @@ export function Video({ block }: { block: VideoBlock }) {
         )}
       </div>
       {block.caption ? (
-        <p className="text-muted mt-2 text-sm">{block.caption}</p>
+        <p className="text-fg-muted mt-2 text-sm">{block.caption}</p>
       ) : null}
     </BlockSection>
   );

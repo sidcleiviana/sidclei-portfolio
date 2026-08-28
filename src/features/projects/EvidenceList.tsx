@@ -10,7 +10,7 @@ export function EvidenceList({ evidence }: { evidence: Evidence[] }) {
       <ul className="space-y-2">
         {items.map((item, index) => (
           <li key={item._key ?? index} className="text-sm">
-            <span className="text-muted text-xs tracking-wide uppercase">
+            <span className="text-fg-muted text-xs tracking-wide uppercase">
               {item.type}
             </span>{" "}
             {item.url ? (
@@ -26,7 +26,7 @@ export function EvidenceList({ evidence }: { evidence: Evidence[] }) {
               <span>{item.label}</span>
             )}
             {item.description ? (
-              <p className="text-muted">{item.description}</p>
+              <p className="text-fg-muted">{item.description}</p>
             ) : null}
           </li>
         ))}

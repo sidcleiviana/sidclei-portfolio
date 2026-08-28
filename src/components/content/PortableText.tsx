@@ -19,7 +19,7 @@ const components: PortableTextComponents = {
       <h3 className="mt-8 text-lg font-semibold tracking-tight">{children}</h3>
     ),
     blockquote: ({ children }) => (
-      <blockquote className="border-border text-muted border-l-2 pl-4 italic">
+      <blockquote className="border-border text-fg-muted border-l-2 pl-4 italic">
         {children}
       </blockquote>
     ),
@@ -59,7 +59,7 @@ const components: PortableTextComponents = {
       <SanityImage
         image={value as SanityImageType}
         sizes="(min-width: 768px) 640px, 100vw"
-        className="rounded-[var(--radius)]"
+        className="rounded-md"
       />
     ),
   },

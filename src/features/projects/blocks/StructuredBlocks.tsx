@@ -30,11 +30,8 @@ export function BeforeAfter({ block }: { block: BeforeAfterBlock }) {
     <BlockSection heading={block.heading} wide>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {sides.map(({ key, label, data }) => (
-          <div
-            key={key}
-            className="border-border rounded-[var(--radius)] border p-4"
-          >
-            <p className="text-muted text-xs font-semibold tracking-wide uppercase">
+          <div key={key} className="border-border rounded-md border p-4">
+            <p className="text-fg-muted text-xs font-semibold tracking-wide uppercase">
               {data?.label ?? label}
             </p>
             {data?.image?.asset ? (
@@ -67,11 +64,11 @@ export function Timeline({ block }: { block: TimelineBlock }) {
               className="bg-accent absolute top-1.5 -left-[1.4rem] h-2 w-2 rounded-full"
             />
             {entry.date ? (
-              <p className="text-muted text-xs font-medium">{entry.date}</p>
+              <p className="text-fg-muted text-xs font-medium">{entry.date}</p>
             ) : null}
             <p className="font-medium">{entry.title}</p>
             {entry.description ? (
-              <p className="text-muted text-sm">{entry.description}</p>
+              <p className="text-fg-muted text-sm">{entry.description}</p>
             ) : null}
           </li>
         ))}
@@ -93,7 +90,7 @@ export function TechnicalDecisions({
         {decisions.map((decision) => (
           <div key={decision._key}>
             <dt className="font-medium">{decision.question}</dt>
-            <dd className="text-muted mt-1">
+            <dd className="text-fg-muted mt-1">
               <PortableText value={decision.rationale} />
             </dd>
           </div>

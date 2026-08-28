@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { Container } from "@/components/ui/Container";
+import { Container, Section, SectionHeading, Stack } from "@/components/ui";
 import { filterPubliclyVisible } from "@/domain/visibility";
 import { ProjectList } from "@/features/projects/ProjectList";
 import { getProjects } from "@/sanity/queries";
@@ -15,15 +15,19 @@ export default async function ProjectsPage() {
   const projects = filterPubliclyVisible(await getProjects());
 
   return (
-    <Container className="py-16">
-      <header className="mb-10 max-w-2xl">
-        <h1 className="text-3xl font-semibold tracking-tight">Projetos</h1>
-        <p className="text-muted mt-3">
-          Cada projeto indica sua natureza — produção, profissional, lab ou
-          estudo — e, quando aplicável, qual foi a contribuição de Sidclei.
-        </p>
-      </header>
-      <ProjectList projects={projects} />
-    </Container>
+    <Section aria-labelledby="projects-title">
+      <Container>
+        <Stack gap="lg">
+          <SectionHeading
+            as="h1"
+            id="projects-title"
+            eyebrow="Trabalho"
+            title="Projetos"
+            description="Cada projeto indica sua natureza — produção, profissional, lab ou estudo — e, quando aplicável, qual foi a contribuição de Sidclei."
+          />
+          <ProjectList projects={projects} />
+        </Stack>
+      </Container>
+    </Section>
   );
 }
