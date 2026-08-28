@@ -46,14 +46,21 @@ cp .env.example .env.local   # e preencha os valores (ver abaixo)
 pnpm dev         # servidor de desenvolvimento (http://localhost:3000)
 pnpm build       # build de produção
 pnpm start       # serve o build de produção
-pnpm lint        # ESLint (next/core-web-vitals + next/typescript)
-pnpm typecheck   # tsc --noEmit
-pnpm test        # Vitest (run único)
-pnpm test:watch  # Vitest em watch
-pnpm format      # Prettier --write
+pnpm lint          # ESLint (next/core-web-vitals + next/typescript)
+pnpm typecheck     # tsc --noEmit
+pnpm test          # Vitest (run único)
+pnpm test:watch    # Vitest em watch
+pnpm format        # Prettier --write
+pnpm typegen       # regenera src/sanity/sanity.types.ts a partir do schema + queries
+pnpm typegen:check # regenera e falha se houver diff (CI / pré-commit)
 ```
 
 O Studio fica em `http://localhost:3000/studio`.
+
+Rode `pnpm typegen` sempre que alterar um schema (`sanity/schemaTypes/`) ou uma
+query (`src/sanity/queries/`). O arquivo gerado é versionado, então uma
+instalação limpa já compila; o comando só é necessário após mudanças. Ver
+[ADR-004](./docs/decisions/ADR-004-sanity-typegen.md).
 
 ---
 
@@ -77,13 +84,21 @@ as páginas exibem o estado vazio e `/studio` mostra um aviso de configuração.
 
 ## Configurar o Sanity
 
-1. Crie um projeto em <https://www.sanity.io/manage> (ou `pnpm dlx sanity@latest init`
-   — escolha "Use existing project" depois de criar, sem sobrescrever schemas).
-2. Preencha `NEXT_PUBLIC_SANITY_PROJECT_ID` e `NEXT_PUBLIC_SANITY_DATASET` em `.env.local`.
-3. Se o dataset for privado, gere um token de leitura em _API → Tokens_ e
-   coloque em `SANITY_API_READ_TOKEN`.
-4. Em _API → CORS origins_, adicione `http://localhost:3000` (e a URL de produção).
-5. `pnpm dev` → acesse `/studio`, faça login, comece a cadastrar conteúdo.
+O projeto Sanity real (`portifólio-sidclei`) já está provisionado. O `projectId`
+e o `dataset` ficam em `.env.local` (git-ignored) — nunca versionados. Para um
+ambiente novo:
+
+1. `NEXT_PUBLIC_SANITY_PROJECT_ID` e `NEXT_PUBLIC_SANITY_DATASET` em `.env.local`.
+2. Dataset privado → gere um token **Viewer** em _API → Tokens_
+   (`https://www.sanity.io/manage/project/<projectId>/api#tokens`) e coloque em
+   `SANITY_API_READ_TOKEN`.
+3. `SANITY_REVALIDATE_SECRET` = qualquer string aleatória longa
+   (`node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`).
+4. _API → CORS origins_: adicione `http://localhost:3000` e a URL de produção.
+5. `pnpm dev` → `/studio` → login → cadastrar conteúdo.
+
+Roteiro de homologação ponta a ponta:
+[`docs/homologation-checklist.md`](./docs/homologation-checklist.md).
 
 ### Publicação sem alterar código
 
@@ -108,7 +123,8 @@ Ver [`docs/architecture.md`](./docs/architecture.md) e
 
 ```
 sanity/schemaTypes/   schemas do CMS (documents/ + objects/ + objects/blocks/)
-src/sanity/           client, queries GROQ centralizadas, tipos de resultado, imagem
+src/sanity/           client, queries GROQ (defineQuery), sanity.types.ts (gerado),
+                      types.ts (adaptador), fetch/revalidate, imagem
 src/domain/           regras puras (visibilidade, labels, período, contribuição)
 src/features/projects/ cards, lista, registry de content blocks + renderers
 src/components/       ui / layout / content (PortableText, imagem)

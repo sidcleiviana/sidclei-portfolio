@@ -121,11 +121,20 @@ Blocos semânticos, não primitivos de layout (sem row/column/spacer — CLAUDE.
 | `linksBlock`              | `blocks/TextBlocks#Links`                  | ✅                        |
 
 **Adicionar um bloco novo** (Sprint futura): criar o schema em
-`sanity/schemaTypes/objects/blocks/`, incluir em `projectBlockTypes`, adicionar a
-interface ao union `KnownContentBlock` e uma linha no `REGISTRY`. O schema
-`project` e a página `/projects/[slug]` **não mudam**. Remover um bloco de um
-documento não exige mudança alguma. Bloco sem renderer nunca quebra a página
-(em dev aparece um aviso para o desenvolvedor; em produção, nada).
+`sanity/schemaTypes/objects/blocks/`, incluir em `projectBlockTypes`, rodar
+`pnpm typegen` (o union `ContentBlock` passa a incluí-lo) e adicionar uma linha
+no `REGISTRY`. O schema `project` e a página `/projects/[slug]` **não mudam**.
+Remover um bloco de um documento não exige mudança alguma. Bloco sem renderer
+nunca quebra a página (em dev aparece um aviso para o desenvolvedor; em
+produção, nada).
+
+## Tipagem
+
+Os contratos de conteúdo são **gerados** pelo Sanity TypeGen
+(`pnpm typegen` → `src/sanity/sanity.types.ts`, versionado). `src/sanity/types.ts`
+apenas adapta esses tipos para nomes amigáveis; não define shape próprio, exceto
+os helpers estruturais `PortableText` e `SanityImage`. Ver
+[ADR-004](./decisions/ADR-004-sanity-typegen.md).
 
 ## Relações inversas (derivadas, não duplicadas)
 

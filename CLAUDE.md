@@ -1097,3 +1097,23 @@ Projeto `private` é excluído **na query GROQ** e novamente barrado por
 `isPubliclyVisible()` antes de qualquer render. `getProjectBySlug` usa o mesmo
 filtro (slug privado → `notFound()`). Validação de schema impede `private` +
 `featured`/`published`. Token do Sanity só no servidor; nunca `NEXT_PUBLIC_`.
+
+---
+
+## Atualização — Sprint 0.1 (homologação & type safety)
+
+- **Projeto Sanity real provisionado.** `projectId` / `dataset` / token vivem em
+  `.env.local` (git-ignored) — não registrados aqui. `.env.local` confirmado no
+  `.gitignore`.
+- **Sanity TypeGen adotado** (ADR-004). Fluxo:
+  `schema + queries (defineQuery)` → `pnpm typegen` → `src/sanity/sanity.types.ts`
+  (versionado, fonte de verdade). `src/sanity/types.ts` virou adaptador;
+  `src/domain/*` aceita subconjuntos estruturais. `pnpm typegen:check` para CI.
+- **Webhook de revalidação verificado localmente** com assinatura HMAC real
+  (`tests/revalidateWebhook.test.ts`): sem assinatura → 401, inválida → 401,
+  válida → 200 + tags, sem secret → 503. Mapeamento `_type`→tags extraído para
+  função pura `tagsForWebhookPayload`. `parseBody(req, secret, false)` (sem a
+  espera de 3s). Teste ponta a ponta com HTTPS + Studio real: ver
+  `docs/homologation-checklist.md`.
+- Comandos oficiais adicionados: `pnpm typegen`, `pnpm typegen:check`.
+- `src/sanity/sanity.types.ts` é gerado — **não editar à mão**.
