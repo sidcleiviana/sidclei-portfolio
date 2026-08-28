@@ -64,12 +64,17 @@ Sanity  webhook GROQ "Portfolio Revalidation" → POST /api/revalidate (HMAC)
   há GitHub Actions (a Git Integration da Vercel já cobre `push → deploy`).
 - **Deploy de conteúdo:** publicar no Studio → webhook assinado →
   `/api/revalidate` → `revalidateTag`. Sem redeploy. Fallback: ISR 60s.
+- **Dataset `production` é PRIVATE** (`aclMode: private`, Sprint 0.2.1). O
+  Content Lake **nega** qualquer leitura anônima — a confidencialidade não
+  depende só do filtro GROQ da aplicação. Toda leitura server-side é
+  autenticada com `SANITY_API_READ_TOKEN` (role `viewer`, somente leitura,
+  server-only). Imagens em `cdn.sanity.io` continuam públicas (URLs não
+  adivinháveis) — nenhuma mudança necessária no pipeline de imagem.
 - **Env vars na Vercel:** `NEXT_PUBLIC_SANITY_PROJECT_ID`,
   `NEXT_PUBLIC_SANITY_DATASET`, `NEXT_PUBLIC_SANITY_API_VERSION`,
   `NEXT_PUBLIC_SITE_URL` (Production/Preview/Development, Config);
-  `SANITY_REVALIDATE_SECRET` (Production/Preview, **Secret**).
-  `SANITY_API_READ_TOKEN` não é usado: o dataset `production` é público para
-  leitura. Se for tornado privado, adicionar o token (server-only).
+  `SANITY_REVALIDATE_SECRET` (Production/Preview, **Secret**);
+  `SANITY_API_READ_TOKEN` (Production/Preview/Development, **Secret**).
 - **CORS Sanity:** `http://localhost:3000`, `http://localhost:3333`,
   `https://sidclei-portfolio.vercel.app` (com credentials). Sem wildcards.
 
@@ -77,8 +82,9 @@ Sanity  webhook GROQ "Portfolio Revalidation" → POST /api/revalidate (HMAC)
 
 | Risco                                   | Mitigação                                                                 |
 | --------------------------------------- | ------------------------------------------------------------------------ |
-| Token privado no browser                | Token lido só em `src/sanity/env.ts` sem prefixo `NEXT_PUBLIC_`; usado apenas em `sanityFetch` (servidor). |
-| Projeto privado renderizado             | **Duas barreiras independentes**: (1) as queries GROQ filtram `status == "published" && visibility != "private"`; (2) toda página pública passa o projeto por `isPubliclyVisible()` antes de renderizar (`src/domain/visibility.ts`). Teste `tests/projectQueries.test.ts` trava o filtro. |
+| Leitura anônima direta do Content Lake   | Dataset `production` é **PRIVATE**: consulta HTTP sem token → **401**. A confidencialidade não depende do código da aplicação. Verificado empiricamente (Sprint 0.2.1). |
+| Token privado no browser                | `SANITY_API_READ_TOKEN` lido só em `src/sanity/env.ts` (sem `NEXT_PUBLIC_`), aplicado só no `client` server-side (`src/sanity/client.ts`). Scan do HTML/RSC/bundles confirma ausência. |
+| Projeto privado renderizado             | **Três barreiras**: (0) dataset privado; (1) queries GROQ filtram `status == "published" && visibility != "private"`; (2) toda página passa o projeto por `isPubliclyVisible()` (`src/domain/visibility.ts`). Teste `tests/projectQueries.test.ts` trava o filtro. |
 | Slug privado adivinhado                 | `getProjectBySlug` usa o mesmo filtro público → retorna `null` → `notFound()`. |
 | Destaque acidental de projeto privado   | Validação no schema (`project.ts`) bloqueia `visibility: private` + `featured` e + `status: published`. |
 | Webhook público não autenticado         | `parseBody` valida a assinatura HMAC: sem assinatura ou inválida → **401**; sem `SANITY_REVALIDATE_SECRET` → **503**. Verificado com assinatura real em `tests/revalidateWebhook.test.ts`. |

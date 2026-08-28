@@ -17,9 +17,10 @@ apenas a operação técnica.
 - **Repositório:** <https://github.com/sidcleiviana/sidclei-portfolio> (público)
 - **Hosting:** Vercel (`sidclei-portfolio`), com Git Integration —
   `push` na branch `main` dispara deploy automático.
-- **CMS:** Sanity (`portifolio-sidclei`, dataset `production`). Publicar no
-  Studio dispara um webhook GROQ → `/api/revalidate` → `revalidateTag` na
-  Vercel, sem novo deploy.
+- **CMS:** Sanity (`portifolio-sidclei`, dataset `production` — **privado**).
+  Leitura server-side autenticada com `SANITY_API_READ_TOKEN`; leitura anônima
+  do Content Lake é negada. Publicar no Studio dispara um webhook GROQ →
+  `/api/revalidate` → `revalidateTag` na Vercel, sem novo deploy.
 
 ```
 GitHub (main)  ──push──►  Vercel  ──build/deploy──►  https://sidclei-portfolio.vercel.app
@@ -91,7 +92,7 @@ Copie `.env.example` para `.env.local`. Nomes (nunca versione valores):
 | `NEXT_PUBLIC_SANITY_PROJECT_ID`  | sim      | ID do projeto Sanity                             |
 | `NEXT_PUBLIC_SANITY_DATASET`     | sim      | dataset (ex.: `production`)                      |
 | `NEXT_PUBLIC_SANITY_API_VERSION` | sim      | versão da API (data fixa)                        |
-| `SANITY_API_READ_TOKEN`          | **não**  | leitura de dataset privado (server-side)         |
+| `SANITY_API_READ_TOKEN`          | **não**  | leitura autenticada do dataset privado (server-side, obrigatório) |
 | `SANITY_REVALIDATE_SECRET`       | **não**  | assina o webhook de revalidação                  |
 | `NEXT_PUBLIC_SITE_URL`           | sim      | URL base para metadata / canonical / sitemap     |
 
@@ -107,9 +108,10 @@ e o `dataset` ficam em `.env.local` (git-ignored) — nunca versionados. Para um
 ambiente novo:
 
 1. `NEXT_PUBLIC_SANITY_PROJECT_ID` e `NEXT_PUBLIC_SANITY_DATASET` em `.env.local`.
-2. Dataset privado → gere um token **Viewer** em _API → Tokens_
+2. O dataset `production` é **privado**: gere um token **Viewer** (somente
+   leitura) em _API → Tokens_
    (`https://www.sanity.io/manage/project/<projectId>/api#tokens`) e coloque em
-   `SANITY_API_READ_TOKEN`.
+   `SANITY_API_READ_TOKEN`. Sem ele, as leituras server-side retornam vazio.
 3. `SANITY_REVALIDATE_SECRET` = qualquer string aleatória longa
    (`node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`).
 4. _API → CORS origins_: adicione `http://localhost:3000` e a URL de produção.

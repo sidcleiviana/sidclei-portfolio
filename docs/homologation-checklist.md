@@ -32,11 +32,26 @@
       (`<meta name="description">`), **sem `git push` e sem deploy** (nenhum
       deployment novo na Vercel).
 
-## Se o dataset `production` for tornado privado
+## Sprint 0.2.1 — dataset privado (2026-08-28)
 
-- [ ] Criar token **Viewer** e adicionar `SANITY_API_READ_TOKEN` (Secret) na
-      Vercel (Production/Preview) e no `.env.local`. Sem isso, as queries
-      server-side retornam vazio e as páginas mostram estado vazio.
+- [x] Dataset `production` → **PRIVATE** (`aclMode: private`) via Management API.
+- [x] `SANITY_API_READ_TOKEN` (token `portfolio-server-read`, role `viewer`) em
+      `.env.local` + Vercel Production/Preview/Development (**Secret**).
+- [x] Código: `src/sanity/client.ts` aplica o token no client server-side;
+      `useCdn` só quando anônimo; `sanityFetch` usa o client autenticado.
+- [x] **Teste crítico — leitura anônima direta do Content Lake → 401.** Com
+      token válido (server-side) → leitura funciona.
+- [x] App: `/` `/projects` `/projects/automacao-de-processos` → 200 (projeto
+      público continua visível via leitura autenticada).
+- [x] Projeto `private` temporário (marcador único) → ausente de `/`,
+      `/projects`, `sitemap.xml`; slug → 404; **e** irrecuperável anonimamente
+      direto do Sanity. Removido após o teste.
+- [x] Browser leak scan (HTML/RSC/bundles): sem `SANITY_API_READ_TOKEN`, sem
+      `SANITY_REVALIDATE_SECRET`, sem conteúdo do doc de teste.
+- [x] Webhook: publish → `/api/revalidate` `200` → produção atualizada, sem
+      push/deploy.
+- [x] Studio: rota `/studio` 200; escrita/publicação autenticada funcionando
+      (dataset privado).
 
 ---
 

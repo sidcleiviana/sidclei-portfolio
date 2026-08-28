@@ -1,5 +1,4 @@
 import { client } from "./client";
-import { readToken } from "./env";
 
 type SanityFetchOptions<TFallback> = {
   query: string;
@@ -15,7 +14,8 @@ type SanityFetchOptions<TFallback> = {
 /**
  * The single entry point for reading content on the server (Sprint §34).
  *
- * - Adds the private read token only on the server.
+ * - Uses the authenticated `client` (private dataset, Sprint 0.2.1). The token
+ *   lives only on the server; it is never sent to the browser.
  * - Wires Next.js cache tags so the `/api/revalidate` webhook can purge
  *   exactly the affected pages (Sprint §33).
  * - Never throws: when unconfigured or on error it resolves to `fallback`,
@@ -30,12 +30,8 @@ export async function sanityFetch<TFallback>({
 }: SanityFetchOptions<TFallback>): Promise<TFallback> {
   if (!client) return fallback;
 
-  const configured = readToken
-    ? client.withConfig({ token: readToken, useCdn: false })
-    : client;
-
   try {
-    return (await configured.fetch(query, params, {
+    return (await client.fetch(query, params, {
       next: { revalidate, ...(tags ? { tags } : {}) },
     })) as TFallback;
   } catch (error) {

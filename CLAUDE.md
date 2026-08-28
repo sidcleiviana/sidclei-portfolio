@@ -1131,10 +1131,22 @@ filtro (slug privado → `notFound()`). Validação de schema impede `private` +
   `https://sidclei-portfolio.vercel.app`.
 - **Env na Vercel:** `NEXT_PUBLIC_SANITY_PROJECT_ID`,
   `NEXT_PUBLIC_SANITY_DATASET`, `NEXT_PUBLIC_SANITY_API_VERSION`,
-  `NEXT_PUBLIC_SITE_URL` (Config); `SANITY_REVALIDATE_SECRET` (Secret).
-  `SANITY_API_READ_TOKEN` não usado — dataset `production` é público p/ leitura.
+  `NEXT_PUBLIC_SITE_URL` (Config); `SANITY_REVALIDATE_SECRET`,
+  `SANITY_API_READ_TOKEN` (Secret).
 - **CMS em produção:** Sanity `portifolio-sidclei` / dataset `production`.
   CORS: localhost + `https://sidclei-portfolio.vercel.app` (credentials, sem
   wildcard). Webhook GROQ "Portfolio Revalidation" → `/api/revalidate`
   (assinado). Criação do webhook é manual (a CLI só abre o navegador).
 - Nenhum ID/token/segredo sensível registrado aqui.
+
+### Atualização — Sprint 0.2.1 (dataset privado)
+
+- Dataset `production` alterado para **PRIVATE** (`aclMode: private`). Leitura
+  anônima direta do Content Lake → **401** (comprovado). A confidencialidade
+  deixa de depender apenas do filtro GROQ da aplicação.
+- Leitura server-side autenticada com `SANITY_API_READ_TOKEN` (token
+  `portfolio-server-read`, role `viewer`, somente leitura). Aplicado no
+  `client` server-side (`src/sanity/client.ts`); `useCdn` só quando anônimo.
+  Nunca no bundle do browser.
+- Studio e webhook não afetados (autenticação/infra próprias). Imagens em
+  `cdn.sanity.io` seguem públicas.
