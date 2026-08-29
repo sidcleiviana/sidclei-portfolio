@@ -2,8 +2,8 @@ import Link from "next/link";
 
 import { Container } from "@/components/ui/Container";
 
+import { DesktopNav } from "./DesktopNav";
 import { MobileNav } from "./MobileNav";
-import { PRIMARY_NAV } from "./nav";
 
 export function SiteHeader() {
   return (
@@ -16,21 +16,7 @@ export function SiteHeader() {
           Sidclei&nbsp;Viana
         </Link>
 
-        <nav aria-label="Navegação principal" className="hidden md:block">
-          <ul className="flex items-center gap-7 text-sm">
-            {PRIMARY_NAV.map((item) => (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className="text-fg-muted hover:text-fg rounded-sm"
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
+        <DesktopNav />
         <MobileNav />
       </Container>
     </header>

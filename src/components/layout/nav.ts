@@ -5,4 +5,5 @@
 export const PRIMARY_NAV = [
   { href: "/", label: "Início" },
   { href: "/projects", label: "Projetos" },
+  { href: "/experiencia", label: "Experiência" },
 ] as const;

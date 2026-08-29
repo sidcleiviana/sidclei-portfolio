@@ -1,4 +1,7 @@
+import Link from "next/link";
+
 import { Badge, Cluster, Divider, Stack, TextLink } from "@/components/ui";
+import { experienceAnchor } from "@/domain/experienceAnchor";
 import type { ProjectDetail } from "@/sanity/types";
 
 function MetaHeading({ children }: { children: React.ReactNode }) {
@@ -77,11 +80,14 @@ export function ProjectMeta({ project }: { project: ProjectDetail }) {
         {experience ? (
           <p className="text-fg-muted">
             Experiência relacionada:{" "}
-            <span className="text-fg">
+            <Link
+              href={`/experiencia#${experienceAnchor(experience)}`}
+              className="text-fg rounded-sm font-medium underline decoration-[var(--color-border-strong)] underline-offset-[3px] hover:decoration-[var(--color-accent)]"
+            >
               {[experience.role, experience.company]
                 .filter(Boolean)
                 .join(" · ")}
-            </span>
+            </Link>
           </p>
         ) : null}
       </Stack>
