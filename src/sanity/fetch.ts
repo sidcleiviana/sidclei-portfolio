@@ -44,6 +44,7 @@ export async function sanityFetch<TFallback>({
 export const CACHE_TAGS = {
   project: "project",
   projects: "projects",
+  experience: "experience",
   profile: "profile",
   siteSettings: "siteSettings",
 } as const;

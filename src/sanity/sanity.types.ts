@@ -912,6 +912,75 @@ export type AllSanitySchemaTypes =
   | Slug
   | SanityAssetSourceData;
 export declare const internalGroqTypeReferenceTo: unique symbol;
+// Source: ./src/sanity/queries/experience.ts
+// Variable: experiencesQuery
+// Query: *[_type == "experience"] | order(    coalesce(period.ongoing, false) desc,    period.startDate desc  ) {    _id,    company,    role,    period,    location,    summary,    responsibilities,    "skills": skills[]->{ _id, name, "slug": slug.current, category },    "technologies": technologies[]->{ _id, name, "slug": slug.current, category },    "projects": *[      _type == "project"      && references(^._id)      && status == "published"      && visibility != "private"    ] | order(coalesce(publishedAt, period.startDate, "") desc) {      _id,      title,      "slug": slug.current,      shortDescription,      projectType,      visibility,      "technologies": technologies[]->{ _id, name, "slug": slug.current, category }    }  }
+export type ExperiencesQueryResult = Array<{
+  _id: string;
+  company: string | null;
+  role: string | null;
+  period: DateRange | null;
+  location: string | null;
+  summary: string | null;
+  responsibilities: Array<string> | null;
+  skills: Array<{
+    _id: string;
+    name: string | null;
+    slug: string | null;
+    category:
+      | "Automa\xE7\xE3o"
+      | "Banco de Dados"
+      | "Cybersecurity"
+      | "Dados"
+      | "Desenvolvimento"
+      | "Gest\xE3o"
+      | "Infraestrutura"
+      | "Integra\xE7\xF5es"
+      | "Intelig\xEAncia Artificial"
+      | "Qualidade"
+      | "Redes"
+      | null;
+  }> | null;
+  technologies: Array<{
+    _id: string;
+    name: string | null;
+    slug: string | null;
+    category:
+      | "Banco de dados"
+      | "Biblioteca"
+      | "Ferramenta"
+      | "Framework"
+      | "Linguagem"
+      | "Plataforma"
+      | "Servi\xE7o"
+      | "Sistema / ERP"
+      | null;
+  }> | null;
+  projects: Array<{
+    _id: string;
+    title: string | null;
+    slug: string | null;
+    shortDescription: string | null;
+    projectType: "lab" | "production" | "professional" | "study" | null;
+    visibility: "anonymized" | "private" | "public" | null;
+    technologies: Array<{
+      _id: string;
+      name: string | null;
+      slug: string | null;
+      category:
+        | "Banco de dados"
+        | "Biblioteca"
+        | "Ferramenta"
+        | "Framework"
+        | "Linguagem"
+        | "Plataforma"
+        | "Servi\xE7o"
+        | "Sistema / ERP"
+        | null;
+    }> | null;
+  }>;
+}>;
+
 // Source: ./src/sanity/queries/profile.ts
 // Variable: profileQuery
 // Query: *[_type == "profile"][0] {    name,    headline,    shortSummary,    about,    publicLocation,    photo,    professionalEmail,    resumeUrl,    "links": coalesce(links, [])  }

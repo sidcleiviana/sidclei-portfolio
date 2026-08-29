@@ -12,6 +12,7 @@
  * permissive shape accepted by `@sanity/image-url`).
  */
 import type {
+  ExperiencesQueryResult,
   ProfileQueryResult,
   Project,
   ProjectBySlugQueryResult,
@@ -95,3 +96,11 @@ export type TechnicalDecisionsBlock = BlockOfType<"technicalDecisionsBlock">;
 export type LearningBlock = BlockOfType<"learningBlock">;
 export type CalloutBlock = BlockOfType<"calloutBlock">;
 export type LinksBlock = BlockOfType<"linksBlock">;
+
+// -- experience -------------------------------------------------------------
+
+/** One row of `/experiencia` — an experience plus its public related projects. */
+export type ExperienceEntry = ExperiencesQueryResult[number];
+
+/** A project as it appears under an experience (light, card-only projection). */
+export type ExperienceProjectRef = ExperienceEntry["projects"][number];
