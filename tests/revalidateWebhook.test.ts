@@ -38,20 +38,28 @@ async function loadRoute() {
 describe("tagsForWebhookPayload", () => {
   it("maps document types to the right cache tags", async () => {
     const { tagsForWebhookPayload } = await import("@/sanity/revalidate");
+    // a project change can also change what shows under an experience
     expect(
       tagsForWebhookPayload({ _type: "project", slug: "visionhash" })
-    ).toEqual(["projects", "project:visionhash"]);
+    ).toEqual(["projects", "experience", "project:visionhash"]);
     expect(
       tagsForWebhookPayload({ _type: "project", slug: { current: "x" } })
-    ).toEqual(["projects", "project:x"]);
-    expect(tagsForWebhookPayload({ _type: "project" })).toEqual(["projects"]);
+    ).toEqual(["projects", "experience", "project:x"]);
+    expect(tagsForWebhookPayload({ _type: "project" })).toEqual([
+      "projects",
+      "experience",
+    ]);
+    expect(tagsForWebhookPayload({ _type: "experience" })).toEqual([
+      "experience",
+    ]);
     expect(tagsForWebhookPayload({ _type: "profile" })).toEqual(["profile"]);
     expect(tagsForWebhookPayload({ _type: "siteSettings" })).toEqual([
       "siteSettings",
     ]);
-    // unknown types still refresh the project list (they appear in projections)
+    // skills / technologies surface in both projections
     expect(tagsForWebhookPayload({ _type: "technology" })).toEqual([
       "projects",
+      "experience",
     ]);
   });
 });
@@ -89,8 +97,13 @@ describe("POST /api/revalidate", () => {
     expect(res.status).toBe(200);
     const json = (await res.json()) as { revalidated: boolean; tags: string[] };
     expect(json.revalidated).toBe(true);
-    expect(json.tags).toEqual(["projects", "project:meu-projeto"]);
+    expect(json.tags).toEqual([
+      "projects",
+      "experience",
+      "project:meu-projeto",
+    ]);
     expect(revalidateTag).toHaveBeenCalledWith("projects");
+    expect(revalidateTag).toHaveBeenCalledWith("experience");
     expect(revalidateTag).toHaveBeenCalledWith("project:meu-projeto");
   });
 
