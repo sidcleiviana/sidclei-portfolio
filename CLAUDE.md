@@ -1208,3 +1208,33 @@ filtro (slug privado → `notFound()`). Validação de schema impede `private` +
 - Prev/next derivados só da lista pública → projeto `private` nunca vaza (§26).
 - 45 testes (33 → +12: caseSections, contribution, sparse/rich composition).
   Gates verdes. Sem regressão de infra (dataset privado, webhook, deploy).
+
+---
+
+## Atualização — Sprint 3 (Experience & Professional Journey)
+
+- **`/experiencia`** — página CMS-driven da trajetória. Server Component.
+  `src/app/(site)/experiencia/page.tsx` → `CareerJourney` → `ExperienceItem`.
+- **Sem mudança de schema.** Lacunas resolvidas com helpers:
+  `src/domain/experienceAnchor.ts` (âncora determinística de `company+role`, sem
+  slug no schema) e `src/domain/monthRange.ts` (precisão mês/ano, "— Atual").
+  Ordenação em GROQ (`period.ongoing desc, period.startDate desc`).
+- **Query única** (`src/sanity/queries/experience.ts`, `defineQuery`): traz as
+  experiências + projetos relacionados via `references(^._id)` num round trip,
+  repetindo o portão público → projeto `private`/unpublished nunca vaza (§8).
+  `ExperienceProjects` filtra de novo com `isPubliclyVisible`.
+- **Cross-link projeto ↔ experiência**: `ProjectMeta` linka `relatedExperience`
+  para `/experiencia#<anchor>`; `/experiencia` linka cada projeto para
+  `/projects/[slug]`.
+- **Revalidação**: `CACHE_TAGS.experience`. `tagsForWebhookPayload` — `experience`
+  → `["experience"]`; `project` → `["projects","experience","project:<slug>"]`;
+  default → `["projects","experience"]`.
+- **Nav**: `Início · Projetos · Experiência`. `DesktopNav` virou client island
+  para `aria-current="page"`.
+- `ProjectCard` ganhou `variant="compact"` (sem cópia divergente, §30).
+  `MonoHeading` primitivo compartilhado.
+- **Sandbox dev** `/dev/experience-preview` + `src/features/experience/fixtures.ts`
+  (sintético, `notFound` em prod, noindex, robots).
+- **Conteúdo real:** nenhum documento `experience` no CMS ainda — sistema pronto,
+  homologado com fixtures. Campos a preencher no Studio: ver `docs/experience.md`.
+- 61 testes (45 → +16). Gates verdes. Infra intacta (dataset privado, webhook).
