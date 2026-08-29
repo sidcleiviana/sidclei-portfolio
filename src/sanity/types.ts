@@ -13,6 +13,7 @@
  */
 import type {
   ExperiencesQueryResult,
+  HomeQueryResult,
   ProfileQueryResult,
   Project,
   ProjectBySlugQueryResult,
@@ -104,3 +105,10 @@ export type ExperienceEntry = ExperiencesQueryResult[number];
 
 /** A project as it appears under an experience (light, card-only projection). */
 export type ExperienceProjectRef = ExperienceEntry["projects"][number];
+
+// -- home ----------------------------------------------------------------
+
+export type HomeData = HomeQueryResult;
+export type HomeProfile = NonNullable<HomeData["profile"]>;
+export type HomeProjectRef = HomeData["projects"][number];
+export type HomeExperienceRef = HomeData["experiences"][number];

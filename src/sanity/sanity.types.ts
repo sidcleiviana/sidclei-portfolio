@@ -981,6 +981,72 @@ export type ExperiencesQueryResult = Array<{
   }>;
 }>;
 
+// Source: ./src/sanity/queries/home.ts
+// Variable: homeQuery
+// Query: {  "profile": *[_type == "profile"][0] {    name,    headline,    shortSummary,    publicLocation,    resumeUrl,    professionalEmail,    "links": coalesce(links, [])  },  "projects": *[    _type == "project" && status == "published" && visibility != "private"  ] | order(featured desc, coalesce(publishedAt, period.startDate, "") desc, title asc)[0...6] {    _id,    title,    "slug": slug.current,    shortDescription,    projectType,    featured,    visibility,    coverImage,    "technologies": technologies[]->{ _id, name, "slug": slug.current, category }  },  "experiences": *[_type == "experience"] | order(    coalesce(period.ongoing, false) desc,    period.startDate desc  )[0...2] {    _id,    company,    role,    period,    location  }}
+export type HomeQueryResult = {
+  profile: {
+    name: string | null;
+    headline: string | null;
+    shortSummary: string | null;
+    publicLocation: string | null;
+    resumeUrl: string | null;
+    professionalEmail: string | null;
+    links:
+      | Array<
+          {
+            _key: string;
+          } & ExternalLink
+        >
+      | Array<never>;
+  } | null;
+  projects: Array<{
+    _id: string;
+    title: string | null;
+    slug: string | null;
+    shortDescription: string | null;
+    projectType: "lab" | "production" | "professional" | "study" | null;
+    featured: boolean | null;
+    visibility: "anonymized" | "private" | "public" | null;
+    coverImage: {
+      asset?: {
+        _ref: string;
+        _type: "reference";
+        _weak?: boolean;
+        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+      };
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      caption?: string;
+      _type: "imageWithAlt";
+    } | null;
+    technologies: Array<{
+      _id: string;
+      name: string | null;
+      slug: string | null;
+      category:
+        | "Banco de dados"
+        | "Biblioteca"
+        | "Ferramenta"
+        | "Framework"
+        | "Linguagem"
+        | "Plataforma"
+        | "Servi\xE7o"
+        | "Sistema / ERP"
+        | null;
+    }> | null;
+  }>;
+  experiences: Array<{
+    _id: string;
+    company: string | null;
+    role: string | null;
+    period: DateRange | null;
+    location: string | null;
+  }>;
+};
+
 // Source: ./src/sanity/queries/profile.ts
 // Variable: profileQuery
 // Query: *[_type == "profile"][0] {    name,    headline,    shortSummary,    about,    publicLocation,    photo,    professionalEmail,    resumeUrl,    "links": coalesce(links, [])  }
