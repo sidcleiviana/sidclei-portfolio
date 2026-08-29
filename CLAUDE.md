@@ -1238,3 +1238,57 @@ filtro (slug privado → `notFound()`). Validação de schema impede `private` +
 - **Conteúdo real:** nenhum documento `experience` no CMS ainda — sistema pronto,
   homologado com fixtures. Campos a preencher no Studio: ver `docs/experience.md`.
 - 61 testes (45 → +16). Gates verdes. Infra intacta (dataset privado, webhook).
+
+---
+
+## Atualização — Sprint 4 (Home definitiva & identidade profissional)
+
+- **`/` reescrita** — deixou de ser o sandbox da Sprint 1. Agora é o **índice
+  narrativo** (§2): `Hero → FocusAreas → FeaturedProjects → CareerSummary →
+  NextStep`. Sintetiza e encaminha para `/projects` e `/experiencia`; sem
+  profundidade de case study (§46). Tudo Server Component
+  (`src/features/home/`, sem `"use client"`).
+- **Sem mudança de schema (§6, §53).** `profile` já modela identidade;
+  `project.featured` ("Destaque na home") já existia. Nenhum `homePage` doc
+  criado — não há conteúdo que `profile` + `featured` não resolvam.
+- **CMS quase vazio** (profile=0, experience=0, project=1 sem cover/tech/featured).
+  Home correta primeiro no caso vazio (§43): `src/features/home/identity.ts`
+  traz copy estrutural neutra do `CLAUDE.md` §1–3 (nome, headline, resumo da
+  trajetória, 4 áreas). **Nenhuma afirmação profissional inventada (§4).**
+  Nenhuma fixture em produção (§5, §21).
+- **Query única** `src/sanity/queries/home.ts` (`defineQuery`, um round trip):
+  `profile` + `projects[0...6]` (portão público inline, `order(featured desc,
+  …)`, projeção leve — sem `contentBlocks`) + `experiences[0...2]` (mesma
+  ordenação de `/experiencia`). `getHome()` → `HomeData` (TypeGen
+  `HomeQueryResult`), fallback `{ profile: null, projects: [], experiences: [] }`.
+- **Seções condicionais:** `FeaturedProjects` prefere `featured`, cai para os
+  mais recentes com regra transparente (§12), some com 0 projetos (§13), reusa
+  `ProjectCard`. `CareerSummary` = 2 papéis mais recentes num `<ol>` linkado
+  (não o `CareerJourney` inteiro — §18), some com 0 experiências (§20).
+  `NextStep` mostra a linha de contato só se `links`/`resumeUrl`/
+  `professionalEmail` existirem no `profile` (§23, §35) — sem formulário.
+  Home ao vivo hoje: `Hero → FocusAreas → NextStep`, sem seções fantasma.
+- **Revalidação (§40):** `getHome` com tags `[profile, projects, experience]`.
+  `tagsForWebhookPayload` já purga as três — sem alteração em `revalidate.ts`,
+  sem `revalidatePath` global.
+- **Confidencialidade (§41):** projeção de projetos com o mesmo portão público;
+  `FeaturedProjects` refiltra com `isPubliclyVisible`. `private`/unpublished
+  nunca alcança a Home.
+- **Design (§28–31):** só primitivos e tokens da Sprint 1 — sem nova paleta,
+  raio, fonte, sombra, animação ou lib de motion. Caráter autoral via
+  composição (medida `wide` no Hero, `text-balance`/`text-pretty`, ritmo de
+  `Section`, um `data-animate="rise"`). Sem cursor custom, parallax,
+  scroll-hijack, canvas/WebGL.
+- **SEO (§36):** `generateMetadata` da Home usa `profile.shortSummary`
+  (fallback neutro) + `canonical: "/"`. Sem keyword list, sem schema.org novo.
+- **Sandbox dev** `/dev/home-preview` + `src/features/home/fixtures.ts`
+  (`richHomeFixture` + `emptyHomeFixture`, sintético, `notFound` em prod,
+  noindex, robots, nunca importado por rota pública).
+- **Performance (§33):** `/` = 352 B / 174 kB First Load JS (igual a
+  `/projects` e `/experiencia`); shared chunk **103 kB**, sem regressão.
+- **Lacunas de conteúdo real (§54 — não preencher automaticamente):** doc
+  `profile` não publicado; nenhum projeto com `featured`/cover/tecnologias;
+  nenhum `experience`; nenhum link profissional/email/currículo. Detalhe em
+  `docs/home.md`.
+- 71 testes (61 → +10: `tests/home.test.tsx`). Gates verdes. Infra intacta
+  (dataset privado, webhook assinado, deploy Vercel via git).
