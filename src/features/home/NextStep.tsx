@@ -21,11 +21,14 @@ export function NextStep({ profile }: { profile: HomeProfile | null }) {
   const hasContact = links.length > 0 || Boolean(email) || Boolean(resume);
 
   return (
-    <Section spacing="lg">
+    <Section spacing="lg" aria-labelledby="next-step-title">
       <Container>
         <div className="border-border bg-surface rounded-lg border p-6 sm:p-8">
           <Stack gap="md">
-            <p className="text-fg-muted font-mono text-xs font-medium tracking-[0.14em] uppercase">
+            <p
+              id="next-step-title"
+              className="text-fg-muted font-mono text-xs font-medium tracking-[0.14em] uppercase"
+            >
               Explorar
             </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
