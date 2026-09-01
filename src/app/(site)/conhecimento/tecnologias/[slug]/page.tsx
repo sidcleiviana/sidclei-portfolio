@@ -36,7 +36,7 @@ export default async function TechnologyDetailPage({ params }: Params) {
       category={tech.category}
       aside={
         tech.officialUrl ? (
-          <TextLink href={tech.officialUrl} className="text-xs">
+          <TextLink href={tech.officialUrl} className="u-label">
             Site oficial
           </TextLink>
         ) : null

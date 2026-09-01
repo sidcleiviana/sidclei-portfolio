@@ -1,80 +1,136 @@
-import { Container, Section, SectionHeading, Stack } from "@/components/ui";
-import { Cluster } from "@/components/ui/Cluster";
-import { MonoHeading } from "@/components/ui/MonoHeading";
+import { Container, Section, SectionHeading } from "@/components/ui";
 import { groupByCategory } from "@/domain/knowledge";
 import type { KnowledgeSkill, KnowledgeTechnology } from "@/sanity/types";
 
 import { KnowledgeBadge, knowledgeHref } from "./KnowledgeBadge";
+import { RelationalScope } from "./RelationalScope";
 
-function SkillGroup({
+type Entity = KnowledgeSkill | KnowledgeTechnology;
+
+function contextsOf(entity: Entity): string[] {
+  return (entity.contexts ?? []).filter((c): c is string => Boolean(c));
+}
+
+function SkillChapter({
+  index,
   category,
   items,
 }: {
+  index: number;
   category: string;
   items: KnowledgeSkill[];
 }) {
   return (
-    <div>
-      <MonoHeading>{category}</MonoHeading>
-      <ul className="mt-2 space-y-2">
-        {items.map((skill) => (
-          <li key={skill._id}>
-            {skill.slug ? (
-              <a
-                href={knowledgeHref("skill", skill.slug)}
-                className="group inline-flex items-baseline gap-2 rounded-sm"
-              >
-                <span className="group-hover:text-accent font-medium">
-                  {skill.name}
-                </span>
-                {skill.featured ? (
-                  <span className="text-fg-muted text-xs">· em destaque</span>
+    <div className="grid gap-x-10 gap-y-6 border-t border-[var(--color-rule)] pt-6 sm:grid-cols-12">
+      <p className="u-label flex items-baseline gap-2.5 sm:col-span-3">
+        <span className="text-fg-faint tabular-nums">
+          {String(index).padStart(2, "0")}
+        </span>
+        {category}
+      </p>
+
+      <RelationalScope className="sm:col-span-9">
+        <ul className="flex flex-col gap-6">
+          {items.map((skill) => {
+            const contexts = contextsOf(skill);
+            return (
+              <li key={skill._id}>
+                {skill.slug ? (
+                  <a
+                    href={knowledgeHref("skill", skill.slug)}
+                    data-rel=""
+                    data-rel-keys={contexts.join(",")}
+                    className="group inline-flex items-baseline gap-2 rounded-sm"
+                  >
+                    <span className="font-display group-hover:text-accent text-xl sm:text-2xl">
+                      {skill.name}
+                    </span>
+                    {skill.featured ? (
+                      <span className="u-label text-fg-faint">em destaque</span>
+                    ) : null}
+                  </a>
+                ) : (
+                  <span className="font-display text-xl">{skill.name}</span>
+                )}
+                {skill.shortDescription ? (
+                  <p className="text-fg-muted mt-1 max-w-[52ch] text-pretty">
+                    {skill.shortDescription}
+                  </p>
                 ) : null}
-              </a>
-            ) : (
-              <span className="font-medium">{skill.name}</span>
-            )}
-            {skill.shortDescription ? (
-              <p className="text-fg-muted mt-0.5 text-sm text-pretty">
-                {skill.shortDescription}
-              </p>
-            ) : null}
-          </li>
-        ))}
-      </ul>
+                {contexts.length ? (
+                  <p className="u-label text-fg-faint mt-1.5">
+                    usado em{" "}
+                    <span className="text-fg-muted">
+                      {contexts.join(" · ")}
+                    </span>
+                  </p>
+                ) : null}
+              </li>
+            );
+          })}
+        </ul>
+      </RelationalScope>
     </div>
   );
 }
 
-function TechnologyGroup({
+function TechChapter({
+  index,
   category,
   items,
 }: {
+  index: number;
   category: string;
   items: KnowledgeTechnology[];
 }) {
   return (
-    <div>
-      <MonoHeading>{category}</MonoHeading>
-      <Cluster gap="xs" className="mt-2.5">
-        {items.map((tech) => (
-          <KnowledgeBadge
-            key={tech._id}
-            kind="technology"
-            slug={tech.slug}
-            name={tech.name}
-          />
-        ))}
-      </Cluster>
+    <div className="grid gap-x-10 gap-y-5 border-t border-[var(--color-rule)] pt-6 sm:grid-cols-12">
+      <p className="u-label flex items-baseline gap-2.5 sm:col-span-3">
+        <span className="text-fg-faint tabular-nums">
+          {String(index).padStart(2, "0")}
+        </span>
+        {category}
+      </p>
+      <RelationalScope className="sm:col-span-9">
+        <ul className="flex flex-col gap-3">
+          {items.map((tech) => {
+            const contexts = contextsOf(tech);
+            return (
+              <li
+                key={tech._id}
+                className="flex flex-wrap items-baseline gap-x-4"
+              >
+                <span
+                  data-rel=""
+                  data-rel-keys={contexts.join(",")}
+                  className="inline-flex"
+                >
+                  <KnowledgeBadge
+                    kind="technology"
+                    slug={tech.slug}
+                    name={tech.name}
+                  />
+                </span>
+                {contexts.length ? (
+                  <span className="u-label text-fg-faint">
+                    {contexts.join(" · ")}
+                  </span>
+                ) : null}
+              </li>
+            );
+          })}
+        </ul>
+      </RelationalScope>
     </div>
   );
 }
 
 /**
- * `/conhecimento` — a relational index of competences and technologies
- * (Sprint §1, §8). Two sections, each grouped by the schema's own `category`.
- * No counts, no levels, no cloud (Sprint §3). Each entry deep-links to its
- * detail page, where the real professional contexts live.
+ * `/conhecimento` — competences and technologies as an editorial atlas
+ * (Sprint 7 §21). Each schema category is a numbered chapter; each entry shows
+ * the real contexts it appeared in and deep-links to its detail page.
+ * Relational highlight is a discreet CSS/island layer (§12, §24, §25). No
+ * counts, no levels, no cloud.
  */
 export function KnowledgeHub({
   skills,
@@ -88,20 +144,19 @@ export function KnowledgeHub({
 
   if (!skills.length && !technologies.length) {
     return (
-      <Section aria-labelledby="knowledge-title">
-        <Container>
-          <Stack gap="lg">
-            <SectionHeading
-              as="h1"
-              id="knowledge-title"
-              eyebrow="Conhecimento"
-              title="Conhecimento"
-              description="Competências e tecnologias demonstradas ao longo da trajetória profissional."
-            />
-            <p className="border-border bg-bg-subtle text-fg-muted rounded-md border border-dashed p-8 text-center text-sm">
-              Ainda não há competências ou tecnologias publicadas.
-            </p>
-          </Stack>
+      <Section spacing="lg" aria-labelledby="knowledge-title">
+        <Container size="editorial">
+          <SectionHeading
+            as="h1"
+            id="knowledge-title"
+            index={1}
+            eyebrow="Conhecimento"
+            title="Conhecimento"
+            description="Competências e tecnologias demonstradas ao longo da trajetória profissional."
+          />
+          <p className="text-fg-muted mt-10 border-t border-[var(--color-border)] pt-6 font-mono text-sm">
+            Ainda não há competências ou tecnologias publicadas.
+          </p>
         </Container>
       </Section>
     );
@@ -109,37 +164,44 @@ export function KnowledgeHub({
 
   return (
     <>
-      <Section spacing="md" aria-labelledby="knowledge-title">
-        <Container>
-          <Stack gap="lg">
-            <SectionHeading
-              as="h1"
-              id="knowledge-title"
-              eyebrow="Conhecimento"
-              title="Conhecimento"
-              description="Competências e tecnologias demonstradas ao longo da trajetória profissional. Cada item abre os contextos reais em que apareceu."
-            />
-            <nav aria-label="Seções desta página">
-              <Cluster gap="sm" className="text-sm">
-                {skills.length ? (
+      <Section
+        spacing="sm"
+        aria-labelledby="knowledge-title"
+        className="sm:pb-0"
+      >
+        <Container size="editorial">
+          <SectionHeading
+            as="h1"
+            id="knowledge-title"
+            index={1}
+            eyebrow="Conhecimento"
+            title="Conhecimento"
+            description="Competências e tecnologias demonstradas ao longo da trajetória. Cada item abre os contextos reais em que apareceu."
+          />
+          <nav aria-label="Seções desta página" className="mt-8">
+            <ul className="flex gap-6">
+              {skills.length ? (
+                <li>
                   <a
                     href="#competencias"
-                    className="text-fg-muted hover:text-fg rounded-sm underline decoration-[var(--color-border-strong)] underline-offset-4"
+                    className="u-label text-fg-muted hover:text-fg rounded-sm"
                   >
                     Competências
                   </a>
-                ) : null}
-                {technologies.length ? (
+                </li>
+              ) : null}
+              {technologies.length ? (
+                <li>
                   <a
                     href="#tecnologias"
-                    className="text-fg-muted hover:text-fg rounded-sm underline decoration-[var(--color-border-strong)] underline-offset-4"
+                    className="u-label text-fg-muted hover:text-fg rounded-sm"
                   >
                     Tecnologias
                   </a>
-                ) : null}
-              </Cluster>
-            </nav>
-          </Stack>
+                </li>
+              ) : null}
+            </ul>
+          </nav>
         </Container>
       </Section>
 
@@ -150,24 +212,23 @@ export function KnowledgeHub({
           aria-labelledby="competencias-title"
           className="scroll-mt-24"
         >
-          <Container>
-            <Stack gap="lg">
-              <SectionHeading
-                id="competencias-title"
-                eyebrow="O que faço"
-                title="Competências"
-                description="O que Sidclei sabe fazer, organizado pela natureza do trabalho."
-              />
-              <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
-                {skillGroups.map((group) => (
-                  <SkillGroup
-                    key={group.category}
-                    category={group.category}
-                    items={group.items}
-                  />
-                ))}
-              </div>
-            </Stack>
+          <Container size="editorial">
+            <SectionHeading
+              id="competencias-title"
+              index={2}
+              eyebrow="O que faço"
+              title="Competências"
+            />
+            <div className="mt-14 flex flex-col gap-12">
+              {skillGroups.map((group, i) => (
+                <SkillChapter
+                  key={group.category}
+                  index={i + 1}
+                  category={group.category}
+                  items={group.items}
+                />
+              ))}
+            </div>
           </Container>
         </Section>
       ) : null}
@@ -179,24 +240,24 @@ export function KnowledgeHub({
           aria-labelledby="tecnologias-title"
           className="scroll-mt-24"
         >
-          <Container>
-            <Stack gap="lg">
-              <SectionHeading
-                id="tecnologias-title"
-                eyebrow="Com o que trabalho"
-                title="Tecnologias"
-                description="Ferramentas, linguagens e plataformas usadas nos contextos profissionais."
-              />
-              <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
-                {technologyGroups.map((group) => (
-                  <TechnologyGroup
-                    key={group.category}
-                    category={group.category}
-                    items={group.items}
-                  />
-                ))}
-              </div>
-            </Stack>
+          <Container size="editorial">
+            <SectionHeading
+              id="tecnologias-title"
+              index={3}
+              eyebrow="Com o que trabalho"
+              title="Tecnologias"
+              description="Ferramentas, linguagens e plataformas — recuadas de propósito: são meios, não o assunto."
+            />
+            <div className="mt-14 flex flex-col gap-12">
+              {technologyGroups.map((group, i) => (
+                <TechChapter
+                  key={group.category}
+                  index={i + 1}
+                  category={group.category}
+                  items={group.items}
+                />
+              ))}
+            </div>
           </Container>
         </Section>
       ) : null}

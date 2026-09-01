@@ -1049,7 +1049,7 @@ export type HomeQueryResult = {
 
 // Source: ./src/sanity/queries/knowledge.ts
 // Variable: knowledgeHubQuery
-// Query: {  "skills": *[_type == "skill" && defined(slug.current)] | order(featured desc, lower(name) asc) {    _id, name, "slug": slug.current, category, shortDescription, featured  },  "technologies": *[_type == "technology" && defined(slug.current)] | order(lower(name) asc) {    _id, name, "slug": slug.current, category  }}
+// Query: {  "skills": *[_type == "skill" && defined(slug.current)] | order(featured desc, lower(name) asc) {    _id, name, "slug": slug.current, category, shortDescription, featured,    "contexts": array::unique(*[_type == "experience" && references(^._id)].company)  },  "technologies": *[_type == "technology" && defined(slug.current)] | order(lower(name) asc) {    _id, name, "slug": slug.current, category,    "contexts": array::unique(*[_type == "experience" && references(^._id)].company)  }}
 export type KnowledgeHubQueryResult = {
   skills: Array<{
     _id: string;
@@ -1070,6 +1070,7 @@ export type KnowledgeHubQueryResult = {
       | null;
     shortDescription: string | null;
     featured: boolean | null;
+    contexts: Array<string | null>;
   }>;
   technologies: Array<{
     _id: string;
@@ -1085,6 +1086,7 @@ export type KnowledgeHubQueryResult = {
       | "Servi\xE7o"
       | "Sistema / ERP"
       | null;
+    contexts: Array<string | null>;
   }>;
 };
 // Variable: skillBySlugQuery

@@ -16,10 +16,12 @@ import type { KnowledgeHubData, SkillDetail, TechnologyDetail } from "../types";
  */
 export const knowledgeHubQuery = defineQuery(`{
   "skills": *[_type == "skill" && defined(slug.current)] | order(featured desc, lower(name) asc) {
-    _id, name, "slug": slug.current, category, shortDescription, featured
+    _id, name, "slug": slug.current, category, shortDescription, featured,
+    "contexts": array::unique(*[_type == "experience" && references(^._id)].company)
   },
   "technologies": *[_type == "technology" && defined(slug.current)] | order(lower(name) asc) {
-    _id, name, "slug": slug.current, category
+    _id, name, "slug": slug.current, category,
+    "contexts": array::unique(*[_type == "experience" && references(^._id)].company)
   }
 }`);
 

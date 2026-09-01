@@ -23,29 +23,35 @@ export function KnowledgeBadge({
   kind,
   slug,
   name,
+  rel = false,
 }: {
   kind: KnowledgeKind;
   slug?: string | null;
   name?: string | null;
+  /** Marks this item for the CSS relational-highlight scope (Sprint 7 §25). */
+  rel?: boolean;
 }) {
   if (!name) return null;
   const mono = kind === "technology";
+  const relAttr = rel ? { "data-rel": "" } : {};
 
   if (!slug) {
     return (
-      <Badge tone="outline" mono={mono}>
-        {name}
-      </Badge>
+      <span {...relAttr}>
+        <Badge tone="outline" mono={mono}>
+          {name}
+        </Badge>
+      </span>
     );
   }
 
   return (
-    <Link href={knowledgeHref(kind, slug)} className="rounded-sm">
-      <Badge
-        tone="outline"
-        mono={mono}
-        className="hover:border-fg/40 hover:text-fg transition-colors"
-      >
+    <Link
+      href={knowledgeHref(kind, slug)}
+      className="hover:text-fg rounded-sm"
+      {...relAttr}
+    >
+      <Badge tone="outline" mono={mono}>
         {name}
       </Badge>
     </Link>

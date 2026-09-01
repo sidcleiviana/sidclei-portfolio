@@ -38,7 +38,7 @@ export default async function SkillDetailPage({ params }: Params) {
       description={skill.shortDescription}
       aside={
         skill.featured ? (
-          <span className="text-fg-muted text-xs">Em destaque</span>
+          <span className="u-label text-fg-faint">Em destaque</span>
         ) : null
       }
       experiences={skill.experiences}
