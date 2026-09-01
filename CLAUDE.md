@@ -1292,3 +1292,50 @@ filtro (slug privado → `notFound()`). Validação de schema impede `private` +
   `docs/home.md`.
 - 71 testes (61 → +10: `tests/home.test.tsx`). Gates verdes. Infra intacta
   (dataset privado, webhook assinado, deploy Vercel via git).
+
+---
+
+## Atualização — Sprint 5 (Knowledge Hub: Skills, Technologies & navegação relacional)
+
+- **`/conhecimento`** — hub relacional de competências e tecnologias (Server
+  Components, `src/features/knowledge/`). Responde "o que sabe fazer" e "em quais
+  contextos", nunca "quantas tecnologias conhece" (§2). Duas seções por anchor
+  (`#competencias`, `#tecnologias`), agrupadas pela `category` real do schema
+  (ordem alfabética; "Outras" por último). Sem contagem, sem barra, sem nível,
+  sem cloud (§3). Marcador neutro "· em destaque" para `skill.featured` (§11).
+- **`/conhecimento/competencias/[slug]` e `/conhecimento/tecnologias/[slug]`** —
+  detail pages SSG (de `getKnowledgeSlugs`), 404 em slug desconhecido.
+  Breadcrumb → nome + categoria → descrição (só quando existe, §12) → **Onde
+  apareceu** (experiências, link p/ `/experiencia#<experienceAnchor>`, §18) →
+  **Projetos** (`ProjectCard variant="compact"`, some quando vazio, §20/§27).
+- **Sem mudança de schema (§46).** Relações usadas = inverso de
+  `experience.skills/technologies` e `project.skills/technologies` via
+  `*[... references(^._id)]`. **Nenhuma edge `skill ↔ technology`** criada,
+  consultada ou renderizada (§7) — co-ocorrência não é relação.
+- **Queries** `src/sanity/queries/knowledge.ts` (`defineQuery`, sem N+1):
+  `knowledgeHubQuery` (um round trip, sem `count()`), `skillBySlugQuery` /
+  `technologyBySlugQuery` (entidade + experiências + projetos com portão público
+  inline), `knowledgeSlugsQuery`. `KnowledgeDetail` refiltra projetos com
+  `isPubliclyVisible` (§21). Projeções leves, sem `contentBlocks` (§24).
+- **Cross-links:** badges de skill/technology em `/experiencia` (`ExperienceItem`)
+  e no case study (`ProjectMeta`) viraram `KnowledgeBadge` — aparência idêntica,
+  link só adiciona foco/cursor (§17, §19, §32). Home `NextStep` ganhou 3º card
+  "Conhecimento" (§31). Header: `Início · Projetos · Experiência · Conhecimento`
+  (§30).
+- **Cache (§43–44):** tags novas `knowledge`/`skills`/`technologies`.
+  `tagsForWebhookPayload` — `skill` → `[knowledge, skills, experience, projects,
+  skill:<slug>]`; `technology` → idem com `technologies`; `experience` →
+  `[experience, knowledge]`; `project` → `[projects, experience, knowledge,
+  project:<slug>]`. Sem purge global. Testes atualizados.
+- **Sitemap:** + `/conhecimento` + `/experiencia` (faltava) + detail routes
+  publicadas.
+- **Conteúdo real:** 11 skills · 8 technologies · 3 experiences · **0 projetos
+  públicos**. Toda skill/technology tem ≥ 1 experiência → toda detail page tem
+  "Onde apareceu"; nenhuma tem "Projetos" ainda. Sem dev fixture (§47).
+- **Graph (§35, §53):** NÃO implementado. `docs/knowledge.md` documenta as 5
+  edges reais disponíveis e a não-edge `skill ↔ technology`. Nenhum adapter/engine
+  escondido (§36).
+- **Performance (§49):** tudo Server Component; `/conhecimento` 340 B / 169 kB;
+  shared First Load JS **103 kB**, sem regressão. Homologado 375/768/1280/1440
+  (sem overflow). 83 testes (71 → +12: `tests/knowledge.test.tsx`). Gates verdes.
+  Infra intacta (dataset privado, webhook 401, deploy Vercel via git).
