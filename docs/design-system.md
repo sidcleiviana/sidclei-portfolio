@@ -1,99 +1,103 @@
-# Design System — foundation (Sprint 1)
+# Design System v2 — "Editorial Relational Premium" (Sprint 7)
 
-> The code is the source of truth. This page states the intent so future
-> Sprints build on it instead of reinventing it. Tokens live in
-> `src/styles/globals.css` (`@theme`); primitives in `src/components/ui`.
+> The code is the source of truth. Tokens live in `src/styles/globals.css`
+> (`@theme`); primitives in `src/components/ui`. This page states intent so
+> future sprints build on it.
 
-## Principles
+## Direction
 
-- **Information before decoration.** Type, spacing and hierarchy do the work;
-  motion and colour only clarify.
-- **One light direction, done well.** No theme toggle in Sprint 1; tokens are
-  structured so a future `:root[data-theme="dark"]` swap needs no component
-  changes. `color-scheme: light` is set explicitly.
-- **Editorial-technical, not SaaS.** Warm near-white paper, graphite ink, a
-  single restrained indigo accent, a mono face for technical labels.
-- **Server-first.** Everything is a Server Component except `MobileNav`
-  (disclosure state). No animation library — CSS covers the interaction language.
+A technology publication crossed with an engineering portfolio. Type is the
+graphic element; thin rules are the structure; vertical rhythm is generous; the
+single accent is reserved for **relation** (links, focus, active state,
+connections). Almost no shadow, little radius, no boxed cards on editorial
+surfaces. One light direction (`color-scheme: light`); dark tokens can be added
+under `:root[data-theme="dark"]` with no component changes.
+
+~20% "Knowledge Atlas": relations surface discreetly — `usado em` / `apareceu
+em` / `demonstrado em` labels, a CSS + tiny-island relational highlight — never
+a canvas, D3, or force graph.
 
 ## Tokens (`@theme` in `globals.css`)
 
 | Group | Tokens |
 | --- | --- |
-| Colour | `--color-bg` `--color-bg-subtle` `--color-surface` `--color-fg` `--color-fg-muted` `--color-border` `--color-border-strong` `--color-accent` `--color-accent-fg` `--color-accent-subtle` `--color-accent-strong` `--color-positive` |
-| Type | `--font-sans` (Inter) · `--font-mono` (JetBrains Mono) · `--text-xs…--text-4xl` (each with a paired `--line-height`) |
-| Radius | `--radius-sm` `.375rem` · `--radius-md` `.625rem` · `--radius-lg` `1rem` |
-| Elevation | `--shadow-sm` `--shadow-md` (both barely-there; borders carry structure) |
-| Layout | `--container-max` `72rem` · `--container-wide` `52rem` · `--container-prose` `42rem` |
-| Motion | `--ease-out` `--ease-in-out` · `--dur-fast` `120ms` · `--dur` `200ms` · `--dur-slow` `380ms` |
+| Colour | `--color-bg` `--color-bg-subtle` `--color-surface` `--color-fg` `--color-fg-muted` `--color-fg-faint` (section numbers, quietest meta) `--color-border` `--color-border-strong` `--color-rule` (near-ink chapter hairline) `--color-accent` `--color-accent-strong` |
+| Type | `--font-display` (Newsreader, serif) · `--font-sans` (Inter) · `--font-mono` (JetBrains Mono) · `--text-xs…--text-5xl` (each with a paired `--line-height`) · `--tracking-display` `--tracking-tight` `--tracking-label` |
+| Radius | `--radius-none` `0` · `--radius-sm` `.25rem` (controls only) · `--radius-md` `.375rem` |
+| Elevation | `--shadow-sm` only — for the rare lifted element; structure comes from space + rule |
+| Layout | `--container-editorial` `84rem` (the wide canvas) · `--container-max` `72rem` · `--container-wide` `52rem` (media) · `--container-prose` `42rem` (reading) · `--gutter` `clamp(1.25rem, 6vw, 4.5rem)` |
+| Motion | `--ease-out` `--ease-in-out` · `--dur-fast` `120ms` · `--dur` `200ms` · `--dur-slow` `420ms` |
 
-Tailwind v4 generates the utilities (`bg-bg`, `text-fg-muted`, `border-border`,
-`rounded-md`, `text-2xl`, `font-mono`, …). Components never hardcode a colour,
-radius or timing.
+Tailwind v4 generates the utilities (`bg-bg`, `text-fg-faint`, `border-border`,
+`text-5xl`, `font-mono`, `max-w-[var(--container-editorial)]`, …). Components
+never hardcode a colour, measure, radius or timing.
 
 ## Typography
 
-- **Inter** (`next/font/google`, self-hosted, `display: swap`) — display + body.
-  Headings: weight 600, `letter-spacing: -0.02em`, `text-wrap: balance`.
-- **JetBrains Mono** (weights 400/500) — eyebrows, code, technical labels, the
-  wordmark. Never for body copy.
-- Scale is a tuned ~1.25 progression; line-height loosens for body, tightens for
-  display. Reading measure is `--container-prose` (~68 characters).
+Three faces, one job each (`src/styles/fonts.ts`, all self-hosted by
+`next/font`):
+
+- **Newsreader** — DISPLAY. `bare h1/h2/h3` and `.font-display` opt in. The
+  editorial voice: hero, chapter and case titles set large, tight tracking.
+  Never body.
+- **Inter** — BODY & UI.
+- **JetBrains Mono** — TECHNICAL. Section numbers, category labels, technology
+  names, metadata — via the `.u-label` utility (`text-xs`, `tracking-label`,
+  uppercase, `--color-fg-muted`).
+
+Scale tops out at `--text-5xl` (5rem); hero and case titles use `clamp()` for
+fluid display sizing. Reading measure is `--container-prose`.
+
+## Editorial numbering
+
+`01 02 03` in mono, `--color-fg-faint`, always **decorative** (`aria-hidden` —
+the label carries the meaning). Components: `SectionMarker` (standalone),
+`SectionHeading` `index` prop, `CaseHeading` `index`, the nav, the project /
+experience / knowledge rows.
 
 ## Layout primitives (`src/components/ui`)
 
-`Container` (size: default | wide | prose) · `Section` (spacing: sm | md | lg) ·
-`Stack` (vertical gap) · `Cluster` (wrapping horizontal group) · `Grid`
-(auto-fill, `minCol`) · `Divider`. Pages are a stack of `Section`s inside a
-`Container`; spacing comes from these, not ad-hoc margins.
+`Container` (size: `editorial | max | wide | prose | full`, fluid `--gutter`
+padding) · `Section` (spacing: `sm | md | lg | xl`) · `Stack` (vertical gap) ·
+`Rule` (`weight: hair | strong`, optional `animate`) · `SectionHeading` ·
+`SectionMarker`. Removed in v2: `Grid`, `Card`, `Cluster`, `Divider`, `Eyebrow`
+(dead after the editorial rebuild — §54).
 
 ## Components
 
-`Button` (real `<button>`, variants primary | secondary | ghost, sizes sm | md) ·
-`ButtonLink` (same look, renders `next/link`) · `TextLink` (inline; http(s) →
-new tab + `rel="noopener noreferrer"` + SR hint) · `Badge` (neutral | accent |
-outline, optional mono) · `Card` (surface panel; `interactive` adds a hover cue
-and moves the focus ring to the card for stretched-link patterns) ·
-`Eyebrow` + `SectionHeading`.
+`Button` / `ButtonLink` (real `<button>` / `next/link`; `primary` = ink fill,
+`secondary` = ruled, `ghost` = text; `--radius-sm` for affordance) ·
+`ArrowLink` (the editorial "LABEL →" call-to-move — mono label, nudging arrow,
+underline on hover/focus; replaces filled CTAs) · `TextLink` (inline prose) ·
+`Badge` (flat token: `neutral | accent | outline`; `outline` is just an
+underline — technologies read as a plain mono list) · `MonoHeading`.
 
-## Interaction language
+## Interaction & motion (CSS-first, one small island)
 
-- **Hover** — colour / border / shadow shifts only, `--dur-fast`.
-- **Focus** — `:focus-visible` → 2px accent outline, 2px offset, everywhere
-  (keyboard only). Stretched-link cards suppress the link outline and show the
-  ring on the card instead.
-- **Pressed** — buttons nudge `translateY(1px)`.
-- **Card lift** — `interactive` cards rise `2px` + gain `--shadow-md` on hover;
-  disabled under `motion-reduce`.
-- **Entrance** — one opt-in cue: `[data-animate="rise"]` (fade + 12px rise,
-  `--dur-slow`), used on the hero and detail header. Never carries information.
-- No parallax, no scroll-hijack, no custom cursor, no particles, no long
-  animations (§11).
-
-## Reduced motion
-
-`@media (prefers-reduced-motion: reduce)` zeroes all animation/transition
-durations and forces `[data-animate]` to its final state (opacity 1, no
-transform). The product is fully usable and legible with zero motion.
-
-## Accessibility
-
-- Skip link (`.skip-link`) → `#conteudo`, visible on focus.
-- Landmarks: `header` / `nav[aria-label]` / `main#conteudo` / `footer`.
-- Heading hierarchy: one `h1` per page; sections use `aria-labelledby`.
-- `MobileNav` is a proper disclosure: `aria-expanded`, `aria-controls`, Escape
-  closes and restores focus to the trigger, outside-pointer closes,
-  `aria-current="page"` on the active link.
-- No `div`-as-button; `Button` is `<button>`, links are `<a>`/`<Link>`.
-- Touch targets ≥ 40px (`h-10`/`h-11` controls, `py-2.5` nav rows).
+- Colour / border / opacity transitions everywhere; transform only for tiny
+  editorial cues (an arrow nudging via `.u-arrow`, a row shifting a few px).
+  No lifts, no scroll-hijack, no parallax, no cursor-follow, no slow easing.
+- `:focus-visible` — 2px accent outline, 3px offset, everywhere, keyboard-only.
+- Entrances: `[data-animate="rise"]` (+ `data-delay="1|2|3"`),
+  `[data-animate="line"]` (a rule drawing in). Opt-in, never carry information.
+- **Relational highlight** (§12, §25): `[data-rel-scope]` dims sibling
+  `[data-rel]` items while one is hovered/focused (pure CSS via `:has()`). The
+  knowledge pages add `RelationalScope` (a ~40-line client island) to *keep
+  relatives bright* by matching `data-rel-keys`. With JS off the CSS still
+  gives a gentler cue; every relation is a real link with visible text.
+- `@media (prefers-reduced-motion: reduce)` zeroes all animation, transform and
+  the relational dimming.
 
 ## Responsive
 
-Tailwind breakpoints: `sm 640` · `md 768` · `lg 1024` · `xl 1280` · `2xl 1536`.
-Navigation switches from inline to `MobileNav` at `md`. `Grid` reflows by column
-count, not by shrinking. Verified at 375 / 768 / 1280 / 1440.
+Homologated at 375 / 768 / 1280 / 1440 / 1920. Desktop uses controlled
+asymmetry (12-col grids: text ~7–8, meta ~3–4); mobile returns to a single
+vertical flow. `--container-editorial` + fluid `--gutter` keep wide screens
+from stranding content; `prose` stays capped for reading.
 
-## Not in scope (Sprint 1)
+## Accessibility
 
-Dark-mode toggle, Knowledge Graph, search, filters, timeline, skill matrix,
-per-block visual redesign, motion library, new content.
+One `h1` per page; heading order preserved; `header`/`nav`/`main`/`footer`
+landmarks; sections `aria-labelledby` their heading; editorial numbers
+`aria-hidden`; `:focus-visible` on every control; relational cues have textual
+equivalents; reduced-motion respected. Nothing depends on colour.

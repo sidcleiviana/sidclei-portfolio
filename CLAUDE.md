@@ -1339,3 +1339,65 @@ filtro (slug privado → `notFound()`). Validação de schema impede `private` +
   shared First Load JS **103 kB**, sem regressão. Homologado 375/768/1280/1440
   (sem overflow). 83 testes (71 → +12: `tests/knowledge.test.tsx`). Gates verdes.
   Infra intacta (dataset privado, webhook 401, deploy Vercel via git).
+
+---
+
+## Atualização — Sprint 7 (Redesign visual profundo: "Editorial Relational Premium")
+
+- **Reconstrução visual de todo o frontend** — nova identidade "Editorial
+  Relational Premium + ~20% Knowledge Atlas". Dados, schemas, queries,
+  confidencialidade, URLs, relações CMS, SEO, revalidação e infraestrutura
+  **preservados** (§47). Nenhuma mudança de conteúdo no Sanity — exceto
+  `knowledgeHubQuery` ganhar `contexts` (companies distintas por skill/tech,
+  `array::unique`, apenas apresentação).
+- **Tokens v2** (`src/styles/globals.css`): paleta neutra com `--color-fg-faint`
+  (números editoriais) e `--color-rule` (hairline forte); escala tipográfica
+  até `--text-5xl` + `clamp()` no hero/case; `--radius-none`/`sm`/`md` (raio
+  quase eliminado, §37); só `--shadow-sm` (§38); containers `editorial 84rem` /
+  `max` / `wide` / `prose` + `--gutter` fluido (§41). Nada hardcoded.
+- **Tipografia protagonista** (§6, §44): 3 faces self-hosted — **Newsreader**
+  (serif, DISPLAY: hero/capítulos/case), **Inter** (corpo), **JetBrains Mono**
+  (`.u-label`: números, categorias, tecnologias, meta). `h1/h2/h3` são serif por
+  padrão.
+- **Numeração editorial** (§7): `01 02 03` mono, `fg-faint`, sempre
+  `aria-hidden` (a label carrega o sentido). `SectionMarker`, `SectionHeading
+  index`, `CaseHeading index`, nav, linhas de projeto/experiência/conhecimento.
+- **Primitivos**: `Container` (5 tamanhos), `Section` (sm/md/lg/xl), `Rule`
+  (hair/strong), `SectionMarker`, `ArrowLink` (CTA editorial "LABEL →"), `Badge`
+  achatado. **Removidos (§54):** `Grid`, `Card`, `Cluster`, `Divider`,
+  `Eyebrow` — mortos após o rebuild.
+- **Home reconstruída**: Hero assimétrico (nome como label, profissão em serif
+  gigante multi-linha, eixos mono, `Explorar trabalho →`); FocusAreas = índice
+  editorial `01 SOFTWARE…`; FeaturedProjects = peça editorial monumental
+  (`ProjectCard variant="feature"`); CareerSummary = progressão + arco
+  `Infraestrutura → Sistemas → Dados/Automação → Software`; NextStep = 3 rotas
+  serif. Sem card central, sem 100vh, sem foto.
+- **/projects** = coleção editorial numerada (`ProjectCard variant="index"`),
+  sem grid de cards. **Case study** = topo monumental (`01 / PRODUÇÃO`, título
+  clamp, `MINHA ATUAÇÃO`, `Rule strong`, `STACK` mono), spine numerado
+  `01 CONTRIBUIÇÃO · 02 CONTEXTO · 03 PROBLEMA`, `Solução` (richText serif),
+  aviso `anonymized` como nota editorial discreta (§48, não warning vermelho).
+  Sistema modular da Sprint 2 preservado; TOC restilizado.
+- **/experiencia** = progressão editorial (sem timeline com bolinhas): ano +
+  função serif + empresa mono + `— responsabilidades`; `data-rel-scope` nos
+  badges.
+- **/conhecimento** = atlas: cada `category` é capítulo numerado; cada item
+  mostra `usado em <empresas>` (contexts reais) e deep-linka. Skill/Technology
+  detail = ficha relacional (`APARECEU EM` numerado, `DEMONSTRADO EM`). Sem
+  dashboard, sem nuvem, sem contagem.
+- **Knowledge Atlas (§12, §24, §25)**: highlight relacional — CSS `[data-rel-scope]`
+  `:has()` dim + `RelationalScope` (client island ~40 linhas) que mantém
+  relativos acesos por `data-rel-keys`. Sem canvas/D3/força. `prefers-reduced-motion`
+  zera. Toda relação tem link + texto (§26, §42).
+- **Header/Footer** editoriais: wordmark serif + nav numerada `01 Projetos…`;
+  footer = nome serif + headline + nav + links reais + whitespace, sem 4 colunas.
+  `MobileNav` mantém disclosure/teclado/touch homologados.
+- **Motion**: CSS-only + 1 island. `ds-rise`, `ds-line`, `.u-arrow`. Sem
+  scroll-hijack/parallax/zoom/cursor-follow.
+- **Performance (§43)**: tudo Server Component salvo `MobileNav`, `DesktopNav`,
+  `ProjectToc`, `RelationalScope`. Shared First Load JS **103 kB — sem
+  regressão** (Newsreader é asset self-hosted, fora do bundle JS). Páginas
+  ~169 kB (leve queda vs 174 kB).
+- **Testes (§55)**: 6 arquivos adaptados à nova estrutura; +1 (contexts). 85
+  testes, gates verdes. Sem pixel/snapshot.
+- **Doc**: `docs/design-system.md` reescrito para v2.
