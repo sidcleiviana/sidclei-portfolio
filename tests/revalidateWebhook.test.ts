@@ -38,28 +38,41 @@ async function loadRoute() {
 describe("tagsForWebhookPayload", () => {
   it("maps document types to the right cache tags", async () => {
     const { tagsForWebhookPayload } = await import("@/sanity/revalidate");
-    // a project change can also change what shows under an experience
+    // a project change can also change what shows under an experience or a
+    // skill / technology detail page
     expect(
       tagsForWebhookPayload({ _type: "project", slug: "visionhash" })
-    ).toEqual(["projects", "experience", "project:visionhash"]);
+    ).toEqual(["projects", "experience", "knowledge", "project:visionhash"]);
     expect(
       tagsForWebhookPayload({ _type: "project", slug: { current: "x" } })
-    ).toEqual(["projects", "experience", "project:x"]);
+    ).toEqual(["projects", "experience", "knowledge", "project:x"]);
     expect(tagsForWebhookPayload({ _type: "project" })).toEqual([
       "projects",
       "experience",
+      "knowledge",
     ]);
     expect(tagsForWebhookPayload({ _type: "experience" })).toEqual([
       "experience",
+      "knowledge",
     ]);
     expect(tagsForWebhookPayload({ _type: "profile" })).toEqual(["profile"]);
     expect(tagsForWebhookPayload({ _type: "siteSettings" })).toEqual([
       "siteSettings",
     ]);
-    // skills / technologies surface in both projections
-    expect(tagsForWebhookPayload({ _type: "technology" })).toEqual([
-      "projects",
+    // a skill / technology rename surfaces on the hub, the experience badges
+    // and the project meta — plus its own detail page
+    expect(tagsForWebhookPayload({ _type: "skill", slug: "python" })).toEqual([
+      "knowledge",
+      "skills",
       "experience",
+      "projects",
+      "skill:python",
+    ]);
+    expect(tagsForWebhookPayload({ _type: "technology" })).toEqual([
+      "knowledge",
+      "technologies",
+      "experience",
+      "projects",
     ]);
   });
 });
@@ -100,10 +113,12 @@ describe("POST /api/revalidate", () => {
     expect(json.tags).toEqual([
       "projects",
       "experience",
+      "knowledge",
       "project:meu-projeto",
     ]);
     expect(revalidateTag).toHaveBeenCalledWith("projects");
     expect(revalidateTag).toHaveBeenCalledWith("experience");
+    expect(revalidateTag).toHaveBeenCalledWith("knowledge");
     expect(revalidateTag).toHaveBeenCalledWith("project:meu-projeto");
   });
 
