@@ -2,7 +2,7 @@ export type ButtonVariant = "primary" | "secondary" | "ghost";
 export type ButtonSize = "sm" | "md";
 
 const BASE =
-  "inline-flex select-none items-center justify-center gap-2 rounded-md font-medium " +
+  "inline-flex select-none items-center justify-center gap-2 rounded-sm font-medium " +
   "whitespace-nowrap disabled:pointer-events-none disabled:opacity-50 " +
   "active:translate-y-px";
 
@@ -12,10 +12,10 @@ const SIZE: Record<ButtonSize, string> = {
 };
 
 const VARIANT: Record<ButtonVariant, string> = {
-  primary: "bg-accent text-accent-fg hover:bg-accent-strong shadow-sm",
+  primary: "bg-fg text-bg hover:bg-[var(--color-accent-strong)]",
   secondary:
-    "bg-surface text-fg border border-border-strong hover:border-fg/40 hover:bg-bg-subtle",
-  ghost: "text-fg hover:bg-bg-subtle",
+    "text-fg border border-border-strong hover:border-[var(--color-rule)]",
+  ghost: "text-fg-muted hover:text-fg",
 };
 
 /** Shared visual contract for `<Button>` and `<ButtonLink>`. */

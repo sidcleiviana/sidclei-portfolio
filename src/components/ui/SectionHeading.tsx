@@ -1,14 +1,15 @@
 import type { ReactNode } from "react";
 
-import { Eyebrow } from "./Eyebrow";
+import { SectionMarker } from "./SectionMarker";
 
 /**
- * The standard block that opens a section: optional eyebrow, a heading, an
- * optional lead line, and an optional trailing action (e.g. "see all").
+ * Opens a section: an optional editorial index mark or mono eyebrow, a serif
+ * heading set large, an optional lead line, and an optional trailing action.
  */
 export function SectionHeading({
   as: Tag = "h2",
   id,
+  index,
   eyebrow,
   title,
   description,
@@ -17,6 +18,8 @@ export function SectionHeading({
 }: {
   as?: "h1" | "h2" | "h3";
   id?: string;
+  /** 1-based editorial number, rendered "01". Takes precedence over `eyebrow`. */
+  index?: number;
   eyebrow?: ReactNode;
   title: ReactNode;
   description?: ReactNode;
@@ -25,22 +28,29 @@ export function SectionHeading({
 }) {
   const size =
     Tag === "h1"
-      ? "text-3xl sm:text-4xl"
+      ? "text-4xl sm:text-5xl"
       : Tag === "h2"
         ? "text-2xl sm:text-3xl"
-        : "text-xl";
+        : "text-xl sm:text-2xl";
 
   return (
     <div
-      className={`flex flex-col gap-3 ${action ? "sm:flex-row sm:items-end sm:justify-between sm:gap-8" : ""} ${className}`}
+      className={`flex flex-col gap-4 ${action ? "sm:flex-row sm:items-end sm:justify-between sm:gap-10" : ""} ${className}`}
     >
-      <div className="flex flex-col gap-3">
-        {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
-        <Tag id={id} className={size}>
+      <div className="flex flex-col gap-4">
+        {typeof index === "number" ? (
+          <SectionMarker index={index}>{eyebrow}</SectionMarker>
+        ) : eyebrow ? (
+          <p className="u-label">{eyebrow}</p>
+        ) : null}
+        <Tag
+          id={id}
+          className={`${size} font-display tracking-[var(--tracking-display)]`}
+        >
           {title}
         </Tag>
         {description ? (
-          <p className="text-fg-muted max-w-[var(--container-prose)] text-base sm:text-lg">
+          <p className="text-fg-muted max-w-[var(--container-prose)] text-lg text-pretty">
             {description}
           </p>
         ) : null}

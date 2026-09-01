@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-/** The small mono uppercase label used to open a sub-section. */
+/** The small mono label that opens a sub-section ("APARECEU EM", "TECNOLOGIAS"). */
 export function MonoHeading({
   as: Tag = "h3",
   id,
@@ -13,10 +13,7 @@ export function MonoHeading({
   className?: string;
 }) {
   return (
-    <Tag
-      id={id}
-      className={`text-fg-muted font-mono text-xs font-medium tracking-[0.14em] uppercase ${className}`}
-    >
+    <Tag id={id} className={`u-label ${className}`}>
       {children}
     </Tag>
   );

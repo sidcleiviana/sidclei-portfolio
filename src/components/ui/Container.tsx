@@ -1,11 +1,13 @@
 import type { ComponentPropsWithoutRef, ElementType, ReactNode } from "react";
 
-type ContainerSize = "default" | "wide" | "prose";
+type ContainerSize = "editorial" | "max" | "wide" | "prose" | "full";
 
 const MAX: Record<ContainerSize, string> = {
-  default: "max-w-[var(--container-max)]",
+  editorial: "max-w-[var(--container-editorial)]",
+  max: "max-w-[var(--container-max)]",
   wide: "max-w-[var(--container-wide)]",
   prose: "max-w-[var(--container-prose)]",
+  full: "max-w-none",
 };
 
 type Props = {
@@ -16,19 +18,21 @@ type Props = {
 } & Omit<ComponentPropsWithoutRef<"div">, "className" | "children">;
 
 /**
- * Horizontal page gutter + max measure. `prose` is the reading width used on
- * long-form pages (project detail); `wide` sits between prose and full.
+ * Horizontal gutter + max measure. The gutter is fluid (`--gutter`) so the page
+ * breathes more on wide editorial screens. `editorial` is the wide canvas for
+ * hero / projects / case top / trajectory; `prose` is the reading measure;
+ * `wide` is for wide media.
  */
 export function Container({
   as: Tag = "div",
-  size = "default",
+  size = "max",
   children,
   className = "",
   ...rest
 }: Props) {
   return (
     <Tag
-      className={`mx-auto w-full px-5 sm:px-6 lg:px-8 ${MAX[size]} ${className}`}
+      className={`mx-auto w-full px-[var(--gutter)] ${MAX[size]} ${className}`}
       {...rest}
     >
       {children}
