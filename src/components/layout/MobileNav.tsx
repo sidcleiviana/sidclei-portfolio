@@ -6,8 +6,11 @@ import { useEffect, useId, useRef, useState } from "react";
 
 import { PRIMARY_NAV } from "./nav";
 
-/** Accessible disclosure menu for narrow viewports. Keyboard: Enter/Space
- *  toggles, Escape closes and returns focus to the trigger. */
+/**
+ * Accessible disclosure menu for narrow viewports. Keyboard: Enter/Space
+ * toggles, Escape closes and returns focus to the trigger. Restyled for the
+ * editorial identity, behaviour unchanged (Sprint 7 §29).
+ */
 export function MobileNav() {
   const [open, setOpen] = useState(false);
   const panelId = useId();
@@ -15,14 +18,12 @@ export function MobileNav() {
   const panelRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
-  // Close on route change.
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
 
   useEffect(() => {
     if (!open) return;
-
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setOpen(false);
@@ -53,22 +54,23 @@ export function MobileNav() {
         aria-controls={panelId}
         aria-label={open ? "Fechar menu" : "Abrir menu"}
         onClick={() => setOpen((v) => !v)}
-        className="text-fg hover:bg-bg-subtle inline-flex h-10 w-10 items-center justify-center rounded-md"
+        className="u-label text-fg -mr-2 inline-flex h-11 items-center gap-2 rounded-sm px-2"
       >
+        {open ? "Fechar" : "Menu"}
         <svg
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
+          width="18"
+          height="18"
+          viewBox="0 0 18 18"
           aria-hidden
           fill="none"
           stroke="currentColor"
-          strokeWidth="1.75"
+          strokeWidth="1.6"
           strokeLinecap="round"
         >
           {open ? (
-            <path d="M5 5l10 10M15 5L5 15" />
+            <path d="M4 4l10 10M14 4L4 14" />
           ) : (
-            <path d="M3 6h14M3 10h14M3 14h14" />
+            <path d="M2 5h14M2 9h14M2 13h14" />
           )}
         </svg>
       </button>
@@ -77,27 +79,31 @@ export function MobileNav() {
         <div
           ref={panelRef}
           id={panelId}
-          className="border-border bg-bg/95 absolute inset-x-0 top-full border-b backdrop-blur"
+          className="border-border bg-bg absolute inset-x-0 top-full border-b"
         >
-          <nav aria-label="Navegação principal" className="px-5 py-3">
+          <nav
+            aria-label="Navegação principal"
+            className="px-[var(--gutter)] py-4"
+          >
             <ul className="flex flex-col">
-              {PRIMARY_NAV.map((item) => {
+              {PRIMARY_NAV.map((item, i) => {
                 const active =
                   item.href === "/"
                     ? pathname === "/"
                     : pathname.startsWith(item.href);
                 return (
-                  <li key={item.href}>
+                  <li key={item.href} className="border-border border-t">
                     <Link
                       href={item.href}
                       aria-current={active ? "page" : undefined}
-                      className={`block rounded-md px-3 py-2.5 text-base ${
-                        active
-                          ? "text-fg font-medium"
-                          : "text-fg-muted hover:text-fg"
+                      className={`flex items-baseline gap-3 py-3.5 ${
+                        active ? "text-fg" : "text-fg-muted"
                       }`}
                     >
-                      {item.label}
+                      <span aria-hidden className="u-label text-fg-faint">
+                        {String(i).padStart(2, "0")}
+                      </span>
+                      <span className="font-display text-xl">{item.label}</span>
                     </Link>
                   </li>
                 );

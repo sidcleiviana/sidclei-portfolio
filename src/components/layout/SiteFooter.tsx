@@ -1,9 +1,14 @@
+import Link from "next/link";
+
 import { Container } from "@/components/ui/Container";
 import type { Profile } from "@/sanity/types";
 
+import { PRIMARY_NAV } from "./nav";
+
 /**
- * Structural footer. Professional links come from the CMS `profile.links` —
- * nothing is invented here (Design System §15).
+ * Editorial close, not a corporate footer: name, headline, the same numbered
+ * index, real CMS links, and air (Sprint 7 §30). Nothing is invented — links
+ * come from `profile.links`.
  */
 export function SiteFooter({
   profile,
@@ -14,29 +19,53 @@ export function SiteFooter({
 }) {
   const links = (profile?.links ?? []).filter((l) => l?.url && l?.label);
   const year = new Date().getFullYear();
+  const nav = PRIMARY_NAV.filter((i) => i.href !== "/");
 
   return (
-    <footer className="border-border mt-24 border-t">
-      <Container className="flex flex-col gap-6 py-10 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p className="text-fg font-mono text-sm font-medium">
-            {profile?.name ?? "Sidclei Viana"}
-          </p>
-          <p className="text-fg-muted mt-1 text-sm">
-            {profile?.headline ?? "Desenvolvedor de Software"}
-          </p>
+    <footer className="mt-32 border-t border-[var(--color-rule)]">
+      <Container size="editorial" className="py-16 sm:py-24">
+        <div className="grid gap-12 sm:grid-cols-[1fr_auto] sm:gap-16">
+          <div className="max-w-[var(--container-prose)]">
+            <p className="font-display text-2xl sm:text-3xl">
+              {profile?.name ?? "Sidclei Viana"}
+            </p>
+            <p className="text-fg-muted mt-2 text-lg text-pretty">
+              {profile?.headline ?? "Desenvolvedor de Software"}
+            </p>
+          </div>
+
+          <nav
+            aria-label="Navegação do rodapé"
+            className="flex flex-col gap-3 sm:items-end"
+          >
+            {nav.map((item, i) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="u-label text-fg-muted hover:text-fg inline-flex items-center gap-2 rounded-sm"
+              >
+                <span aria-hidden className="text-fg-faint tabular-nums">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                {item.label}
+              </Link>
+            ))}
+          </nav>
         </div>
 
         {links.length ? (
-          <nav aria-label="Links profissionais">
-            <ul className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+          <nav
+            aria-label="Links profissionais"
+            className="mt-16 border-t border-[var(--color-border)] pt-6"
+          >
+            <ul className="flex flex-wrap gap-x-8 gap-y-2">
               {links.map((link) => (
                 <li key={link._key ?? link.url}>
                   <a
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-fg-muted hover:text-fg rounded-sm"
+                    className="u-label text-fg-muted hover:text-fg rounded-sm"
                   >
                     {link.label}
                     <span className="sr-only"> (abre em nova aba)</span>
@@ -46,10 +75,10 @@ export function SiteFooter({
             </ul>
           </nav>
         ) : null}
-      </Container>
 
-      <Container className="border-border text-fg-muted border-t py-5 text-xs">
-        <p>{note ?? `© ${year} Sidclei Viana · Next.js + Sanity`}</p>
+        <p className="text-fg-faint mt-16 font-mono text-xs">
+          {note ?? `© ${year} Sidclei Viana · Next.js + Sanity`}
+        </p>
       </Container>
     </footer>
   );
