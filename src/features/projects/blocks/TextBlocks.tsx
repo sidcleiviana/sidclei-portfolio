@@ -80,20 +80,18 @@ export function Learning({ block }: { block: LearningBlock }) {
 
 export function Callout({ block }: { block: CalloutBlock }) {
   if (!block.body?.length && !block.title) return null;
-  // One neutral language; only "warning" shifts the left border (Sprint §22).
-  const border =
+  // One neutral language; only "warning" shifts the left rule (Sprint 7 §18).
+  const rule =
     block.tone === "warning"
-      ? "border-l-amber-500/60"
-      : "border-l-[var(--color-accent)]";
+      ? "border-amber-500/60"
+      : "border-[var(--color-rule)]";
   return (
     <BlockShell>
-      <aside
-        className={`border-border bg-bg-subtle rounded-md border border-l-2 px-4 py-3.5 ${border}`}
-      >
+      <aside className={`border-l-2 pl-5 ${rule}`}>
         {block.title ? (
-          <p className="mb-1 text-sm font-semibold">{block.title}</p>
+          <p className="font-display mb-1 text-lg">{block.title}</p>
         ) : null}
-        <div className="text-fg-muted text-sm">
+        <div className="text-fg-muted">
           <PortableText value={block.body} />
         </div>
       </aside>

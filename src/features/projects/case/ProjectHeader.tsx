@@ -1,4 +1,4 @@
-import { Badge, Cluster, Container, Stack } from "@/components/ui";
+import { Container, Rule } from "@/components/ui";
 import { rolesSummary } from "@/domain/contribution";
 import { formatDateRange } from "@/domain/dateRange";
 import { projectTypeLabel } from "@/domain/projectType";
@@ -12,14 +12,16 @@ const AUTHORSHIP_SHORT: Record<string, string> = {
 };
 
 /**
- * The editorial top of the case — establishes, at a glance (Sprint §5, §6):
- * what it is, its nature, whether it was solo or a team, when, the roles, and
- * the core stack. Empty fields never render; nothing is invented.
+ * The monumental top of the case (Sprint 7 §16): an index mark, the title set
+ * as a graphic element, the roles, a strong rule, then the stack. Empty fields
+ * never render; nothing is invented. The anonymised note is an editorial aside,
+ * not a warning (Sprint 7 §48).
  */
 export function ProjectHeader({ project }: { project: ProjectDetail }) {
   const period = formatDateRange(project.period);
   const roles = rolesSummary(project.contribution);
   const authorship = project.contribution?.authorship;
+  const authorshipLabel = authorship ? AUTHORSHIP_SHORT[authorship] : null;
   const technologies = (project.technologies ?? []).filter((t) => t?.name);
   const notice =
     isAnonymized(project) && project.confidentialityNotice
@@ -27,62 +29,59 @@ export function ProjectHeader({ project }: { project: ProjectDetail }) {
       : null;
 
   return (
-    <Container size="prose" as="header">
-      <Stack gap="md" data-animate="rise">
-        <Cluster gap="xs">
-          <Badge tone="accent">{projectTypeLabel(project.projectType)}</Badge>
-          {authorship && AUTHORSHIP_SHORT[authorship] ? (
-            <Badge tone="outline">{AUTHORSHIP_SHORT[authorship]}</Badge>
+    <Container size="editorial" as="header">
+      <div data-animate="rise">
+        <p className="u-label">
+          <span className="text-fg-faint tabular-nums">01</span> /{" "}
+          {projectTypeLabel(project.projectType)}
+          {authorshipLabel ? (
+            <span className="text-fg-faint"> · {authorshipLabel}</span>
           ) : null}
-        </Cluster>
+          {period ? <span className="text-fg-faint"> · {period}</span> : null}
+        </p>
 
-        <h1 id="project-title" className="text-3xl sm:text-4xl">
+        <h1
+          id="project-title"
+          className="font-display mt-8 max-w-[18ch] text-[clamp(2.5rem,7vw,5rem)] leading-[1.02] tracking-[var(--tracking-display)] text-balance"
+        >
           {project.title}
         </h1>
 
         {project.shortDescription ? (
-          <p className="text-fg-muted text-lg text-pretty">
+          <p className="text-fg-muted mt-8 max-w-[var(--container-prose)] text-xl text-pretty">
             {project.shortDescription}
           </p>
         ) : null}
 
-        {notice ? (
-          <p className="border-border bg-bg-subtle text-fg-muted rounded-md border p-4 text-sm">
-            {notice}
+        {roles ? (
+          <p className="u-label mt-8">
+            <span className="text-fg-faint">Minha atuação</span> {roles}
           </p>
         ) : null}
 
-        {period || roles ? (
-          <dl className="flex flex-col gap-2 text-sm sm:flex-row sm:gap-8">
-            {period ? (
-              <div>
-                <dt className="text-fg-muted font-mono text-xs tracking-[0.12em] uppercase">
-                  Período
-                </dt>
-                <dd className="mt-0.5">{period}</dd>
-              </div>
-            ) : null}
-            {roles ? (
-              <div>
-                <dt className="text-fg-muted font-mono text-xs tracking-[0.12em] uppercase">
-                  Minha atuação
-                </dt>
-                <dd className="mt-0.5">{roles}</dd>
-              </div>
-            ) : null}
-          </dl>
-        ) : null}
+        <Rule weight="strong" className="mt-12" />
 
-        {technologies.length ? (
-          <Cluster gap="xs" aria-label="Tecnologias principais">
-            {technologies.slice(0, 6).map((tech) => (
-              <Badge key={tech._id} tone="outline" mono>
-                {tech.name}
-              </Badge>
-            ))}
-          </Cluster>
-        ) : null}
-      </Stack>
+        <div className="mt-8 grid gap-x-10 gap-y-8 sm:grid-cols-12">
+          {technologies.length ? (
+            <div className="sm:col-span-8">
+              <p className="u-label text-fg-faint mb-3">Stack</p>
+              <ul className="flex flex-wrap gap-x-6 gap-y-1.5 font-mono text-sm">
+                {technologies.map((tech) => (
+                  <li key={tech._id} className="text-fg-muted">
+                    {tech.name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          {notice ? (
+            <p className="text-fg-muted border-l border-[var(--color-border-strong)] pl-4 text-sm text-pretty sm:col-span-4">
+              {notice}
+            </p>
+          ) : null}
+        </div>
+      </div>
     </Container>
   );
 }

@@ -8,10 +8,10 @@ const MAX: Record<Width, string> = {
 };
 
 /**
- * Every content block sits in one of two measures (Sprint §10): `prose` for
+ * Every content block sits in one of two measures (Sprint 7 §18): `prose` for
  * narrative, `wide` for media / diagrams / metrics. Horizontal gutters come
- * from the case-study container, not from here. An optional mono heading keeps
- * block titles consistent with the rest of the case.
+ * from the case-study container. The optional heading matches `CaseHeading` —
+ * a mono label bound to its content by a strong hairline.
  */
 export function BlockShell({
   heading,
@@ -23,9 +23,9 @@ export function BlockShell({
   children: ReactNode;
 }) {
   return (
-    <div className={`mx-auto w-full ${MAX[width]}`}>
+    <div className={`w-full ${MAX[width]}`}>
       {heading ? (
-        <h2 className="text-fg-muted mb-4 font-mono text-xs font-medium tracking-[0.14em] uppercase">
+        <h2 className="u-label mb-6 border-t border-[var(--color-rule)] pt-4">
           {heading}
         </h2>
       ) : null}

@@ -36,7 +36,7 @@ export function BeforeAfter({ block }: { block: BeforeAfterBlock }) {
         {usable.map(({ key, fallback, data }) => (
           <div
             key={key}
-            className="border-border bg-surface rounded-md border p-4"
+            className="border-t border-[var(--color-border-strong)] pt-4"
           >
             <p className="text-fg-muted font-mono text-xs font-medium tracking-[0.14em] uppercase">
               {data?.label ?? fallback}
@@ -47,7 +47,7 @@ export function BeforeAfter({ block }: { block: BeforeAfterBlock }) {
                   image={data.image}
                   sizes="(min-width: 640px) 24rem, 100vw"
                   ratio={4 / 3}
-                  className="border-border w-full rounded border object-cover"
+                  className="w-full border border-[var(--color-border)] object-cover"
                 />
               </Figure>
             ) : null}
@@ -68,7 +68,7 @@ export function Timeline({ block }: { block: TimelineBlock }) {
   if (!entries.length) return null;
   return (
     <BlockShell heading={block.heading ?? "Processo"}>
-      <ol className="border-border space-y-5 border-l pl-6">
+      <ol className="space-y-6 border-l border-[var(--color-rule)] pl-6">
         {entries.map((entry) => (
           <li key={entry._key} className="relative">
             <span

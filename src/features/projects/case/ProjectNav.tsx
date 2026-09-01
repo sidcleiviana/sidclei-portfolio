@@ -5,27 +5,33 @@ import { Container } from "@/components/ui/Container";
 type Neighbor = { slug: string; title: string } | null;
 
 /**
- * End-of-case navigation. Neighbours are derived from the public project list
- * only, so a private project can never appear here (Sprint §26).
+ * End-of-case navigation. Neighbours come from the public project list only, so
+ * a private project can never appear here (Sprint 7 §47).
  */
 export function ProjectNav({ prev, next }: { prev: Neighbor; next: Neighbor }) {
   return (
-    <Container as="nav" aria-label="Navegação entre projetos" className="mt-20">
-      <div className="border-border border-t pt-6">
-        <Link
-          href="/projects"
-          className="text-fg-muted hover:text-fg rounded-sm font-mono text-xs tracking-[0.12em] uppercase"
-        >
-          ← Todos os projetos
-        </Link>
-        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <Container
+      size="editorial"
+      as="nav"
+      aria-label="Navegação entre projetos"
+      className="mt-28"
+    >
+      <Link
+        href="/projects"
+        className="u-label text-fg-muted hover:text-fg inline-flex items-center gap-2 rounded-sm"
+      >
+        <span aria-hidden>←</span> Todos os projetos
+      </Link>
+
+      {prev || next ? (
+        <div className="mt-6 grid gap-px border-t border-[var(--color-rule)] sm:grid-cols-2">
           {prev ? (
             <Link
               href={`/projects/${prev.slug}`}
-              className="group border-border bg-surface hover:border-border-strong rounded-md border p-4"
+              className="group border-b border-[var(--color-border)] py-6"
             >
-              <span className="text-fg-muted text-xs">Anterior</span>
-              <span className="group-hover:text-accent mt-1 block font-medium">
+              <span className="u-label text-fg-faint">Anterior</span>
+              <span className="font-display group-hover:text-accent mt-1 block text-lg">
                 {prev.title}
               </span>
             </Link>
@@ -35,16 +41,16 @@ export function ProjectNav({ prev, next }: { prev: Neighbor; next: Neighbor }) {
           {next ? (
             <Link
               href={`/projects/${next.slug}`}
-              className="group border-border bg-surface hover:border-border-strong rounded-md border p-4 text-right sm:col-start-2"
+              className="group border-b border-[var(--color-border)] py-6 sm:col-start-2 sm:text-right"
             >
-              <span className="text-fg-muted text-xs">Próximo</span>
-              <span className="group-hover:text-accent mt-1 block font-medium">
+              <span className="u-label text-fg-faint">Próximo</span>
+              <span className="font-display group-hover:text-accent mt-1 block text-lg">
                 {next.title}
               </span>
             </Link>
           ) : null}
         </div>
-      </div>
+      ) : null}
     </Container>
   );
 }

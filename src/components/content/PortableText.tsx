@@ -18,32 +18,32 @@ import type {
 const components: PortableTextComponents = {
   block: {
     normal: ({ children }) => (
-      <p className="text-[0.975rem] leading-7 text-pretty">{children}</p>
+      <p className="text-fg-muted text-lg leading-8 text-pretty">{children}</p>
     ),
     h2: ({ children }) => (
-      <h2 className="mt-10 scroll-mt-24 text-xl font-semibold tracking-tight first:mt-0">
+      <h2 className="font-display mt-14 scroll-mt-24 text-2xl first:mt-0">
         {children}
       </h2>
     ),
     h3: ({ children }) => (
-      <h3 className="mt-8 scroll-mt-24 text-lg font-semibold tracking-tight first:mt-0">
+      <h3 className="font-display mt-10 scroll-mt-24 text-xl first:mt-0">
         {children}
       </h3>
     ),
     blockquote: ({ children }) => (
-      <blockquote className="text-fg-muted border-l-2 border-[var(--color-accent)] pl-4 italic">
+      <blockquote className="font-display text-fg text-xl leading-relaxed italic">
         {children}
       </blockquote>
     ),
   },
   list: {
     bullet: ({ children }) => (
-      <ul className="marker:text-fg-muted list-disc space-y-1.5 pl-5 text-[0.975rem] leading-7">
+      <ul className="text-fg-muted marker:text-fg-faint list-disc space-y-2 pl-5 text-lg leading-8">
         {children}
       </ul>
     ),
     number: ({ children }) => (
-      <ol className="marker:text-fg-muted list-decimal space-y-1.5 pl-5 text-[0.975rem] leading-7">
+      <ol className="text-fg-muted marker:text-fg-faint list-decimal space-y-2 pl-5 text-lg leading-8">
         {children}
       </ol>
     ),
@@ -94,7 +94,7 @@ export function PortableText({ value }: { value?: PortableTextValue | null }) {
   if (!value || value.length === 0) return null;
   type BaseValue = Parameters<typeof BasePortableText>[0]["value"];
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <BasePortableText
         value={value as unknown as BaseValue}
         components={components}

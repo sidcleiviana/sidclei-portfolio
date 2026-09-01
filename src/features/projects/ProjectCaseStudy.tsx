@@ -18,17 +18,17 @@ import { ProjectMeta } from "./case/ProjectMeta";
 import { ProjectNav } from "./case/ProjectNav";
 import { ProjectToc } from "./case/ProjectToc";
 
-const PROSE = "mx-auto w-full max-w-[var(--container-prose)]";
-const WIDE = "mx-auto w-full max-w-[var(--container-wide)]";
+const PROSE = "max-w-[var(--container-prose)]";
+const WIDE = "max-w-[var(--container-wide)]";
 
 type Neighbor = { slug: string; title: string } | null;
 
 /**
- * The whole case study composed from whatever the CMS provided. Every section
- * is conditional: a project with only a title, a description, a type and a few
- * technologies still reads as a finished page (Sprint §28); a project with
- * many blocks stays navigable (Sprint §29). Order is fixed for the framing
- * sections; the modular blocks keep the narrative order the editor chose.
+ * The whole case study, composed from whatever the CMS provided (Sprint 2
+ * modular system, preserved). Sprint 7: a monumental header, framing sections
+ * carry an editorial number, measures separate narrative (prose) from media
+ * (wide). Every section is conditional — a lean project still reads as a
+ * finished editorial page.
  */
 export function ProjectCaseStudy({
   project,
@@ -60,6 +60,10 @@ export function ProjectCaseStudy({
   });
   const showToc = shouldShowToc(sections);
 
+  // Editorial numbering for the fixed framing sections, in render order.
+  let n = 0;
+  const num = () => (n += 1);
+
   return (
     <article className="pb-8">
       <Section spacing="md">
@@ -67,22 +71,22 @@ export function ProjectCaseStudy({
       </Section>
 
       {project.coverImage?.asset ? (
-        <Container size="wide" className="mb-8">
+        <Container size="editorial" className="mb-12">
           <SanityImage
             image={project.coverImage}
             priority
-            sizes="(min-width: 900px) 52rem, 100vw"
+            sizes="(min-width: 900px) 60rem, 100vw"
             ratio={16 / 9}
-            className="border-border w-full rounded-lg border"
+            className="w-full"
           />
         </Container>
       ) : null}
 
-      <Container>
+      <Container size="editorial">
         <div
           className={
             showToc
-              ? "xl:grid xl:grid-cols-[13rem_minmax(0,1fr)] xl:gap-12"
+              ? "xl:grid xl:grid-cols-[12rem_minmax(0,1fr)] xl:gap-16"
               : undefined
           }
         >
@@ -92,25 +96,29 @@ export function ProjectCaseStudy({
             </div>
           ) : null}
 
-          <div className="flex min-w-0 flex-col gap-14">
+          <div className="flex min-w-0 flex-col gap-16">
             {contribution ? (
-              <section id="contribuicao" className={`scroll-mt-24 ${PROSE}`}>
-                <CaseHeading>Contribuição</CaseHeading>
+              <section id="contribuicao" className={`scroll-mt-24 ${WIDE}`}>
+                <CaseHeading index={num()}>Contribuição</CaseHeading>
                 <ProjectContribution contribution={contribution} />
               </section>
             ) : null}
 
             {context ? (
               <section id="contexto" className={`scroll-mt-24 ${PROSE}`}>
-                <CaseHeading>Contexto</CaseHeading>
-                <p className="text-fg-muted leading-7 text-pretty">{context}</p>
+                <CaseHeading index={num()}>Contexto</CaseHeading>
+                <p className="text-fg-muted text-lg leading-8 text-pretty">
+                  {context}
+                </p>
               </section>
             ) : null}
 
             {problem ? (
               <section id="problema" className={`scroll-mt-24 ${PROSE}`}>
-                <CaseHeading>Problema</CaseHeading>
-                <p className="text-fg-muted leading-7 text-pretty">{problem}</p>
+                <CaseHeading index={num()}>Problema</CaseHeading>
+                <p className="text-fg-muted text-lg leading-8 text-pretty">
+                  {problem}
+                </p>
               </section>
             ) : null}
 
@@ -118,19 +126,19 @@ export function ProjectCaseStudy({
 
             {hasResults ? (
               <section id="resultados" className={`scroll-mt-24 ${WIDE}`}>
-                <CaseHeading>Resultados</CaseHeading>
+                <CaseHeading index={num()}>Resultados</CaseHeading>
                 <MetricList metrics={metrics} />
               </section>
             ) : null}
 
             {hasEvidence ? (
               <section id="evidencias" className={`scroll-mt-24 ${WIDE}`}>
-                <CaseHeading>Evidências</CaseHeading>
+                <CaseHeading index={num()}>Evidências</CaseHeading>
                 <EvidenceList evidence={evidence} />
               </section>
             ) : null}
 
-            <div className={PROSE}>
+            <div className={WIDE}>
               <ProjectMeta project={project} />
             </div>
           </div>

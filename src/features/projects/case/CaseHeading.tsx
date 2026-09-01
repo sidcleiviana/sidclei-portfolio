@@ -1,19 +1,30 @@
 import type { ReactNode } from "react";
 
-/** The mono kicker that opens every fixed case section. */
+/**
+ * Opens a case section: an editorial index number and a mono label, bound to
+ * the content below by a strong hairline (Sprint 7 §16).
+ */
 export function CaseHeading({
   id,
+  index,
   children,
 }: {
   id?: string;
+  /** 1-based; rendered "01". */
+  index?: number;
   children: ReactNode;
 }) {
   return (
     <h2
       id={id}
-      className="text-fg-muted mb-4 font-mono text-xs font-medium tracking-[0.14em] uppercase"
+      className="u-label mb-6 flex items-center gap-2.5 border-t border-[var(--color-rule)] pt-4"
     >
-      {children}
+      {typeof index === "number" ? (
+        <span aria-hidden className="text-fg-faint tabular-nums">
+          {String(index).padStart(2, "0")}
+        </span>
+      ) : null}
+      <span>{children}</span>
     </h2>
   );
 }

@@ -1,4 +1,4 @@
-import { Badge, Cluster } from "@/components/ui";
+import { Badge } from "@/components/ui";
 import {
   authorshipLabel,
   isTeamProject,
@@ -8,10 +8,9 @@ import {
 import type { Contribution } from "@/sanity/types";
 
 /**
- * Makes authorship unambiguous without reading like a legal disclaimer
- * (Sprint §3, §13). Solo projects get one line. Team / participation projects
- * name the team context and *Sidclei's* roles — never inferred from tech or
- * skills, only what the CMS states.
+ * Makes authorship unambiguous without reading like a disclaimer (Sprint 7
+ * §16). Solo projects get one line; team / participation projects name the team
+ * context and *Sidclei's* roles — only what the CMS states, never inferred.
  */
 export function ProjectContribution({
   contribution,
@@ -24,47 +23,49 @@ export function ProjectContribution({
   const responsibilities = responsibilitiesList(contribution);
 
   return (
-    <div className="border-border bg-surface rounded-md border p-5">
-      <p className="font-medium">{label ?? "Contribuição"}</p>
-
-      {team && contribution.teamContext ? (
-        <p className="text-fg-muted mt-1 text-sm">{contribution.teamContext}</p>
-      ) : null}
-
-      {roles.length ? (
-        <div className="mt-4">
-          <p className="text-fg-muted font-mono text-xs tracking-[0.12em] uppercase">
-            {team ? "Minha atuação" : "Atuação"}
+    <div className="grid gap-x-10 gap-y-6 sm:grid-cols-12">
+      <div className="sm:col-span-4">
+        <p className="font-display text-xl">{label ?? "Contribuição"}</p>
+        {team && contribution.teamContext ? (
+          <p className="text-fg-muted mt-1 text-sm">
+            {contribution.teamContext}
           </p>
-          <Cluster gap="xs" className="mt-2">
-            {roles.map((role) => (
-              <Badge key={role} tone="accent">
-                {role}
-              </Badge>
+        ) : null}
+        {roles.length ? (
+          <div className="mt-4">
+            <p className="u-label text-fg-faint">
+              {team ? "Minha atuação" : "Atuação"}
+            </p>
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+              {roles.map((role) => (
+                <Badge key={role} tone="accent">
+                  {role}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="sm:col-span-8">
+        {responsibilities.length ? (
+          <ul className="text-fg-muted space-y-2">
+            {responsibilities.map((item) => (
+              <li key={item} className="flex gap-3">
+                <span aria-hidden className="text-fg-faint">
+                  —
+                </span>
+                {item}
+              </li>
             ))}
-          </Cluster>
-        </div>
-      ) : null}
-
-      {responsibilities.length ? (
-        <ul className="text-fg-muted mt-4 space-y-1.5 text-sm">
-          {responsibilities.map((item) => (
-            <li key={item} className="flex gap-2.5">
-              <span
-                aria-hidden
-                className="bg-fg-muted mt-2 h-1 w-1 shrink-0 rounded-full"
-              />
-              {item}
-            </li>
-          ))}
-        </ul>
-      ) : null}
-
-      {contribution.summary ? (
-        <p className="text-fg-muted mt-4 text-sm leading-6">
-          {contribution.summary}
-        </p>
-      ) : null}
+          </ul>
+        ) : null}
+        {contribution.summary ? (
+          <p className="text-fg-muted mt-5 text-pretty">
+            {contribution.summary}
+          </p>
+        ) : null}
+      </div>
     </div>
   );
 }

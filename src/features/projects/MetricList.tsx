@@ -20,20 +20,18 @@ export function MetricList({ metrics }: { metrics: Metric[] }) {
   if (!usable.length) return null;
 
   return (
-    <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <dl className="grid grid-cols-1 gap-px sm:grid-cols-2 lg:grid-cols-3">
       {usable.map(({ metric, value }, index) => (
         <div
           key={metric._key ?? index}
-          className="border-border bg-surface rounded-md border p-4"
+          className="border-t border-[var(--color-rule)] py-5"
         >
-          <dd className="text-fg text-xl font-semibold tracking-tight">
-            {value}
-          </dd>
+          <dd className="font-display text-3xl">{value}</dd>
           {metric.label ? (
-            <dt className="text-fg-muted mt-1 text-sm">{metric.label}</dt>
+            <dt className="u-label text-fg-muted mt-2">{metric.label}</dt>
           ) : null}
           {metric.description ? (
-            <p className="text-fg-muted mt-2 text-xs leading-5">
+            <p className="text-fg-muted mt-2 text-sm leading-6">
               {metric.description}
             </p>
           ) : null}

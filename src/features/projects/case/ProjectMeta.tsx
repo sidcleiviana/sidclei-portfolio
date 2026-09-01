@@ -1,23 +1,19 @@
 import Link from "next/link";
 
-import { Cluster, Divider, Stack, TextLink } from "@/components/ui";
+import { Rule, TextLink } from "@/components/ui";
 import { experienceAnchor } from "@/domain/experienceAnchor";
 import { KnowledgeBadge } from "@/features/knowledge/KnowledgeBadge";
 import type { ProjectDetail } from "@/sanity/types";
 
-function MetaHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <h2 className="text-fg-muted font-mono text-xs font-medium tracking-[0.14em] uppercase">
-      {children}
-    </h2>
-  );
+function MetaLabel({ children }: { children: React.ReactNode }) {
+  return <p className="u-label text-fg-faint mb-3">{children}</p>;
 }
 
 /**
  * The closing metadata of a case. Skills and Technologies stay separate
- * concepts (Sprint §14): a Skill is what was done, a Technology is what it was
- * done with. Related projects are *not* inferred — only explicit CMS relations
- * appear (Sprint §27).
+ * concepts (Sprint 7 §16): a Skill is what was done, a Technology is what it
+ * was done with. Related projects are never inferred — only explicit CMS
+ * relations. Badges deep-link into the Knowledge Hub.
  */
 export function ProjectMeta({ project }: { project: ProjectDetail }) {
   const skills = (project.skills ?? []).filter((s) => s?.name);
@@ -37,12 +33,12 @@ export function ProjectMeta({ project }: { project: ProjectDetail }) {
 
   return (
     <>
-      <Divider className="mt-16" />
-      <Stack gap="lg" className="pt-8 text-sm">
+      <Rule weight="strong" className="mt-20" />
+      <div className="mt-8 grid gap-x-10 gap-y-10 sm:grid-cols-2">
         {skills.length ? (
-          <Stack gap="sm">
-            <MetaHeading>Competências</MetaHeading>
-            <Cluster gap="xs">
+          <div>
+            <MetaLabel>Competências</MetaLabel>
+            <div className="flex flex-wrap gap-x-4 gap-y-2">
               {skills.map((s) => (
                 <KnowledgeBadge
                   key={s._id}
@@ -51,14 +47,14 @@ export function ProjectMeta({ project }: { project: ProjectDetail }) {
                   name={s.name}
                 />
               ))}
-            </Cluster>
-          </Stack>
+            </div>
+          </div>
         ) : null}
 
         {technologies.length ? (
-          <Stack gap="sm">
-            <MetaHeading>Tecnologias</MetaHeading>
-            <Cluster gap="xs">
+          <div>
+            <MetaLabel>Tecnologias</MetaLabel>
+            <div className="flex flex-wrap gap-x-4 gap-y-2">
               {technologies.map((t) => (
                 <KnowledgeBadge
                   key={t._id}
@@ -67,13 +63,27 @@ export function ProjectMeta({ project }: { project: ProjectDetail }) {
                   name={t.name}
                 />
               ))}
-            </Cluster>
-          </Stack>
+            </div>
+          </div>
+        ) : null}
+
+        {experience ? (
+          <div>
+            <MetaLabel>Experiência relacionada</MetaLabel>
+            <Link
+              href={`/experiencia#${experienceAnchor(experience)}`}
+              className="font-display hover:text-accent rounded-sm text-lg"
+            >
+              {[experience.role, experience.company]
+                .filter(Boolean)
+                .join(" · ")}
+            </Link>
+          </div>
         ) : null}
 
         {links.length ? (
-          <Stack gap="sm">
-            <MetaHeading>Links</MetaHeading>
+          <div>
+            <MetaLabel>Links</MetaLabel>
             <ul className="space-y-1.5">
               {links.map((link) => (
                 <li key={link.key}>
@@ -81,23 +91,9 @@ export function ProjectMeta({ project }: { project: ProjectDetail }) {
                 </li>
               ))}
             </ul>
-          </Stack>
+          </div>
         ) : null}
-
-        {experience ? (
-          <p className="text-fg-muted">
-            Experiência relacionada:{" "}
-            <Link
-              href={`/experiencia#${experienceAnchor(experience)}`}
-              className="text-fg rounded-sm font-medium underline decoration-[var(--color-border-strong)] underline-offset-[3px] hover:decoration-[var(--color-accent)]"
-            >
-              {[experience.role, experience.company]
-                .filter(Boolean)
-                .join(" · ")}
-            </Link>
-          </p>
-        ) : null}
-      </Stack>
+      </div>
     </>
   );
 }

@@ -50,26 +50,26 @@ export function ProjectToc({ sections }: { sections: CaseSection[] }) {
   if (!sections.length) return null;
 
   const list = (
-    <ol className="space-y-1.5">
-      {sections.map((section) => {
+    <ol className="border-t border-[var(--color-border)]">
+      {sections.map((section, i) => {
         const active = section.id === activeId;
         return (
-          <li key={section.id}>
+          <li
+            key={section.id}
+            className="border-b border-[var(--color-border)]"
+          >
             <a
               href={`#${section.id}`}
               aria-current={active ? "location" : undefined}
-              className={`flex items-center gap-2 rounded-sm py-0.5 text-sm ${
-                active ? "text-fg font-medium" : "text-fg-muted hover:text-fg"
+              className={`u-label flex items-center gap-2.5 py-2.5 ${
+                active ? "text-fg" : "text-fg-muted hover:text-fg"
               }`}
             >
               <span
-                aria-hidden
-                className={`h-px w-4 shrink-0 transition-[width,background-color] ${
-                  active
-                    ? "w-6 bg-[var(--color-accent)]"
-                    : "bg-[var(--color-border-strong)]"
-                }`}
-              />
+                className={`tabular-nums ${active ? "text-accent" : "text-fg-faint"}`}
+              >
+                {String(i + 1).padStart(2, "0")}
+              </span>
               {section.label}
             </a>
           </li>
@@ -85,18 +85,16 @@ export function ProjectToc({ sections }: { sections: CaseSection[] }) {
         aria-label="Índice do projeto"
         className="sticky top-24 hidden xl:block"
       >
-        <p className="text-fg-muted mb-3 font-mono text-xs font-medium tracking-[0.14em] uppercase">
-          Neste projeto
-        </p>
+        <p className="u-label text-fg-faint mb-4">Neste projeto</p>
         {list}
       </nav>
 
       {/* Mobile disclosure */}
-      <details className="border-border bg-bg-subtle mb-8 rounded-md border xl:hidden">
-        <summary className="text-fg-muted cursor-pointer list-none px-4 py-3 font-mono text-xs font-medium tracking-[0.14em] uppercase">
+      <details className="mb-10 border-y border-[var(--color-rule)] xl:hidden">
+        <summary className="u-label text-fg-muted cursor-pointer list-none py-3">
           Índice do projeto
         </summary>
-        <nav aria-label="Índice do projeto" className="px-4 pb-4">
+        <nav aria-label="Índice do projeto" className="pb-4">
           {list}
         </nav>
       </details>

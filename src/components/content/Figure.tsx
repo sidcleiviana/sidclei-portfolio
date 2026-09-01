@@ -11,10 +11,12 @@ export function Figure({
   className?: string;
 }) {
   return (
-    <figure className={`space-y-2 ${className}`}>
+    <figure className={`space-y-2.5 ${className}`}>
       {children}
       {caption ? (
-        <figcaption className="text-fg-muted text-sm">{caption}</figcaption>
+        <figcaption className="u-label text-fg-faint normal-case">
+          {caption}
+        </figcaption>
       ) : null}
     </figure>
   );

@@ -30,7 +30,7 @@ export function Gallery({ block }: { block: GalleryBlock }) {
                 image={image}
                 sizes={sizes}
                 ratio={4 / 3}
-                className="border-border w-full rounded-md border object-cover"
+                className="w-full border border-[var(--color-border)] object-cover"
               />
             </Figure>
           </li>
@@ -67,7 +67,7 @@ export function Video({ block }: { block: VideoBlock }) {
 
   return (
     <BlockShell heading={block.title} width="wide">
-      <div className="border-border bg-bg-subtle overflow-hidden rounded-md border">
+      <div className="overflow-hidden border border-[var(--color-border)]">
         {embed ? (
           <iframe
             src={embed}

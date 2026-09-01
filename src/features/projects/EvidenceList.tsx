@@ -24,16 +24,16 @@ export function EvidenceList({ evidence }: { evidence: Evidence[] }) {
   if (!items.length) return null;
 
   return (
-    <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <ul className="grid grid-cols-1 gap-px sm:grid-cols-2">
       {items.map((item, index) => (
         <li
           key={item._key ?? index}
-          className="border-border bg-surface rounded-md border p-4"
+          className="border-t border-[var(--color-rule)] py-5"
         >
           <Badge tone="neutral" mono className="mb-2">
             {EVIDENCE_LABEL[item.type ?? "other"] ?? item.type ?? "Link"}
           </Badge>
-          <p className="text-sm font-medium">
+          <p className="font-display text-lg">
             {item.url ? (
               <TextLink href={item.url}>{item.label || item.url}</TextLink>
             ) : (

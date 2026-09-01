@@ -11,7 +11,7 @@ import { renderContentBlock } from "./blockRegistry";
 export function ProjectContentBlocks({ blocks }: { blocks: ContentBlock[] }) {
   if (!blocks?.length) return null;
   return (
-    <div className="flex flex-col gap-14">
+    <div className="flex flex-col gap-16">
       {blocks.map((block) => {
         const anchored = Boolean(blockHeading(block));
         return (
