@@ -1,4 +1,3 @@
-import { Cluster, Stack } from "@/components/ui";
 import { MonoHeading } from "@/components/ui/MonoHeading";
 import { KnowledgeBadge } from "@/features/knowledge/KnowledgeBadge";
 import type { ExperienceEntry } from "@/sanity/types";
@@ -7,15 +6,18 @@ import { ExperienceProjects } from "./ExperienceProjects";
 import { PeriodBadge } from "./PeriodBadge";
 
 /**
- * One step of the journey. Role is the focus, company is context (Sprint §13);
- * every field is conditional (Sprint §12, §27). No logos, ever.
+ * One phase of the trajectory as an editorial block (Sprint 7 §19): year and
+ * role set large, then the work, the knowledge it exercised, and the projects
+ * of the period. Every field is conditional; no logos, no timeline dots.
  */
 export function ExperienceItem({
   experience,
   anchor,
+  index,
 }: {
   experience: ExperienceEntry;
   anchor: string;
+  index?: number;
 }) {
   const responsibilities = (experience.responsibilities ?? []).filter(Boolean);
   const skills = (experience.skills ?? []).filter((s) => s?.name);
@@ -26,75 +28,92 @@ export function ExperienceItem({
     .join(" · ");
 
   return (
-    <article id={anchor} className="scroll-mt-24">
-      <Stack gap="md">
-        <div>
-          <PeriodBadge period={experience.period} />
-          <h2 className="mt-1.5 text-xl sm:text-2xl">
+    <article
+      id={anchor}
+      className="scroll-mt-24 border-t border-[var(--color-rule)] pt-6"
+    >
+      <div className="grid gap-x-10 gap-y-8 lg:grid-cols-12">
+        <div className="lg:col-span-4">
+          <p className="u-label flex items-center gap-2.5">
+            {typeof index === "number" ? (
+              <span className="text-fg-faint tabular-nums">
+                {String(index).padStart(2, "0")}
+              </span>
+            ) : null}
+            <PeriodBadge period={experience.period} />
+          </p>
+          <h2 className="font-display mt-3 text-3xl leading-[1.05] sm:text-4xl">
             {experience.role ?? experience.company ?? "Experiência"}
           </h2>
           {companyLine && experience.role ? (
-            <p className="text-fg-muted mt-0.5">{companyLine}</p>
+            <p className="u-label text-fg-muted mt-3">{companyLine}</p>
           ) : null}
         </div>
 
-        {experience.summary ? (
-          <p className="text-fg-muted leading-7 text-pretty">
-            {experience.summary}
-          </p>
-        ) : null}
+        <div className="flex flex-col gap-8 lg:col-span-8">
+          {experience.summary ? (
+            <p className="text-fg-muted text-lg leading-8 text-pretty">
+              {experience.summary}
+            </p>
+          ) : null}
 
-        {responsibilities.length ? (
-          <div>
-            <MonoHeading>O que eu fazia</MonoHeading>
-            <ul className="mt-2 space-y-1.5 text-[0.975rem] leading-7">
-              {responsibilities.map((item) => (
-                <li key={item} className="flex gap-2.5">
-                  <span
-                    aria-hidden
-                    className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-accent)]"
-                  />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
+          {responsibilities.length ? (
+            <div>
+              <MonoHeading>O que eu fazia</MonoHeading>
+              <ul className="text-fg-muted mt-3 space-y-2">
+                {responsibilities.map((item) => (
+                  <li key={item} className="flex gap-3">
+                    <span aria-hidden className="text-fg-faint">
+                      —
+                    </span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
 
-        {skills.length ? (
-          <div>
-            <MonoHeading>Competências</MonoHeading>
-            <Cluster gap="xs" className="mt-2">
-              {skills.map((s) => (
-                <KnowledgeBadge
-                  key={s._id}
-                  kind="skill"
-                  slug={s.slug}
-                  name={s.name}
-                />
-              ))}
-            </Cluster>
-          </div>
-        ) : null}
+          {skills.length || technologies.length ? (
+            <div className="flex flex-col gap-6" data-rel-scope>
+              {skills.length ? (
+                <div>
+                  <MonoHeading>Competências</MonoHeading>
+                  <div className="mt-2.5 flex flex-wrap gap-x-4 gap-y-2">
+                    {skills.map((s) => (
+                      <KnowledgeBadge
+                        key={s._id}
+                        kind="skill"
+                        slug={s.slug}
+                        name={s.name}
+                        rel
+                      />
+                    ))}
+                  </div>
+                </div>
+              ) : null}
 
-        {technologies.length ? (
-          <div>
-            <MonoHeading>Tecnologias</MonoHeading>
-            <Cluster gap="xs" className="mt-2">
-              {technologies.map((t) => (
-                <KnowledgeBadge
-                  key={t._id}
-                  kind="technology"
-                  slug={t.slug}
-                  name={t.name}
-                />
-              ))}
-            </Cluster>
-          </div>
-        ) : null}
+              {technologies.length ? (
+                <div>
+                  <MonoHeading>Tecnologias</MonoHeading>
+                  <div className="mt-2.5 flex flex-wrap gap-x-4 gap-y-2">
+                    {technologies.map((t) => (
+                      <KnowledgeBadge
+                        key={t._id}
+                        kind="technology"
+                        slug={t.slug}
+                        name={t.name}
+                        rel
+                      />
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
 
-        {projects.length ? <ExperienceProjects projects={projects} /> : null}
-      </Stack>
+          {projects.length ? <ExperienceProjects projects={projects} /> : null}
+        </div>
+      </div>
     </article>
   );
 }
