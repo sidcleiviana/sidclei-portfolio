@@ -1,12 +1,30 @@
 import Link from "next/link";
 
-import { Container, Section, Stack, TextLink } from "@/components/ui";
+import { Container, Section, SectionMarker } from "@/components/ui";
 import type { HomeProfile } from "@/sanity/types";
 
+const ROUTES = [
+  {
+    href: "/projects",
+    label: "Projetos",
+    note: "O que foi construído, e as evidências.",
+  },
+  {
+    href: "/experiencia",
+    label: "Experiência",
+    note: "A trajetória, fase por fase.",
+  },
+  {
+    href: "/conhecimento",
+    label: "Conhecimento",
+    note: "Competências e tecnologias, em contexto.",
+  },
+];
+
 /**
- * The closing step: a clear way forward (Sprint §23). Professional links,
- * résumé and email appear only when they exist in the CMS `profile` — nothing
- * personal is assumed (Sprint §35).
+ * The closing step (Sprint 7 §31 layout): three routes as large serif links,
+ * and a contact line that appears only when the CMS `profile` actually carries
+ * links, résumé or email — nothing personal is assumed.
  */
 export function NextStep({ profile }: { profile: HomeProfile | null }) {
   const links = (profile?.links ?? [])
@@ -18,69 +36,72 @@ export function NextStep({ profile }: { profile: HomeProfile | null }) {
     }));
   const email = profile?.professionalEmail?.trim();
   const resume = profile?.resumeUrl?.trim();
-  const hasContact = links.length > 0 || Boolean(email) || Boolean(resume);
+  const contact = [
+    ...links,
+    ...(resume ? [{ key: "cv", url: resume, label: "Currículo" }] : []),
+    ...(email ? [{ key: "email", url: `mailto:${email}`, label: email }] : []),
+  ];
 
   return (
     <Section spacing="lg" aria-labelledby="next-step-title">
-      <Container>
-        <div className="border-border bg-surface rounded-lg border p-6 sm:p-8">
-          <Stack gap="md">
-            <p
-              id="next-step-title"
-              className="text-fg-muted font-mono text-xs font-medium tracking-[0.14em] uppercase"
-            >
-              Explorar
-            </p>
-            <div className="grid gap-3 sm:grid-cols-3 sm:gap-4">
-              <Link
-                href="/projects"
-                className="border-border-strong hover:border-fg/30 hover:bg-bg-subtle rounded-md border px-4 py-3 font-medium"
-              >
-                Projetos
-                <span className="text-fg-muted mt-0.5 block text-sm font-normal">
-                  O que foi construído, e as evidências.
-                </span>
-              </Link>
-              <Link
-                href="/experiencia"
-                className="border-border-strong hover:border-fg/30 hover:bg-bg-subtle rounded-md border px-4 py-3 font-medium"
-              >
-                Experiência
-                <span className="text-fg-muted mt-0.5 block text-sm font-normal">
-                  A trajetória, fase por fase.
-                </span>
-              </Link>
-              <Link
-                href="/conhecimento"
-                className="border-border-strong hover:border-fg/30 hover:bg-bg-subtle rounded-md border px-4 py-3 font-medium"
-              >
-                Conhecimento
-                <span className="text-fg-muted mt-0.5 block text-sm font-normal">
-                  Competências e tecnologias, em contexto.
-                </span>
-              </Link>
-            </div>
+      <Container size="editorial">
+        <SectionMarker id="next-step-title" className="text-fg-muted">
+          Explorar
+        </SectionMarker>
 
-            {hasContact ? (
-              <div className="border-border flex flex-wrap gap-x-5 gap-y-2 border-t pt-4 text-sm">
-                {links.map((link) => (
-                  <TextLink key={link.key} href={link.url}>
-                    {link.label}
-                  </TextLink>
-                ))}
-                {resume ? <TextLink href={resume}>Currículo</TextLink> : null}
-                {email ? (
-                  <a
-                    href={`mailto:${email}`}
-                    className="text-accent rounded-sm underline decoration-[var(--color-accent)]/35 underline-offset-[3px] hover:decoration-[var(--color-accent)]"
-                  >
-                    {email}
-                  </a>
-                ) : null}
-              </div>
-            ) : null}
-          </Stack>
-        </div>
+        <ul className="mt-8 border-t border-[var(--color-rule)]">
+          {ROUTES.map((r, i) => (
+            <li key={r.href} className="border-b border-[var(--color-border)]">
+              <Link
+                href={r.href}
+                className="group grid gap-x-8 gap-y-1 py-8 sm:grid-cols-12 sm:items-baseline"
+              >
+                <span
+                  aria-hidden
+                  className="u-label text-fg-faint tabular-nums sm:col-span-1"
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span className="font-display group-hover:text-accent inline-flex items-center gap-3 text-3xl sm:col-span-6 sm:text-4xl">
+                  {r.label}
+                  <span aria-hidden className="u-arrow text-xl">
+                    →
+                  </span>
+                </span>
+                <span className="text-fg-muted text-pretty sm:col-span-5">
+                  {r.note}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        {contact.length ? (
+          <div className="mt-10 flex flex-wrap gap-x-8 gap-y-2">
+            {contact.map((c) =>
+              c.url.startsWith("mailto:") ? (
+                <a
+                  key={c.key}
+                  href={c.url}
+                  className="u-label text-fg-muted hover:text-fg rounded-sm"
+                >
+                  {c.label}
+                </a>
+              ) : (
+                <a
+                  key={c.key}
+                  href={c.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="u-label text-fg-muted hover:text-fg rounded-sm"
+                >
+                  {c.label}
+                  <span className="sr-only"> (abre em nova aba)</span>
+                </a>
+              )
+            )}
+          </div>
+        ) : null}
       </Container>
     </Section>
   );
