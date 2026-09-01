@@ -14,11 +14,14 @@
 import type {
   ExperiencesQueryResult,
   HomeQueryResult,
+  KnowledgeHubQueryResult,
   ProfileQueryResult,
   Project,
   ProjectBySlugQueryResult,
   ProjectsListQueryResult,
   SiteSettingsQueryResult,
+  SkillBySlugQueryResult,
+  TechnologyBySlugQueryResult,
 } from "./sanity.types";
 
 // -- structural helpers (not schema contracts) ----------------------------
@@ -112,3 +115,17 @@ export type HomeData = HomeQueryResult;
 export type HomeProfile = NonNullable<HomeData["profile"]>;
 export type HomeProjectRef = HomeData["projects"][number];
 export type HomeExperienceRef = HomeData["experiences"][number];
+
+// -- knowledge ---------------------------------------------------------
+
+export type KnowledgeHubData = KnowledgeHubQueryResult;
+export type KnowledgeSkill = KnowledgeHubData["skills"][number];
+export type KnowledgeTechnology = KnowledgeHubData["technologies"][number];
+
+export type SkillDetail = NonNullable<SkillBySlugQueryResult>;
+export type TechnologyDetail = NonNullable<TechnologyBySlugQueryResult>;
+
+/** An experience as it appears on a knowledge detail page (light projection). */
+export type KnowledgeExperienceRef = SkillDetail["experiences"][number];
+/** A public project as it appears on a knowledge detail page. */
+export type KnowledgeProjectRef = SkillDetail["projects"][number];

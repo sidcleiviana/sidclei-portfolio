@@ -1047,6 +1047,129 @@ export type HomeQueryResult = {
   }>;
 };
 
+// Source: ./src/sanity/queries/knowledge.ts
+// Variable: knowledgeHubQuery
+// Query: {  "skills": *[_type == "skill" && defined(slug.current)] | order(featured desc, lower(name) asc) {    _id, name, "slug": slug.current, category, shortDescription, featured  },  "technologies": *[_type == "technology" && defined(slug.current)] | order(lower(name) asc) {    _id, name, "slug": slug.current, category  }}
+export type KnowledgeHubQueryResult = {
+  skills: Array<{
+    _id: string;
+    name: string | null;
+    slug: string | null;
+    category:
+      | "Automa\xE7\xE3o"
+      | "Banco de Dados"
+      | "Cybersecurity"
+      | "Dados"
+      | "Desenvolvimento"
+      | "Gest\xE3o"
+      | "Infraestrutura"
+      | "Integra\xE7\xF5es"
+      | "Intelig\xEAncia Artificial"
+      | "Qualidade"
+      | "Redes"
+      | null;
+    shortDescription: string | null;
+    featured: boolean | null;
+  }>;
+  technologies: Array<{
+    _id: string;
+    name: string | null;
+    slug: string | null;
+    category:
+      | "Banco de dados"
+      | "Biblioteca"
+      | "Ferramenta"
+      | "Framework"
+      | "Linguagem"
+      | "Plataforma"
+      | "Servi\xE7o"
+      | "Sistema / ERP"
+      | null;
+  }>;
+};
+// Variable: skillBySlugQuery
+// Query: *[  _type == "skill" && slug.current == $slug][0] {  _id, name, "slug": slug.current, category, shortDescription, featured,  "experiences": *[_type == "experience" && references(^._id)] | order(    coalesce(period.ongoing, false) desc, period.startDate desc  ) { _id, company, role, period },  "projects": *[    _type == "project" && references(^._id)    && status == "published" && visibility != "private"  ] | order(coalesce(publishedAt, period.startDate, "") desc) {    _id, title, "slug": slug.current, shortDescription, projectType, visibility,    "technologies": technologies[]->{ _id, name }  }}
+export type SkillBySlugQueryResult = {
+  _id: string;
+  name: string | null;
+  slug: string | null;
+  category:
+    | "Automa\xE7\xE3o"
+    | "Banco de Dados"
+    | "Cybersecurity"
+    | "Dados"
+    | "Desenvolvimento"
+    | "Gest\xE3o"
+    | "Infraestrutura"
+    | "Integra\xE7\xF5es"
+    | "Intelig\xEAncia Artificial"
+    | "Qualidade"
+    | "Redes"
+    | null;
+  shortDescription: string | null;
+  featured: boolean | null;
+  experiences: Array<{
+    _id: string;
+    company: string | null;
+    role: string | null;
+    period: DateRange | null;
+  }>;
+  projects: Array<{
+    _id: string;
+    title: string | null;
+    slug: string | null;
+    shortDescription: string | null;
+    projectType: "lab" | "production" | "professional" | "study" | null;
+    visibility: "anonymized" | "private" | "public" | null;
+    technologies: Array<{
+      _id: string;
+      name: string | null;
+    }> | null;
+  }>;
+} | null;
+// Variable: technologyBySlugQuery
+// Query: *[  _type == "technology" && slug.current == $slug][0] {  _id, name, "slug": slug.current, category, officialUrl,  "experiences": *[_type == "experience" && references(^._id)] | order(    coalesce(period.ongoing, false) desc, period.startDate desc  ) { _id, company, role, period },  "projects": *[    _type == "project" && references(^._id)    && status == "published" && visibility != "private"  ] | order(coalesce(publishedAt, period.startDate, "") desc) {    _id, title, "slug": slug.current, shortDescription, projectType, visibility,    "technologies": technologies[]->{ _id, name }  }}
+export type TechnologyBySlugQueryResult = {
+  _id: string;
+  name: string | null;
+  slug: string | null;
+  category:
+    | "Banco de dados"
+    | "Biblioteca"
+    | "Ferramenta"
+    | "Framework"
+    | "Linguagem"
+    | "Plataforma"
+    | "Servi\xE7o"
+    | "Sistema / ERP"
+    | null;
+  officialUrl: string | null;
+  experiences: Array<{
+    _id: string;
+    company: string | null;
+    role: string | null;
+    period: DateRange | null;
+  }>;
+  projects: Array<{
+    _id: string;
+    title: string | null;
+    slug: string | null;
+    shortDescription: string | null;
+    projectType: "lab" | "production" | "professional" | "study" | null;
+    visibility: "anonymized" | "private" | "public" | null;
+    technologies: Array<{
+      _id: string;
+      name: string | null;
+    }> | null;
+  }>;
+} | null;
+// Variable: knowledgeSlugsQuery
+// Query: {  "skills": *[_type == "skill" && defined(slug.current)].slug.current,  "technologies": *[_type == "technology" && defined(slug.current)].slug.current}
+export type KnowledgeSlugsQueryResult = {
+  skills: Array<string | null>;
+  technologies: Array<string | null>;
+};
+
 // Source: ./src/sanity/queries/profile.ts
 // Variable: profileQuery
 // Query: *[_type == "profile"][0] {    name,    headline,    shortSummary,    about,    publicLocation,    photo,    professionalEmail,    resumeUrl,    "links": coalesce(links, [])  }

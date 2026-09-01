@@ -47,4 +47,7 @@ export const CACHE_TAGS = {
   experience: "experience",
   profile: "profile",
   siteSettings: "siteSettings",
+  skills: "skills",
+  technologies: "technologies",
+  knowledge: "knowledge",
 } as const;

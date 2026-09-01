@@ -3,3 +3,4 @@ export * from "./profile";
 export * from "./siteSettings";
 export * from "./experience";
 export * from "./home";
+export * from "./knowledge";
