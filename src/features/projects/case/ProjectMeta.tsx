@@ -1,7 +1,8 @@
 import Link from "next/link";
 
-import { Badge, Cluster, Divider, Stack, TextLink } from "@/components/ui";
+import { Cluster, Divider, Stack, TextLink } from "@/components/ui";
 import { experienceAnchor } from "@/domain/experienceAnchor";
+import { KnowledgeBadge } from "@/features/knowledge/KnowledgeBadge";
 import type { ProjectDetail } from "@/sanity/types";
 
 function MetaHeading({ children }: { children: React.ReactNode }) {
@@ -43,9 +44,12 @@ export function ProjectMeta({ project }: { project: ProjectDetail }) {
             <MetaHeading>Competências</MetaHeading>
             <Cluster gap="xs">
               {skills.map((s) => (
-                <Badge key={s._id} tone="outline">
-                  {s.name}
-                </Badge>
+                <KnowledgeBadge
+                  key={s._id}
+                  kind="skill"
+                  slug={s.slug}
+                  name={s.name}
+                />
               ))}
             </Cluster>
           </Stack>
@@ -56,9 +60,12 @@ export function ProjectMeta({ project }: { project: ProjectDetail }) {
             <MetaHeading>Tecnologias</MetaHeading>
             <Cluster gap="xs">
               {technologies.map((t) => (
-                <Badge key={t._id} tone="outline" mono>
-                  {t.name}
-                </Badge>
+                <KnowledgeBadge
+                  key={t._id}
+                  kind="technology"
+                  slug={t.slug}
+                  name={t.name}
+                />
               ))}
             </Cluster>
           </Stack>

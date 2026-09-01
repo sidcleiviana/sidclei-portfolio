@@ -1,5 +1,6 @@
-import { Badge, Cluster, Stack } from "@/components/ui";
+import { Cluster, Stack } from "@/components/ui";
 import { MonoHeading } from "@/components/ui/MonoHeading";
+import { KnowledgeBadge } from "@/features/knowledge/KnowledgeBadge";
 import type { ExperienceEntry } from "@/sanity/types";
 
 import { ExperienceProjects } from "./ExperienceProjects";
@@ -65,9 +66,12 @@ export function ExperienceItem({
             <MonoHeading>Competências</MonoHeading>
             <Cluster gap="xs" className="mt-2">
               {skills.map((s) => (
-                <Badge key={s._id} tone="outline">
-                  {s.name}
-                </Badge>
+                <KnowledgeBadge
+                  key={s._id}
+                  kind="skill"
+                  slug={s.slug}
+                  name={s.name}
+                />
               ))}
             </Cluster>
           </div>
@@ -78,9 +82,12 @@ export function ExperienceItem({
             <MonoHeading>Tecnologias</MonoHeading>
             <Cluster gap="xs" className="mt-2">
               {technologies.map((t) => (
-                <Badge key={t._id} tone="outline" mono>
-                  {t.name}
-                </Badge>
+                <KnowledgeBadge
+                  key={t._id}
+                  kind="technology"
+                  slug={t.slug}
+                  name={t.name}
+                />
               ))}
             </Cluster>
           </div>
