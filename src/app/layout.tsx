@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { fontMono, fontSans } from "@/styles/fonts";
+import { fontDisplay, fontMono, fontSans } from "@/styles/fonts";
 import { siteUrl } from "@/sanity/env";
 import "@/styles/globals.css";
 
@@ -20,7 +20,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className={`${fontSans.variable} ${fontMono.variable}`}>
+    <html
+      lang="pt-BR"
+      className={`${fontDisplay.variable} ${fontSans.variable} ${fontMono.variable}`}
+    >
       <body>{children}</body>
     </html>
   );
