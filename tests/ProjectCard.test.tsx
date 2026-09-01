@@ -26,7 +26,6 @@ function makeProject(
 describe("ProjectCard", () => {
   it("renders a minimal project without optional data", () => {
     render(<ProjectCard project={makeProject()} />);
-
     expect(
       screen.getByRole("heading", { name: "Projeto A" })
     ).toBeInTheDocument();
@@ -34,11 +33,9 @@ describe("ProjectCard", () => {
       screen.getByText("Uma descrição curta do projeto A.")
     ).toBeInTheDocument();
     expect(screen.getByText("Lab")).toBeInTheDocument();
-    // no contribution → no "Minha contribuição"
-    expect(screen.queryByText(/Minha contribuição/)).not.toBeInTheDocument();
   });
 
-  it("shows the contribution roles and technology chips when present", () => {
+  it("shows the type, period, roles and technologies when present", () => {
     render(
       <ProjectCard
         project={makeProject({
@@ -68,13 +65,13 @@ describe("ProjectCard", () => {
         })}
       />
     );
-
-    expect(screen.getByText(/Minha contribuição/)).toBeInTheDocument();
-    expect(screen.getByText(/Backend · QA \/ Testes/)).toBeInTheDocument();
+    expect(screen.getByText("Produção")).toBeInTheDocument();
     expect(screen.getByText("Python")).toBeInTheDocument();
     expect(screen.getByText("Oracle")).toBeInTheDocument();
-    expect(screen.getByText("2023 — atual")).toBeInTheDocument();
-    expect(screen.getByText("Produção")).toBeInTheDocument();
+    // period + roles appear in the meta label
+    const label = screen.getByText("Produção").closest("p");
+    expect(label?.textContent).toContain("2023 — atual");
+    expect(label?.textContent).toContain("Backend · QA / Testes");
   });
 
   it("links to the project detail route", () => {
@@ -83,5 +80,29 @@ describe("ProjectCard", () => {
       "href",
       "/projects/projeto-a"
     );
+  });
+
+  it("compact variant keeps a heading link and technologies", () => {
+    render(
+      <ProjectCard
+        variant="compact"
+        project={makeProject({
+          technologies: [
+            {
+              _id: "t1",
+              name: "Python",
+              slug: "python",
+              category: "Linguagem",
+              icon: null,
+            },
+          ],
+        })}
+      />
+    );
+    expect(screen.getByRole("link", { name: "Projeto A" })).toHaveAttribute(
+      "href",
+      "/projects/projeto-a"
+    );
+    expect(screen.getByText("Python")).toBeInTheDocument();
   });
 });

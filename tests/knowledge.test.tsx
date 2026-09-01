@@ -30,6 +30,7 @@ const skill = (
   category: "Desenvolvimento",
   shortDescription: null,
   featured: false,
+  contexts: [],
   ...over,
 });
 
@@ -39,6 +40,7 @@ const tech = (
   name: over._id,
   slug: over._id,
   category: "Linguagem",
+  contexts: [],
   ...over,
 });
 
@@ -101,13 +103,30 @@ describe("KnowledgeHub", () => {
       "/conhecimento/tecnologias/t1"
     );
     // featured marker, neutral wording (Sprint §11) — no percentages/levels
-    expect(screen.getByText("· em destaque")).toBeInTheDocument();
+    expect(screen.getByText("em destaque")).toBeInTheDocument();
     expect(screen.queryByText(/%/)).not.toBeInTheDocument();
   });
 
   it("renders an editorial empty state, not a crash (Sprint §4)", () => {
     render(<KnowledgeHub skills={[]} technologies={[]} />);
     expect(screen.getByText(/Ainda não há competências/i)).toBeInTheDocument();
+  });
+
+  it("shows the real usage contexts, not a count (Sprint 7 §21)", () => {
+    render(
+      <KnowledgeHub
+        skills={[
+          skill({
+            _id: "s1",
+            name: "Backend Development",
+            contexts: ["ISO Olhos", "Freelance"],
+          }),
+        ]}
+        technologies={[]}
+      />
+    );
+    expect(screen.getByText("ISO Olhos · Freelance")).toBeInTheDocument();
+    expect(screen.getByText(/usado em/i)).toBeInTheDocument();
   });
 });
 
@@ -126,7 +145,7 @@ describe("KnowledgeDetail", () => {
         projects={[]}
       />
     );
-    expect(screen.getByText("Onde apareceu")).toBeInTheDocument();
+    expect(screen.getByText("Apareceu em")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Desenvolvedor/ })).toHaveAttribute(
       "href",
       "/experiencia#iso-olhos-desenvolvedor"
@@ -148,8 +167,8 @@ describe("KnowledgeDetail", () => {
         projects={[]}
       />
     );
-    expect(screen.queryByText("Onde apareceu")).not.toBeInTheDocument();
-    expect(screen.queryByText("Projetos")).not.toBeInTheDocument();
+    expect(screen.queryByText("Apareceu em")).not.toBeInTheDocument();
+    expect(screen.queryByText("Demonstrado em")).not.toBeInTheDocument();
     expect(
       screen.queryByText(/0 (experiências|projetos)/i)
     ).not.toBeInTheDocument();

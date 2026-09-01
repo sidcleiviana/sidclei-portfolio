@@ -13,8 +13,8 @@ import type { HomeProjectRef } from "@/sanity/types";
 const proj = (
   over: Partial<HomeProjectRef> & { _id: string }
 ): HomeProjectRef => ({
-  title: "Projeto",
-  slug: "p",
+  title: over._id,
+  slug: over._id,
   shortDescription: "desc",
   projectType: "professional",
   featured: false,
@@ -28,44 +28,39 @@ describe("Hero", () => {
   it("falls back to constitution copy when there is no profile", () => {
     render(<Hero profile={null} />);
     expect(
-      screen.getByRole("heading", { level: 1, name: "Sidclei Viana" })
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Desenvolvedor de Software",
+      })
     ).toBeInTheDocument();
-    expect(screen.getByText("Desenvolvedor de Software")).toBeInTheDocument();
-    expect(screen.getByText("Software")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Ver projetos" })).toHaveAttribute(
-      "href",
-      "/projects"
-    );
+    expect(screen.getByText("Sidclei Viana")).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: "Ver trajetória" })
-    ).toHaveAttribute("href", "/experiencia");
+      screen.getByText("Software · Automação · Dados · Sistemas")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /Explorar trabalho/ })
+    ).toHaveAttribute("href", "/projects");
   });
 
-  it("uses CMS identity when present", () => {
+  it("uses the CMS profile when present", () => {
     render(<Hero profile={richHomeFixture.profile} />);
     expect(screen.getByText(/Resumo de exemplo/)).toBeInTheDocument();
-    expect(screen.getByText("Brasil · Remoto")).toBeInTheDocument();
   });
 });
 
 describe("FeaturedProjects", () => {
-  it("renders nothing when there is nothing to show (Sprint §13)", () => {
+  it("renders nothing when there is nothing to show", () => {
     const { container } = render(<FeaturedProjects projects={[]} />);
     expect(container).toBeEmptyDOMElement();
   });
 
-  it("prefers featured and never shows a private project (Sprint §12, §41)", () => {
+  it("prefers featured and never shows a private project", () => {
     render(
       <FeaturedProjects
         projects={[
-          proj({ _id: "a", title: "Em destaque", featured: true }),
-          proj({ _id: "b", title: "Comum", featured: false }),
-          proj({
-            _id: "c",
-            title: "PRIVADO",
-            featured: true,
-            visibility: "private",
-          }),
+          proj({ _id: "Em destaque", featured: true }),
+          proj({ _id: "Comum", featured: false }),
+          proj({ _id: "PRIVADO", featured: true, visibility: "private" }),
         ]}
       />
     );
@@ -77,10 +72,7 @@ describe("FeaturedProjects", () => {
   it("falls back to the recent list when nothing is featured", () => {
     render(
       <FeaturedProjects
-        projects={[
-          proj({ _id: "a", title: "Recente 1" }),
-          proj({ _id: "b", title: "Recente 2" }),
-        ]}
+        projects={[proj({ _id: "Recente 1" }), proj({ _id: "Recente 2" })]}
       />
     );
     expect(screen.getByText("Recente 1")).toBeInTheDocument();
@@ -89,7 +81,7 @@ describe("FeaturedProjects", () => {
 });
 
 describe("CareerSummary", () => {
-  it("renders nothing without experience content (Sprint §20)", () => {
+  it("renders nothing without experience content", () => {
     const { container } = render(<CareerSummary experiences={[]} />);
     expect(container).toBeEmptyDOMElement();
   });
@@ -100,7 +92,7 @@ describe("CareerSummary", () => {
       screen.getByRole("heading", { name: "Como cheguei aqui" })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: "Ver trajetória completa →" })
+      screen.getByRole("link", { name: "Ver trajetória completa" })
     ).toHaveAttribute("href", "/experiencia");
     expect(
       screen
@@ -112,11 +104,15 @@ describe("CareerSummary", () => {
 });
 
 describe("NextStep", () => {
-  it("always offers the two routes; contact only with real data (Sprint §23, §35)", () => {
+  it("always offers the three routes; contact only with real data", () => {
     const { rerender } = render(<NextStep profile={null} />);
     expect(screen.getByRole("link", { name: /Projetos/ })).toHaveAttribute(
       "href",
       "/projects"
+    );
+    expect(screen.getByRole("link", { name: /Conhecimento/ })).toHaveAttribute(
+      "href",
+      "/conhecimento"
     );
     expect(screen.queryByText(/@/)).not.toBeInTheDocument();
 
@@ -132,11 +128,10 @@ describe("NextStep", () => {
 });
 
 describe("homeQuery", () => {
-  it("applies the public gate to the projects projection (Sprint §41)", () => {
+  it("applies the public gate to the projects projection", () => {
     expect(homeQuery).toContain('status == "published"');
     expect(homeQuery).toContain('visibility != "private"');
     expect(homeQuery).toContain('"experiences"');
-    // light — no content blocks fetched
     expect(homeQuery).not.toContain("contentBlocks");
   });
   it("reuses the same experience ordering as /experiencia", () => {
