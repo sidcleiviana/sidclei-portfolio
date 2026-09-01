@@ -31,10 +31,10 @@ export function NextStep({ profile }: { profile: HomeProfile | null }) {
             >
               Explorar
             </p>
-            <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
+            <div className="grid gap-3 sm:grid-cols-3 sm:gap-4">
               <Link
                 href="/projects"
-                className="border-border-strong hover:border-fg/30 hover:bg-bg-subtle flex-1 rounded-md border px-4 py-3 font-medium"
+                className="border-border-strong hover:border-fg/30 hover:bg-bg-subtle rounded-md border px-4 py-3 font-medium"
               >
                 Projetos
                 <span className="text-fg-muted mt-0.5 block text-sm font-normal">
@@ -43,11 +43,20 @@ export function NextStep({ profile }: { profile: HomeProfile | null }) {
               </Link>
               <Link
                 href="/experiencia"
-                className="border-border-strong hover:border-fg/30 hover:bg-bg-subtle flex-1 rounded-md border px-4 py-3 font-medium"
+                className="border-border-strong hover:border-fg/30 hover:bg-bg-subtle rounded-md border px-4 py-3 font-medium"
               >
                 Experiência
                 <span className="text-fg-muted mt-0.5 block text-sm font-normal">
                   A trajetória, fase por fase.
+                </span>
+              </Link>
+              <Link
+                href="/conhecimento"
+                className="border-border-strong hover:border-fg/30 hover:bg-bg-subtle rounded-md border px-4 py-3 font-medium"
+              >
+                Conhecimento
+                <span className="text-fg-muted mt-0.5 block text-sm font-normal">
+                  Competências e tecnologias, em contexto.
                 </span>
               </Link>
             </div>
