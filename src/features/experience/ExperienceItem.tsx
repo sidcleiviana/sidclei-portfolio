@@ -6,9 +6,11 @@ import { ExperienceProjects } from "./ExperienceProjects";
 import { PeriodBadge } from "./PeriodBadge";
 
 /**
- * One phase of the trajectory as an editorial block (Sprint 7 §19): year and
- * role set large, then the work, the knowledge it exercised, and the projects
- * of the period. Every field is conditional; no logos, no timeline dots.
+ * One phase of the trajectory as an editorial block (Sprint 7 §19; refined
+ * 7.1 §9–14): a large year and role on the left, the work and the knowledge it
+ * exercised on the right — recomposed so it reads as a chapter of a career,
+ * not a résumé. Responsibilities keep list semantics but lose the checklist
+ * look. Every field is conditional; no logos, no timeline dots.
  */
 export function ExperienceItem({
   experience,
@@ -26,23 +28,34 @@ export function ExperienceItem({
   const companyLine = [experience.company, experience.location]
     .filter(Boolean)
     .join(" · ");
+  const startYear = experience.period?.startDate?.slice(0, 4) ?? null;
 
   return (
     <article
       id={anchor}
-      className="scroll-mt-24 border-t border-[var(--color-rule)] pt-6"
+      className="scroll-mt-24 border-t-2 border-[var(--color-rule)] pt-6"
     >
-      <div className="grid gap-x-10 gap-y-8 lg:grid-cols-12">
+      <div className="grid gap-x-12 gap-y-10 lg:grid-cols-12">
         <div className="lg:col-span-4">
-          <p className="u-label flex items-center gap-2.5">
+          <p className="u-label flex items-baseline gap-2.5">
             {typeof index === "number" ? (
-              <span className="text-fg-faint tabular-nums">
+              <span aria-hidden className="text-fg-faint tabular-nums">
                 {String(index).padStart(2, "0")}
               </span>
             ) : null}
             <PeriodBadge period={experience.period} />
           </p>
-          <h2 className="font-display mt-3 text-3xl leading-[1.05] sm:text-4xl">
+
+          {startYear ? (
+            <p
+              aria-hidden
+              className="font-display text-fg-faint mt-4 text-[clamp(3rem,7vw,5rem)] leading-none tabular-nums"
+            >
+              {startYear}
+            </p>
+          ) : null}
+
+          <h2 className="font-display mt-4 text-[clamp(2rem,4vw,3.25rem)] leading-[1.03] tracking-[var(--tracking-tight)]">
             {experience.role ?? experience.company ?? "Experiência"}
           </h2>
           {companyLine && experience.role ? (
@@ -50,9 +63,9 @@ export function ExperienceItem({
           ) : null}
         </div>
 
-        <div className="flex flex-col gap-8 lg:col-span-8">
+        <div className="flex flex-col gap-10 lg:col-span-8 lg:pt-1">
           {experience.summary ? (
-            <p className="text-fg-muted text-lg leading-8 text-pretty">
+            <p className="text-fg text-xl leading-8 text-pretty">
               {experience.summary}
             </p>
           ) : null}
@@ -60,12 +73,12 @@ export function ExperienceItem({
           {responsibilities.length ? (
             <div>
               <MonoHeading>O que eu fazia</MonoHeading>
-              <ul className="text-fg-muted mt-3 space-y-2">
+              <ul className="mt-3 border-t border-[var(--color-border)]">
                 {responsibilities.map((item) => (
-                  <li key={item} className="flex gap-3">
-                    <span aria-hidden className="text-fg-faint">
-                      —
-                    </span>
+                  <li
+                    key={item}
+                    className="text-fg-muted border-b border-[var(--color-border)] py-2.5 leading-7 text-pretty"
+                  >
                     {item}
                   </li>
                 ))}
@@ -74,7 +87,7 @@ export function ExperienceItem({
           ) : null}
 
           {skills.length || technologies.length ? (
-            <div className="flex flex-col gap-6" data-rel-scope>
+            <div className="grid gap-8 sm:grid-cols-2" data-rel-scope>
               {skills.length ? (
                 <div>
                   <MonoHeading>Competências</MonoHeading>

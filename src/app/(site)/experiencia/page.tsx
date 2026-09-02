@@ -15,7 +15,11 @@ export default async function ExperiencePage() {
   const experiences = await getExperiences();
 
   return (
-    <Section spacing="lg" aria-labelledby="experience-title">
+    <Section
+      spacing="lg"
+      aria-labelledby="experience-title"
+      className="pt-8 sm:pt-12"
+    >
       <Container size="editorial">
         <SectionHeading
           as="h1"
