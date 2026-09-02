@@ -73,7 +73,7 @@
   /* -- layout -------------------------------------------------------------
      editorial = the wide canvas for hero / projects / case top / trajectory.
      max = general content. wide = wide media. prose = reading measure. */
-  --container-editorial: 84rem;
+  --container-editorial: 88rem;
   --container-max: 72rem;
   --container-wide: 52rem;
   --container-prose: 42rem;
@@ -140,6 +140,23 @@ h6 {
   color: var(--color-fg-muted);
 }
 
+/* An "└" elbow that ties a relation label to the entity above it (Sprint 7.1
+   §16). Decorative — the label text ("usado em …") carries the meaning. */
+.u-connect {
+  position: relative;
+  padding-left: 1.15rem;
+}
+.u-connect::before {
+  content: "";
+  position: absolute;
+  left: 1px;
+  top: -0.5rem;
+  bottom: 0.5rem;
+  width: 0.65rem;
+  border-left: 1px solid var(--color-border-strong);
+  border-bottom: 1px solid var(--color-border-strong);
+}
+
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
@@ -185,7 +202,7 @@ button:hover .u-arrow,
    a real link and visible text (§26, §42). */
 [data-rel-scope]:has([data-rel]:hover, [data-rel]:focus-visible)
   [data-rel]:not(:hover):not(:focus-visible):not([data-rel-active]) {
-  opacity: 0.38;
+  opacity: 0.5;
 }
 [data-rel-scope] [data-rel] {
   transition: opacity var(--dur) var(--ease-out);

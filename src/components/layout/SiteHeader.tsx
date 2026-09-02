@@ -14,11 +14,11 @@ export function SiteHeader() {
     <header className="border-border bg-bg/85 sticky top-0 z-50 border-b backdrop-blur-md">
       <Container
         size="editorial"
-        className="flex h-16 items-center justify-between"
+        className="flex h-16 items-center justify-between sm:h-20"
       >
         <Link
           href="/"
-          className="font-display rounded-sm text-lg tracking-[var(--tracking-tight)]"
+          className="font-display rounded-sm text-xl tracking-[var(--tracking-tight)] sm:text-2xl"
         >
           Sidclei&nbsp;Viana
         </Link>

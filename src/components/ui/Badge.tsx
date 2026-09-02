@@ -5,7 +5,7 @@ type Tone = "neutral" | "accent" | "outline";
 const TONE: Record<Tone, string> = {
   neutral: "text-fg-muted",
   accent: "text-accent",
-  outline: "border-border-strong text-fg-muted border-b",
+  outline: "text-fg border-b border-[var(--color-border-strong)]",
 };
 
 /**
