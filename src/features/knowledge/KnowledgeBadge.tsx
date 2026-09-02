@@ -15,25 +15,27 @@ export function knowledgeHref(kind: KnowledgeKind, slug: string): string {
 
 /**
  * A skill / technology badge that links into the Knowledge Hub when a slug is
- * known (Sprint §17, §19). Appearance is unchanged from a plain `Badge`
- * (Sprint §32) — the link only adds a focus ring and pointer. Falls back to a
- * non-interactive badge when there is no slug.
+ * known (Sprint §17, §19). At rest it reads at full text colour — never
+ * disabled (7.1 §14); the link only adds hover accent and a focus ring.
  */
 export function KnowledgeBadge({
   kind,
   slug,
   name,
   rel = false,
+  relKeys,
 }: {
   kind: KnowledgeKind;
   slug?: string | null;
   name?: string | null;
-  /** Marks this item for the CSS relational-highlight scope (Sprint 7 §25). */
+  /** Marks this item for the relational-highlight scope (Sprint 7 §25). */
   rel?: boolean;
+  /** Comma-joined keys the relational island matches on (7.1 §21). */
+  relKeys?: string;
 }) {
   if (!name) return null;
   const mono = kind === "technology";
-  const relAttr = rel ? { "data-rel": "" } : {};
+  const relAttr = rel ? { "data-rel": "", "data-rel-keys": relKeys ?? "" } : {};
 
   if (!slug) {
     return (
@@ -48,7 +50,7 @@ export function KnowledgeBadge({
   return (
     <Link
       href={knowledgeHref(kind, slug)}
-      className="hover:text-fg rounded-sm"
+      className="hover:text-accent rounded-sm"
       {...relAttr}
     >
       <Badge tone="outline" mono={mono}>

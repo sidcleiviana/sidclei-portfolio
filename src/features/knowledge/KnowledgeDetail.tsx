@@ -18,6 +18,14 @@ const CRUMB: Record<KnowledgeKind, { label: string; href: string }> = {
   technology: { label: "Tecnologias", href: "/conhecimento#tecnologias" },
 };
 
+function RelationLabel({ children }: { children: ReactNode }) {
+  return (
+    <h2 className="u-label text-fg grid gap-x-6 border-t-2 border-[var(--color-rule)] pt-3 sm:grid-cols-12">
+      <span className="sm:col-span-3">{children}</span>
+    </h2>
+  );
+}
+
 function AppearedIn({
   experiences,
 }: {
@@ -26,21 +34,21 @@ function AppearedIn({
   if (!experiences.length) return null;
   return (
     <div>
-      <h2 className="u-label text-fg-faint mb-4">Apareceu em</h2>
-      <ol className="border-t border-[var(--color-rule)]">
+      <RelationLabel>Apareceu em</RelationLabel>
+      <ol className="mt-2">
         {experiences.map((exp, i) => (
           <li key={exp._id} className="border-b border-[var(--color-border)]">
             <Link
               href={`/experiencia#${experienceAnchor(exp)}`}
-              className="group grid gap-x-6 gap-y-1 py-5 sm:grid-cols-12 sm:items-baseline"
+              className="group grid gap-x-6 gap-y-1 py-6 sm:grid-cols-12 sm:items-baseline"
             >
               <span
                 aria-hidden
-                className="u-label text-fg-faint tabular-nums sm:col-span-1"
+                className="font-display text-fg-faint text-2xl tabular-nums sm:col-span-1 sm:text-3xl"
               >
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <span className="font-display group-hover:text-accent text-xl sm:col-span-7 sm:text-2xl">
+              <span className="font-display group-hover:text-accent text-2xl sm:col-span-7 sm:text-3xl">
                 {exp.role ?? exp.company}
               </span>
               <span className="u-label text-fg-muted flex flex-wrap gap-x-2 sm:col-span-4 sm:justify-end">
@@ -60,8 +68,8 @@ function DemonstratedIn({ projects }: { projects: KnowledgeProjectRef[] }) {
   if (!visible.length) return null;
   return (
     <div>
-      <h2 className="u-label text-fg-faint mb-4">Demonstrado em</h2>
-      <div className="grid gap-x-10 gap-y-6 sm:grid-cols-2">
+      <RelationLabel>Demonstrado em</RelationLabel>
+      <div className="mt-6 grid gap-x-10 gap-y-6 sm:grid-cols-2">
         {visible.map((project) => (
           <ProjectCard key={project._id} project={project} variant="compact" />
         ))}
@@ -96,7 +104,11 @@ export function KnowledgeDetail({
   const crumb = CRUMB[kind];
 
   return (
-    <Section spacing="lg" aria-labelledby="knowledge-detail-title">
+    <Section
+      spacing="lg"
+      aria-labelledby="knowledge-detail-title"
+      className="pt-8 sm:pt-12"
+    >
       <Container size="editorial">
         <nav aria-label="Trilha de navegação">
           <ol className="u-label text-fg-muted flex flex-wrap items-center gap-2">

@@ -11,6 +11,21 @@ function contextsOf(entity: Entity): string[] {
   return (entity.contexts ?? []).filter((c): c is string => Boolean(c));
 }
 
+/** The chapter marker — a large index and the category label, on a strong rule. */
+function ChapterMark({ index, category }: { index: number; category: string }) {
+  return (
+    <div className="sm:sticky sm:top-24 sm:col-span-3">
+      <span
+        aria-hidden
+        className="font-display text-fg-faint block text-4xl leading-none tabular-nums sm:text-5xl"
+      >
+        {String(index).padStart(2, "0")}
+      </span>
+      <p className="u-label mt-3">{category}</p>
+    </div>
+  );
+}
+
 function SkillChapter({
   index,
   category,
@@ -21,16 +36,11 @@ function SkillChapter({
   items: KnowledgeSkill[];
 }) {
   return (
-    <div className="grid gap-x-10 gap-y-6 border-t border-[var(--color-rule)] pt-6 sm:grid-cols-12">
-      <p className="u-label flex items-baseline gap-2.5 sm:col-span-3">
-        <span className="text-fg-faint tabular-nums">
-          {String(index).padStart(2, "0")}
-        </span>
-        {category}
-      </p>
+    <div className="grid gap-x-10 gap-y-6 border-t-2 border-[var(--color-rule)] pt-8 sm:grid-cols-12">
+      <ChapterMark index={index} category={category} />
 
       <RelationalScope className="sm:col-span-9">
-        <ul className="flex flex-col gap-6">
+        <ul className="flex flex-col gap-8">
           {items.map((skill) => {
             const contexts = contextsOf(skill);
             return (
@@ -40,25 +50,31 @@ function SkillChapter({
                     href={knowledgeHref("skill", skill.slug)}
                     data-rel=""
                     data-rel-keys={contexts.join(",")}
-                    className="group inline-flex items-baseline gap-2 rounded-sm"
+                    className="group inline-flex items-baseline gap-2.5 rounded-sm"
                   >
-                    <span className="font-display group-hover:text-accent text-xl sm:text-2xl">
+                    {skill.featured ? (
+                      <span
+                        aria-hidden
+                        className="bg-accent inline-block h-1.5 w-1.5 shrink-0 translate-y-[-0.15em] rounded-full"
+                      />
+                    ) : null}
+                    <span className="font-display group-hover:text-accent text-2xl sm:text-3xl">
                       {skill.name}
                     </span>
                     {skill.featured ? (
-                      <span className="u-label text-fg-faint">em destaque</span>
+                      <span className="sr-only">(em destaque)</span>
                     ) : null}
                   </a>
                 ) : (
-                  <span className="font-display text-xl">{skill.name}</span>
+                  <span className="font-display text-2xl">{skill.name}</span>
                 )}
                 {skill.shortDescription ? (
-                  <p className="text-fg-muted mt-1 max-w-[52ch] text-pretty">
+                  <p className="text-fg-muted mt-1.5 max-w-[52ch] text-pretty">
                     {skill.shortDescription}
                   </p>
                 ) : null}
                 {contexts.length ? (
-                  <p className="u-label text-fg-faint mt-1.5">
+                  <p className="u-connect u-label text-fg-faint mt-2">
                     usado em{" "}
                     <span className="text-fg-muted">
                       {contexts.join(" · ")}
@@ -84,15 +100,10 @@ function TechChapter({
   items: KnowledgeTechnology[];
 }) {
   return (
-    <div className="grid gap-x-10 gap-y-5 border-t border-[var(--color-rule)] pt-6 sm:grid-cols-12">
-      <p className="u-label flex items-baseline gap-2.5 sm:col-span-3">
-        <span className="text-fg-faint tabular-nums">
-          {String(index).padStart(2, "0")}
-        </span>
-        {category}
-      </p>
+    <div className="grid gap-x-10 gap-y-6 border-t-2 border-[var(--color-rule)] pt-8 sm:grid-cols-12">
+      <ChapterMark index={index} category={category} />
       <RelationalScope className="sm:col-span-9">
-        <ul className="flex flex-col gap-3">
+        <ul className="flex flex-col gap-4">
           {items.map((tech) => {
             const contexts = contextsOf(tech);
             return (
@@ -100,17 +111,13 @@ function TechChapter({
                 key={tech._id}
                 className="flex flex-wrap items-baseline gap-x-4"
               >
-                <span
-                  data-rel=""
-                  data-rel-keys={contexts.join(",")}
-                  className="inline-flex"
-                >
-                  <KnowledgeBadge
-                    kind="technology"
-                    slug={tech.slug}
-                    name={tech.name}
-                  />
-                </span>
+                <KnowledgeBadge
+                  kind="technology"
+                  slug={tech.slug}
+                  name={tech.name}
+                  rel
+                  relKeys={contexts.join(",")}
+                />
                 {contexts.length ? (
                   <span className="u-label text-fg-faint">
                     {contexts.join(" · ")}
@@ -167,7 +174,7 @@ export function KnowledgeHub({
       <Section
         spacing="sm"
         aria-labelledby="knowledge-title"
-        className="sm:pb-0"
+        className="pt-8 pb-0 sm:pt-12"
       >
         <Container size="editorial">
           <SectionHeading
@@ -178,7 +185,7 @@ export function KnowledgeHub({
             title="Conhecimento"
             description="Competências e tecnologias demonstradas ao longo da trajetória. Cada item abre os contextos reais em que apareceu."
           />
-          <nav aria-label="Seções desta página" className="mt-8">
+          <nav aria-label="Seções desta página" className="mt-6">
             <ul className="flex gap-6">
               {skills.length ? (
                 <li>
@@ -207,7 +214,7 @@ export function KnowledgeHub({
 
       {skills.length ? (
         <Section
-          spacing="md"
+          spacing="sm"
           id="competencias"
           aria-labelledby="competencias-title"
           className="scroll-mt-24"
@@ -219,7 +226,7 @@ export function KnowledgeHub({
               eyebrow="O que faço"
               title="Competências"
             />
-            <div className="mt-14 flex flex-col gap-12">
+            <div className="mt-10 flex flex-col gap-14">
               {skillGroups.map((group, i) => (
                 <SkillChapter
                   key={group.category}
@@ -248,7 +255,7 @@ export function KnowledgeHub({
               title="Tecnologias"
               description="Ferramentas, linguagens e plataformas — recuadas de propósito: são meios, não o assunto."
             />
-            <div className="mt-14 flex flex-col gap-12">
+            <div className="mt-10 flex flex-col gap-14">
               {technologyGroups.map((group, i) => (
                 <TechChapter
                   key={group.category}
