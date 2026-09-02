@@ -16,7 +16,11 @@ export default async function ProjectsPage() {
   const projects = filterPubliclyVisible(await getProjects());
 
   return (
-    <Section spacing="lg" aria-labelledby="projects-title">
+    <Section
+      spacing="lg"
+      aria-labelledby="projects-title"
+      className="pt-8 sm:pt-12"
+    >
       <Container size="editorial">
         <SectionHeading
           as="h1"

@@ -42,13 +42,13 @@ export function ProjectHeader({ project }: { project: ProjectDetail }) {
 
         <h1
           id="project-title"
-          className="font-display mt-8 max-w-[18ch] text-[clamp(2.5rem,7vw,5rem)] leading-[1.02] tracking-[var(--tracking-display)] text-balance"
+          className="font-display mt-8 max-w-[16ch] text-[clamp(2.75rem,8.5vw,6.25rem)] leading-[0.98] tracking-[var(--tracking-display)] text-balance"
         >
           {project.title}
         </h1>
 
         {project.shortDescription ? (
-          <p className="text-fg-muted mt-8 max-w-[var(--container-prose)] text-xl text-pretty">
+          <p className="text-fg-muted mt-10 max-w-[var(--container-prose)] text-xl leading-8 text-pretty">
             {project.shortDescription}
           </p>
         ) : null}
@@ -59,17 +59,17 @@ export function ProjectHeader({ project }: { project: ProjectDetail }) {
           </p>
         ) : null}
 
-        <Rule weight="strong" className="mt-12" />
+        <Rule weight="strong" className="mt-14" />
 
-        <div className="mt-8 grid gap-x-10 gap-y-8 sm:grid-cols-12">
+        <div className="mt-6 grid gap-x-10 gap-y-8 sm:grid-cols-12">
           {technologies.length ? (
             <div className="sm:col-span-8">
-              <p className="u-label text-fg-faint mb-3">Stack</p>
-              <ul className="flex flex-wrap gap-x-6 gap-y-1.5 font-mono text-sm">
+              <p className="u-label text-fg-faint mb-2.5 text-[0.65rem]">
+                Stack
+              </p>
+              <ul className="text-fg-faint flex flex-wrap gap-x-5 gap-y-1 font-mono text-xs">
                 {technologies.map((tech) => (
-                  <li key={tech._id} className="text-fg-muted">
-                    {tech.name}
-                  </li>
+                  <li key={tech._id}>{tech.name}</li>
                 ))}
               </ul>
             </div>

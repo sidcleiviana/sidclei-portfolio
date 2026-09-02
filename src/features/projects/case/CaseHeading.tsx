@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 
 /**
- * Opens a case section: an editorial index number and a mono label, bound to
- * the content below by a strong hairline (Sprint 7 §16).
+ * Opens a case section: a large editorial index number and a mono label, bound
+ * to the content below by a strong hairline (Sprint 7 §16; 7.1 §25 — more
+ * contrast, more rhythm between chapters).
  */
 export function CaseHeading({
   id,
@@ -17,14 +18,17 @@ export function CaseHeading({
   return (
     <h2
       id={id}
-      className="u-label mb-6 flex items-center gap-2.5 border-t border-[var(--color-rule)] pt-4"
+      className="mb-8 flex items-baseline gap-3 border-t-2 border-[var(--color-rule)] pt-4"
     >
       {typeof index === "number" ? (
-        <span aria-hidden className="text-fg-faint tabular-nums">
+        <span
+          aria-hidden
+          className="font-display text-fg-faint text-2xl leading-none tabular-nums sm:text-3xl"
+        >
           {String(index).padStart(2, "0")}
         </span>
       ) : null}
-      <span>{children}</span>
+      <span className="u-label">{children}</span>
     </h2>
   );
 }

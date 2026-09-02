@@ -66,7 +66,7 @@ export function ProjectCaseStudy({
 
   return (
     <article className="pb-8">
-      <Section spacing="md">
+      <Section spacing="md" className="pt-8 sm:pt-12">
         <ProjectHeader project={project} />
       </Section>
 
@@ -96,7 +96,7 @@ export function ProjectCaseStudy({
             </div>
           ) : null}
 
-          <div className="flex min-w-0 flex-col gap-16">
+          <div className="flex min-w-0 flex-col gap-20 sm:gap-24">
             {contribution ? (
               <section id="contribuicao" className={`scroll-mt-24 ${WIDE}`}>
                 <CaseHeading index={num()}>Contribuição</CaseHeading>
