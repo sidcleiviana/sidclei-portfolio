@@ -34,9 +34,8 @@ describe("Hero", () => {
       })
     ).toBeInTheDocument();
     expect(screen.getByText("Sidclei Viana")).toBeInTheDocument();
-    expect(
-      screen.getByText("Software · Automação · Dados · Sistemas")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Software")).toBeInTheDocument();
+    expect(screen.getByText("Sistemas")).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: /Explorar trabalho/ })
     ).toHaveAttribute("href", "/projects");

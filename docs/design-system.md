@@ -101,3 +101,26 @@ One `h1` per page; heading order preserved; `header`/`nav`/`main`/`footer`
 landmarks; sections `aria-labelledby` their heading; editorial numbers
 `aria-hidden`; `:focus-visible` on every control; relational cues have textual
 equivalents; reduced-motion respected. Nothing depends on colour.
+
+## Sprint 7.1 — art-direction refinement
+
+Intensified, not rebuilt. `--container-editorial` 84→88rem (better use of wide
+screens); relational dim opacity 0.38→0.5 (never "disabled"); new `.u-connect`
+elbow that ties a relation label to the entity above it.
+
+- **Home** — header/hero read as one composition (top space trimmed); headline
+  `clamp(3rem, 11vw, 8.5rem)` dominant; the four axes become a connected list in
+  the right column (thin spine + hairline elbows) — the discreet atlas cue;
+  `ArrowLink size="lg"` for the CTA on its own rule.
+- **Projects / Case** — the title is the protagonist (`clamp` up to ~3.5–6.25rem,
+  2–3 lines); metadata is small mono; `Stack` is `text-fg-faint` `text-xs` —
+  clearly tertiary. Title graphite at rest, accent on hover (§8).
+- **Experience** — a large faint year marks each phase; role ≫ company ≫ period
+  in scale; responsibilities are rule-separated rows, not a bulleted checklist.
+- **Knowledge** — category = a real chapter (big serif number, `border-t-2`,
+  sticky label on desktop); "em destaque" is now a small accent dot + an
+  `sr-only` note (no repeated text); the usage-context line carries a `.u-connect`
+  elbow. Detail pages get the same treatment for "Apareceu em" / "Demonstrado em".
+- **Badge** `outline` reads at full `text-fg` at rest; `KnowledgeBadge` hover is
+  accent.
+- Header wordmark `text-xl sm:text-2xl`, header `h-16 sm:h-20`.

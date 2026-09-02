@@ -103,7 +103,7 @@ describe("KnowledgeHub", () => {
       "/conhecimento/tecnologias/t1"
     );
     // featured marker, neutral wording (Sprint §11) — no percentages/levels
-    expect(screen.getByText("em destaque")).toBeInTheDocument();
+    expect(screen.getByText("(em destaque)")).toBeInTheDocument();
     expect(screen.queryByText(/%/)).not.toBeInTheDocument();
   });
 
