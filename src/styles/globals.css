@@ -16,15 +16,15 @@
   /* -- colour · base -----------------------------------------------------
      Warm paper, warm near-black ink. `faint` is for section numbers and the
      quietest meta; `rule` is the strong editorial hairline used sparingly. */
-  --color-bg: #fcfcfb;
-  --color-bg-subtle: #f4f3f0;
+  --color-bg: #e9e7e0;
+  --color-bg-subtle: #dedcd3;
   --color-bg-tonal: #ecebfb; /* indigo-soft surface */
-  --color-surface: #ffffff;
+  --color-surface: #f2f0ea;
   --color-fg: #16150f;
-  --color-fg-muted: #67665c;
-  --color-fg-faint: #9a998d;
-  --color-border: #e5e4de;
-  --color-border-strong: #cbcac0;
+  --color-fg-muted: #55534a;
+  --color-fg-faint: #86847a;
+  --color-border: #cac7ba;
+  --color-border-strong: #a8a494;
   --color-rule: #1b1a14;
 
   /* -- colour · indigo (the site colour — relation, structure, identity) - */
