@@ -138,7 +138,7 @@ export function ProjectCard({
 
   // index — the /projects collection row
   return (
-    <article className="group relative grid grid-cols-12 gap-x-8 gap-y-5 border-t-2 border-[var(--color-rule)] py-12">
+    <article className="hover:bg-bg-tonal focus-within:bg-bg-tonal group relative -mx-4 grid grid-cols-12 gap-x-8 gap-y-5 border-t-2 border-[var(--color-rule)] px-4 py-12 transition-colors">
       <p
         aria-hidden
         className="font-display text-fg-faint col-span-2 text-3xl tabular-nums sm:col-span-1 sm:text-4xl"
