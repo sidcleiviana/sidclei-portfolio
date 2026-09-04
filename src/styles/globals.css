@@ -2,21 +2,23 @@
 
 /* ==========================================================================
    Design System v2 — "Editorial Relational Premium" (Sprint 7)
+   + Chromatic Art Direction (Sprint 7.2)
    A technology publication crossed with an engineering portfolio: type as the
-   graphic element, thin rules as structure, generous vertical rhythm, a single
-   accent reserved for *relation* (links, focus, active, connections). Almost no
-   shadow, little radius, no boxed cards on editorial surfaces.
-   Tokens are the only source of truth — components never hardcode a colour,
-   measure, radius or timing. One light direction; the structure below lets a
-   future `:root[data-theme="dark"]` swap values without touching components.
+   graphic element, thin rules as structure, generous vertical rhythm. Colour
+   has a job — identity + structure + relation, ~80/15/5 neutral / indigo /
+   petrol. Dark surfaces are *chapters within the light identity*, not a dark
+   mode. Tokens are the only source of truth — components never hardcode a
+   colour; a `[data-surface]` scope repaints the shared vars so the same
+   components render correctly on paper, tonal and dark.
    ========================================================================== */
 
 @theme {
-  /* -- colour ---------------------------------------------------------------
+  /* -- colour · base -----------------------------------------------------
      Warm paper, warm near-black ink. `faint` is for section numbers and the
      quietest meta; `rule` is the strong editorial hairline used sparingly. */
   --color-bg: #fcfcfb;
   --color-bg-subtle: #f4f3f0;
+  --color-bg-tonal: #ecebfb; /* indigo-soft surface */
   --color-surface: #ffffff;
   --color-fg: #16150f;
   --color-fg-muted: #67665c;
@@ -24,8 +26,22 @@
   --color-border: #e5e4de;
   --color-border-strong: #cbcac0;
   --color-rule: #1b1a14;
-  --color-accent: #2d2ae2; /* electric indigo — relation only */
-  --color-accent-strong: #1f1eb2; /* accent, pressed / hover */
+
+  /* -- colour · indigo (the site colour — relation, structure, identity) - */
+  --color-accent: #2d2ae2;
+  --color-accent-strong: #1f1eb2;
+  --color-accent-on-dark: #9b9aff; /* luminous indigo, for dark chapters */
+
+  /* -- colour · dark chapter ------------------------------------------- */
+  --color-surface-dark: #16152f; /* deep indigo-ink */
+  --color-on-dark: #f4f3ef;
+  --color-on-dark-muted: #b9b8c6;
+  --color-on-dark-faint: #8b8aa0;
+  --color-rule-on-dark: rgb(244 243 239 / 0.16);
+
+  /* -- colour · petrol (secondary — rare: relational nodes / markers) -- */
+  --color-petrol: #0f6e6a;
+  --color-node-on-dark: #4fd0c4;
 
   /* -- typography ------------------------------------------------------------
      display = Newsreader (serif) · sans = Inter · mono = JetBrains Mono */
@@ -105,6 +121,39 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+/* -- surface scopes (Sprint 7.2) ----------------------------------------
+   A section (or the footer) opts into a chromatic surface with
+   `data-surface`. Inside the scope the shared vars are locally redefined,
+   so `text-fg`, `text-fg-muted`, `border-border`, `text-accent`, `.u-label`
+   etc. keep working with no per-component change. Not a dark mode — a
+   chapter. Editorial surfaces stay square (no radius). */
+[data-surface] {
+  background: var(--surface-bg);
+  color: var(--color-fg);
+}
+[data-surface="tonal"] {
+  --surface-bg: var(--color-bg-tonal);
+}
+[data-surface="dark"] {
+  --surface-bg: var(--color-surface-dark);
+  --color-fg: var(--color-on-dark);
+  --color-fg-muted: var(--color-on-dark-muted);
+  --color-fg-faint: var(--color-on-dark-faint);
+  --color-border: var(--color-rule-on-dark);
+  --color-border-strong: rgb(244 243 239 / 0.3);
+  --color-rule: var(--color-on-dark);
+  --color-accent: var(--color-accent-on-dark);
+  --color-accent-strong: var(--color-on-dark);
+  --color-node: var(--color-node-on-dark);
+}
+[data-surface="dark"] :focus-visible {
+  outline-color: var(--color-on-dark);
+}
+/* the relational elbow follows the surface */
+[data-surface="dark"] .u-connect::before {
+  border-color: var(--color-rule-on-dark);
 }
 
 /* Display headings: serif, tight, set as graphic elements. Components opt into
