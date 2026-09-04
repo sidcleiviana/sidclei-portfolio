@@ -28,7 +28,7 @@ export function SectionHeading({
 }) {
   const size =
     Tag === "h1"
-      ? "text-4xl sm:text-5xl"
+      ? "text-[clamp(2.25rem,11vw,3.75rem)] sm:text-5xl"
       : Tag === "h2"
         ? "text-2xl sm:text-3xl"
         : "text-xl sm:text-2xl";
