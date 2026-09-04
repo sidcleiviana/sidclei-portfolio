@@ -20,7 +20,7 @@ const CRUMB: Record<KnowledgeKind, { label: string; href: string }> = {
 
 function RelationLabel({ children }: { children: ReactNode }) {
   return (
-    <h2 className="u-label text-fg grid gap-x-6 border-t-2 border-[var(--color-rule)] pt-3 sm:grid-cols-12">
+    <h2 className="u-label text-fg grid gap-x-6 border-t-2 border-[var(--color-accent)] pt-3 sm:grid-cols-12">
       <span className="sm:col-span-3">{children}</span>
     </h2>
   );
@@ -128,7 +128,10 @@ export function KnowledgeDetail({
           </ol>
         </nav>
 
-        <div className="mt-10 border-b border-[var(--color-rule)] pb-10">
+        <div
+          data-surface="tonal"
+          className="mt-10 border-b-2 border-[var(--color-accent)] px-6 py-8 sm:px-10 sm:py-10"
+        >
           <h1
             id="knowledge-detail-title"
             className="font-display max-w-[16ch] text-[clamp(2.25rem,6vw,4.5rem)] leading-[1.02] tracking-[var(--tracking-display)] text-balance"

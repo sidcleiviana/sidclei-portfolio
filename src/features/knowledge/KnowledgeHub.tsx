@@ -214,10 +214,11 @@ export function KnowledgeHub({
 
       {skills.length ? (
         <Section
-          spacing="sm"
+          spacing="lg"
           id="competencias"
           aria-labelledby="competencias-title"
           className="scroll-mt-24"
+          data-surface="dark"
         >
           <Container size="editorial">
             <SectionHeading
