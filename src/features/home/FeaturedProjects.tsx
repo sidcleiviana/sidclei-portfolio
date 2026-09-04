@@ -21,7 +21,7 @@ export function FeaturedProjects({ projects }: { projects: HomeProjectRef[] }) {
   if (!shown.length) return null;
 
   return (
-    <Section spacing="lg" aria-labelledby="work-title">
+    <Section spacing="lg" aria-labelledby="work-title" data-surface="dark">
       <Container size="editorial">
         <SectionHeading
           as="h2"

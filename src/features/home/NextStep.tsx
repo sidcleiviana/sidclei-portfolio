@@ -43,7 +43,11 @@ export function NextStep({ profile }: { profile: HomeProfile | null }) {
   ];
 
   return (
-    <Section spacing="lg" aria-labelledby="next-step-title">
+    <Section
+      spacing="lg"
+      aria-labelledby="next-step-title"
+      data-surface="tonal"
+    >
       <Container size="editorial">
         <SectionMarker id="next-step-title" className="text-fg-muted">
           Explorar

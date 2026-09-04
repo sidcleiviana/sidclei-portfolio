@@ -54,14 +54,15 @@ export function Hero({ profile }: { profile: HomeProfile | null }) {
             data-animate="rise"
             data-delay="2"
             aria-label="Áreas de atuação"
-            className="lg:col-span-3 lg:justify-self-end lg:pt-3"
+            data-surface="tonal"
+            className="p-5 lg:col-span-3 lg:justify-self-end lg:pt-4"
           >
-            <p className="u-label text-fg-faint">Atuação</p>
-            <ul className="mt-3 border-l border-[var(--color-border-strong)] pl-3.5">
+            <p className="u-label text-fg-muted">Atuação</p>
+            <ul className="mt-3 border-l border-[var(--color-accent)]/35 pl-3.5">
               {FOCUS_AREAS.map((area) => (
                 <li
                   key={area.name}
-                  className="u-label text-fg relative py-1.5 before:absolute before:top-1/2 before:-left-3.5 before:h-px before:w-2.5 before:bg-[var(--color-border-strong)] before:content-['']"
+                  className="u-label text-fg relative py-1.5 before:absolute before:top-1/2 before:-left-3.5 before:h-px before:w-2.5 before:bg-[var(--color-accent)] before:content-['']"
                 >
                   {area.name}
                 </li>
@@ -79,9 +80,11 @@ export function Hero({ profile }: { profile: HomeProfile | null }) {
             {summary}
           </p>
           <div className="lg:col-span-5 lg:justify-self-end">
-            <ArrowLink href="/projects" size="lg">
-              Explorar trabalho
-            </ArrowLink>
+            <div className="hover:bg-bg-tonal -m-3 inline-block rounded-sm p-3 transition-colors">
+              <ArrowLink href="/projects" size="lg">
+                Explorar trabalho
+              </ArrowLink>
+            </div>
           </div>
         </div>
       </Container>

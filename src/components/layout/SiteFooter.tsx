@@ -22,7 +22,10 @@ export function SiteFooter({
   const nav = PRIMARY_NAV.filter((i) => i.href !== "/");
 
   return (
-    <footer className="mt-32 border-t border-[var(--color-rule)]">
+    <footer
+      data-surface="dark"
+      className="mt-32 border-t border-[var(--color-rule)]"
+    >
       <Container size="editorial" className="py-16 sm:py-24">
         <div className="grid gap-12 sm:grid-cols-[1fr_auto] sm:gap-16">
           <div className="max-w-[var(--container-prose)]">
@@ -76,7 +79,11 @@ export function SiteFooter({
           </nav>
         ) : null}
 
-        <p className="text-fg-faint mt-16 font-mono text-xs">
+        <p className="text-fg-faint mt-16 flex items-center gap-2 font-mono text-xs">
+          <span
+            aria-hidden
+            className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--color-node,var(--color-petrol))]"
+          />
           {note ?? `© ${year} Sidclei Viana · Next.js + Sanity`}
         </p>
       </Container>
