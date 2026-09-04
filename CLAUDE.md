@@ -1401,3 +1401,47 @@ filtro (slug privado → `notFound()`). Validação de schema impede `private` +
 - **Testes (§55)**: 6 arquivos adaptados à nova estrutura; +1 (contexts). 85
   testes, gates verdes. Sem pixel/snapshot.
 - **Doc**: `docs/design-system.md` reescrito para v2.
+
+---
+
+## Atualização — Sprint 7.2 (Cor + Atmosfera + Superfícies)
+
+- **Direção cromática, não redesign.** Preservados: layout, tipografia
+  (Newsreader/Inter/JetBrains Mono), grid 12-col, componentes, relações,
+  conteúdo, URLs. Regra central: cor = identidade + estrutura + relação, não
+  apenas link/hover. Proporção-alvo ~80% neutro / 15% indigo / 5% petrol.
+- **Tokens novos** em `globals.css`: `--color-bg-tonal` (indigo-soft),
+  `--color-accent-on-dark` (indigo luminoso), `--color-surface-dark` (indigo-
+  ink profundo — um *capítulo*, não dark mode), `--color-on-dark`/`-muted`/
+  `-faint`, `--color-rule-on-dark`, `--color-petrol` (2ª cor, rara — só nós/
+  marcadores relacionais), `--color-node-on-dark`. Todos com contraste WCAG
+  verificado (AA/AAA — ver `docs/design-system.md`).
+- **Mecanismo de superfície**: atributo `data-surface="tonal"|"dark"` em
+  `<Section>`/`<footer>` (já full-bleed) que redefine localmente `--color-fg`,
+  `--color-fg-muted`, `--color-border`, `--color-rule`, `--color-accent` no
+  escopo — os componentes existentes (`text-fg`, `text-accent`, `.u-label`,
+  `.u-connect`) se repintam sozinhos, **zero mudança por componente**. Nenhum
+  componente novo, nenhum card, nenhum raio, nenhum gradiente.
+- **Ritmo cromático da Home**: Hero (paper + painel tonal nos eixos) → Focus
+  (paper) → **Projetos (dark full-bleed)** → Trajetória (paper) → **Explorar
+  (tonal)** → **Footer (dark full-bleed)**.
+- **Case study**: abertura (`ProjectHeader`) em **dark**; corpo/documentação
+  volta ao paper — contraste abertura → documentação.
+- **Knowledge**: capítulo "Competências" em **dark** (a maior ousadia
+  cromática, §21); "Tecnologias" permanece em paper (recessiva, "meios, não o
+  assunto"). Detail pages ganham cabeçalho **tonal** + spine relacional em
+  accent (`RelationLabel`).
+- **Relação cromática**: linhas/spines/conectores (`.u-connect`) em indigo;
+  nós/marcadores (skill em destaque, marcador do footer) em petrol — raro, só
+  pontos. Fase atual da Experiência em indigo (régua + ano), sem badge verde
+  SaaS. `/projects` revela `bg-bg-tonal` no hover/focus da linha (CSS puro).
+- **Sem taxonomia por cor**: nenhuma Skill/Technology/área ganhou cor própria.
+- **Sem mudança de CMS/schema/query/rota.**
+- **Performance**: zero biblioteca nova, zero JS novo — tudo `data-surface` +
+  cascata de variáveis CSS. Gates: lint/typecheck/test verdes (85 testes,
+  inalterados — mudança puramente visual). Build local bloqueado por
+  instabilidade de rede da máquina ao buscar fontes do Google (não relacionado
+  ao código); verificado via build/deploy do Vercel em produção.
+- **Doc**: `docs/design-system.md` ganhou seção "Sprint 7.2 — chromatic art
+  direction" com paleta, função de cada cor, superfícies, exemplos corretos/
+  incorretos e contraste.

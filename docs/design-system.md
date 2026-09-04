@@ -124,3 +124,88 @@ elbow that ties a relation label to the entity above it.
 - **Badge** `outline` reads at full `text-fg` at rest; `KnowledgeBadge` hover is
   accent.
 - Header wordmark `text-xl sm:text-2xl`, header `h-16 sm:h-20`.
+
+## Sprint 7.2 — chromatic art direction
+
+Colour got a job: **identity + structure + relation**, not just link/hover.
+Roughly **80% neutral / 15% indigo / 5% petrol** — the site stays predominantly
+sober; colour arrives as *chapters*, not decoration.
+
+### Palette additions (`@theme` in `globals.css`)
+
+| Token | Value | Function | Contrast |
+| --- | --- | --- | --- |
+| `--color-bg-tonal` | `#ECEBFB` | indigo-soft surface | fg `#16150F` on it ≈ 15:1 (AAA) |
+| `--color-accent` | `#2D2AE2` | the site colour — relation, links, focus, active | on paper ≈ 8.9:1 |
+| `--color-accent-strong` | `#1F1EB2` | pressed / hover-deep | |
+| `--color-accent-on-dark` | `#9B9AFF` | luminous indigo, dark chapters only | on surface-dark ≈ 7.6:1 (AAA) |
+| `--color-surface-dark` | `#16152F` | deep indigo-ink — a *chapter*, not dark mode | |
+| `--color-on-dark` | `#F4F3EF` | body text on dark | ≈ 15.3:1 (AAA) |
+| `--color-on-dark-muted` | `#B9B8C6` | meta on dark | ≈ 8.7:1 (AAA) |
+| `--color-on-dark-faint` | `#8B8AA0` | decorative numbers on dark (large only) | ≈ 4.6:1 (AA) |
+| `--color-rule-on-dark` | `rgb(244 243 239 / .16)` | hairlines on dark | |
+| `--color-petrol` | `#0F6E6A` | secondary colour, **rare** — relational node/marker on paper | ≈ 5.3:1 (AA) |
+| `--color-node-on-dark` | `#4FD0C4` | relational node/marker on dark | ≈ 9.8:1 (AAA) |
+
+Never used as a category taxonomy — Skills, Technologies and focus areas are
+never colour-coded per item (no "Python = yellow").
+
+### Surface scopes — not a component, an attribute
+
+`data-surface="tonal" | "dark"` on a `<Section>` / `<footer>` (both already
+full-bleed) repaints the shared vars for everything inside — `text-fg`,
+`text-fg-muted`, `border-border`, `text-accent`, `.u-label`, `.u-connect` all
+keep working with **zero per-component change**:
+
+```css
+[data-surface="dark"] {
+  --surface-bg: var(--color-surface-dark);
+  --color-fg: var(--color-on-dark);
+  --color-fg-muted: var(--color-on-dark-muted);
+  --color-accent: var(--color-accent-on-dark);
+  /* … */
+}
+```
+
+No card, no radius, no gradient — a plane, edge-to-edge inside the section it
+already was. `Grid`/`Card` are not reintroduced (removed in v2, stay removed).
+
+### Where each surface appears
+
+| Surface | Where |
+| --- | --- |
+| paper (default) | everywhere else — the baseline |
+| tonal (`--color-bg-tonal`) | Hero right column (relational axes) · Home `NextStep` · Knowledge Detail header |
+| dark (`--color-surface-dark`) | Home `FeaturedProjects` (the project chapter) · Case study opening (`ProjectHeader`) · Knowledge Hub "Competências" · `SiteFooter` |
+
+Chromatic rhythm on the Home: paper (Hero, tonal accent) → paper (Focus) →
+**dark** (Project) → paper (Career) → **tonal** (Explorar) → **dark** (Footer).
+The case study: **dark** opening → paper documentation (§16's contrast).
+Knowledge: paper header → **dark** Competências chapter → paper Tecnologias
+(kept recessive — "meios, não o assunto").
+
+### Relational colour
+
+- Relation *lines* (`.u-connect` elbow, nav underline, spine rules) → indigo
+  (`--color-accent`, luminous on dark).
+- Relation *nodes* (the featured-skill dot, the footer marker) → petrol
+  (`--color-petrol` / `--color-node-on-dark`) — rare, only markers.
+- The current experience phase gets an indigo top-rule and an indigo year
+  (`isCurrent()`), not a "current" badge — colour marks the phase, not a chip.
+- `/projects` rows reveal a tonal background on hover/focus
+  (`hover:bg-bg-tonal`), CSS-only.
+
+### Correct vs incorrect
+
+✅ A `<Section data-surface="dark">` wrapping an unchanged component tree.
+✅ One indigo accent, rare petrol markers, tonal panels bounded by a `Container`.
+❌ `rounded-xl bg-indigo-50` cards.
+❌ A colour per Skill/Technology/focus-area.
+❌ Gradients, glow, neon, hue-rotation, an animated background.
+
+### Accessibility
+
+Every new pairing checked against WCAG (table above); dark scope also
+redefines `:focus-visible`'s outline colour so focus rings stay visible on
+`--color-surface-dark`. No new JS — the whole system is `[data-surface]` + CSS
+variable cascade.
