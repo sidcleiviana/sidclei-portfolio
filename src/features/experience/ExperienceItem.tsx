@@ -1,4 +1,5 @@
 import { MonoHeading } from "@/components/ui/MonoHeading";
+import { isCurrent } from "@/domain/monthRange";
 import { KnowledgeBadge } from "@/features/knowledge/KnowledgeBadge";
 import type { ExperienceEntry } from "@/sanity/types";
 
@@ -29,11 +30,14 @@ export function ExperienceItem({
     .filter(Boolean)
     .join(" · ");
   const startYear = experience.period?.startDate?.slice(0, 4) ?? null;
+  const current = isCurrent(experience.period);
 
   return (
     <article
       id={anchor}
-      className="scroll-mt-24 border-t-2 border-[var(--color-rule)] pt-6"
+      className={`scroll-mt-24 border-t-2 pt-6 ${
+        current ? "border-[var(--color-accent)]" : "border-[var(--color-rule)]"
+      }`}
     >
       <div className="grid gap-x-12 gap-y-10 lg:grid-cols-12">
         <div className="lg:col-span-4">
@@ -49,7 +53,9 @@ export function ExperienceItem({
           {startYear ? (
             <p
               aria-hidden
-              className="font-display text-fg-faint mt-4 text-[clamp(3rem,7vw,5rem)] leading-none tabular-nums"
+              className={`font-display mt-4 text-[clamp(3rem,7vw,5rem)] leading-none tabular-nums ${
+                current ? "text-accent" : "text-fg-faint"
+              }`}
             >
               {startYear}
             </p>
