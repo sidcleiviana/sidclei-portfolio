@@ -6,7 +6,10 @@ import { Hero } from "@/features/home/Hero";
 import { HomeKnowledge } from "@/features/home/HomeKnowledge";
 import { HomeOutro } from "@/features/home/HomeOutro";
 import { HomeTrajectory } from "@/features/home/HomeTrajectory";
+import { PortraitSurface } from "@/features/home/PortraitSurface";
 import { richHomeFixture } from "@/features/home/fixtures";
+import { FALLBACK_HEADLINE, FOCUS_LINE } from "@/features/home/identity";
+import type { HomePhoto } from "@/sanity/types";
 import { experiencesQuery } from "@/sanity/queries/experience";
 import { homeQuery } from "@/sanity/queries/home";
 import type { HomeProjectRef } from "@/sanity/types";
@@ -48,7 +51,7 @@ describe("Hero", () => {
 
   it("shows no live status without an ongoing experience", () => {
     render(<Hero profile={null} current={null} />);
-    expect(screen.queryByText("Agora")).not.toBeInTheDocument();
+    expect(screen.queryByText("Atualmente")).not.toBeInTheDocument();
   });
 
   it("surfaces the ongoing experience as a live status link", () => {
@@ -56,13 +59,144 @@ describe("Hero", () => {
       <Hero profile={null} current={richHomeFixture.experiences[0]!} />
     );
     const link = screen
-      .getByText("Agora")
+      .getByText("Atualmente")
       .closest("a") as HTMLAnchorElement;
     expect(link).toHaveAttribute(
       "href",
       "/experiencia#empresa-de-exemplo-desenvolvedor-de-software"
     );
     expect(link.textContent).toContain("Empresa de exemplo");
+  });
+});
+
+const photoFixture = (alt = "Retrato de Sidclei Viana"): HomePhoto => ({
+  alt,
+  asset: {
+    _ref: "image-abc123-900x1125-jpg",
+    _type: "reference",
+  },
+  hotspot: null,
+  crop: null,
+});
+const PREVIEW_SRC = "data:image/svg+xml,%3Csvg%3E%3C%2Fsvg%3E";
+
+describe("Hero — Sprint 10 identity", () => {
+  it("uses profile.headline as the positioning h1 and shows the territory line", () => {
+    render(
+      <Hero
+        profile={{ ...richHomeFixture.profile!, headline: "Engenheiro de Software & Soluções" }}
+        current={null}
+      />
+    );
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Engenheiro de Software & Soluções",
+      })
+    ).toBeInTheDocument();
+    expect(screen.getByText(FOCUS_LINE)).toBeInTheDocument();
+  });
+
+  it("without a photo: no image, the live card reads 'Atualmente', axes remain", () => {
+    const { container } = render(
+      <Hero profile={null} current={richHomeFixture.experiences[0]!} />
+    );
+    expect(container.querySelector("img")).toBeNull();
+    expect(screen.getByText("Atualmente")).toBeInTheDocument();
+    expect(screen.getByText("Software")).toBeInTheDocument();
+    // no premature placeholder copy
+    expect(screen.queryByText(/adicione sua foto/i)).not.toBeInTheDocument();
+    // technical fallback stays at the currently published headline
+    expect(
+      screen.getByRole("heading", { level: 1, name: FALLBACK_HEADLINE })
+    ).toBeInTheDocument();
+  });
+
+  it("with a preview photo: renders the portrait, its agent anchor, and keeps the axes strip", () => {
+    const { container } = render(
+      <Hero
+        profile={richHomeFixture.profile}
+        current={null}
+        portraitPreviewSrc={PREVIEW_SRC}
+      />
+    );
+    const img = container.querySelector("img");
+    expect(img).not.toBeNull();
+    expect(img).toHaveAttribute("alt", "Sidclei Viana");
+    expect(
+      container.querySelector('[data-agent-anchor="portrait"]')
+    ).not.toBeNull();
+    // the hero-context anchor is not duplicated when the portrait is shown
+    expect(container.querySelector('[data-agent-anchor="hero"]')).toBeNull();
+    expect(screen.getByText("Software")).toBeInTheDocument();
+  });
+
+  it("with a photo and a current role: the factual title shows beside the portrait, linked to the experience", () => {
+    render(
+      <Hero
+        profile={richHomeFixture.profile}
+        current={richHomeFixture.experiences[0]!}
+        portraitPreviewSrc={PREVIEW_SRC}
+      />
+    );
+    // positioning stays the h1; the current job title is separate and factual
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Engenheiro de Software & Soluções" })
+    ).toBeInTheDocument();
+    const link = screen.getByRole("link", {
+      name: "Desenvolvedor de Software · Empresa de exemplo",
+    });
+    expect(link).toHaveAttribute(
+      "href",
+      "/experiencia#empresa-de-exemplo-desenvolvedor-de-software"
+    );
+  });
+});
+
+describe("PortraitSurface", () => {
+  it("renders nothing without an image and without a preview src", () => {
+    const { container } = render(<PortraitSurface photo={null} />);
+    expect(container).toBeEmptyDOMElement();
+  });
+
+  it("uses the CMS alt text, falling back to the name", () => {
+    const withAlt = render(
+      <PortraitSurface
+        photo={photoFixture("Retrato de estúdio")}
+        previewSrc={PREVIEW_SRC}
+      />
+    );
+    expect(withAlt.container.querySelector("img")).toHaveAttribute(
+      "alt",
+      "Retrato de estúdio"
+    );
+    withAlt.unmount();
+
+    const noAlt = render(
+      <PortraitSurface photo={photoFixture("")} previewSrc={PREVIEW_SRC} />
+    );
+    expect(noAlt.container.querySelector("img")).toHaveAttribute(
+      "alt",
+      "Sidclei Viana"
+    );
+  });
+
+  it("is not a link / not interactive", () => {
+    const { container } = render(
+      <PortraitSurface photo={photoFixture()} previewSrc={PREVIEW_SRC} />
+    );
+    expect(container.querySelector("a")).toBeNull();
+    expect(container.querySelector("button")).toBeNull();
+  });
+});
+
+describe("Experience integrity (Sprint 10)", () => {
+  it("does not touch Experience.role — the trajectory still shows the factual title", () => {
+    expect(richHomeFixture.experiences[0]!.role).toBe("Desenvolvedor de Software");
+    render(<HomeTrajectory experiences={richHomeFixture.experiences} />);
+    expect(
+      screen.getAllByRole("tab", { name: /Desenvolvedor de Software/ }).length
+    ).toBeGreaterThan(0);
   });
 });
 
@@ -155,6 +289,10 @@ describe("homeQuery", () => {
     expect(homeQuery).toContain('"experiences"');
     expect(homeQuery).toContain('"featuredSkills"');
     expect(homeQuery).not.toContain("contentBlocks");
+  });
+  it("projects the profile photo for the hero portrait", () => {
+    expect(homeQuery).toContain("photo{");
+    expect(homeQuery).toContain("hotspot");
   });
   it("reuses the same experience ordering as /experiencia", () => {
     expect(experiencesQuery).toContain("coalesce(period.ongoing, false) desc");

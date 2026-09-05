@@ -1700,3 +1700,63 @@ filtro (slug privado → `notFound()`). Validação de schema impede `private` +
   `docOverflow: 0`. Rotas `/`, `/conhecimento`, `/conhecimento/mapa`,
   `/experiencia`, `/projects`, case study e detail → 200; webhook sem
   assinatura → 401; nenhum token no HTML.
+
+---
+
+## Atualização — Sprint 10 (Personal Identity & Positioning)
+
+- **Posicionamento profissional público** separado do cargo factual.
+  `profile.headline` = posicionamento amplo ("Engenheiro de Software &
+  Soluções", ainda em `drafts.profile` — não publicado); `Experience.role`
+  continua sendo o cargo real de cada experiência. **Nunca sincronizados.**
+  Ambos aparecem na Home: headline como `h1`, cargo atual como linha
+  "Atualmente ·" separada. Nenhuma `Experience` tocada.
+- **Governança de publicação:** o novo texto de identidade não aparece em
+  **nenhuma** superfície pública a partir do código. Toda leitura pública é
+  `profile?.headline` **sem** fallback de código para o novo valor
+  (`FALLBACK_HEADLINE` permanece no headline atualmente publicado; só surge em
+  outage do CMS). `metadata.title` do root virou neutro ("Sidclei Viana"); o
+  default titulado e o OG/Twitter da Home derivam de `profile.headline` em
+  `(site)/layout.tsx` (`generateMetadata` novo) e `(site)/page.tsx`. Resultado:
+  o código pode ser publicado a qualquer momento; o novo posicionamento entra
+  em produção **apenas** quando o documento `profile` for republicado (webhook
+  → `revalidateTag(profile)`, sem deploy).
+- **Linha de territórios** `FOCUS_LINE` ("Automação · Sistemas · Dados · IA")
+  sob o `h1` — `.u-label`, as quatro áreas transversais, não uma alegação de
+  senioridade. `src/features/home/identity.ts`.
+- **`PortraitSurface`** (`src/features/home/PortraitSurface.tsx`) — superfície
+  de identidade: `data-surface="tonal"`, uma hairline, `--radius`, `next/image`
+  `4/5`, âncora do Living Agent `portrait` numa quina. **Não** é card, **não**
+  é link, **não** é interativa (§15) — moldura discreta, a futura fotografia é
+  a protagonista (sem HUD, sem grid, sem annotation sobre a imagem). Retorna
+  `null` sem imagem → a Home cai na composição sem foto (sem placeholder "adicione
+  sua foto"). Foto real: pipeline do Sanity com
+  `fit("crop").crop("focalpoint")` (respeita o hotspot — schema `imageWithAlt`
+  já tinha `hotspot: true`, **nenhuma mudança de schema**), `sizes` responsivo,
+  `alt` do schema com fallback "Sidclei Viana". `previewSrc` é escape hatch
+  **só de DEV**.
+- **Hero** recomposto: sem foto = layout atual (card "Atualmente" — renomeado
+  de "Agora" —, grid de 4 áreas, faixa de tecnologias, âncora `hero`). Com foto
+  = grid `1.1fr/0.9fr`, coluna direita = `PortraitSurface`, 4 áreas descem para
+  uma faixa full-width, cargo atual vira linha "Atualmente ·" na coluna
+  esquerda, âncora ativa única = `portrait`. Ordem mobile: nome → posicionamento
+  → territórios → resumo → CTAs → "Atualmente" → retrato (§41).
+- **Foto:** nenhuma foto real nesta Sprint. Suporte implementado e homologado
+  com fixture DEV. Publicação da imagem real = **Sprint 10.1 — Portrait
+  Publication** (operação de conteúdo separada, quando a imagem for fornecida).
+- **shortSummary:** mantido literalmente (uma variável editorial por vez).
+- **SEO:** sem Person JSON-LD (decisão deliberada — `jobTitle` poderia divergir
+  do `Experience.role` factual). `canonical`/`robots` intocados.
+- **DEV preview** `/dev/home-preview` recriado (`notFound()` em prod, `noindex`,
+  `/dev/` já em `robots.txt`): renderiza `richHomeFixture` (headline do fixture
+  = novo posicionamento, só DEV/teste); `?photo=off` remove o retrato para
+  comparar os dois estados.
+- **Performance:** `/` 174 kB → 180 kB First Load (+~6 kB: runtime do
+  `next/image` puxado para a rota da Home pelo `PortraitSurface` — `next/image`
+  é exigido pelo §47). Shared First Load JS **103 kB — inalterado**. Sem
+  `priority` de LCP ainda (medir e ativar se o retrato for o elemento LCP
+  quando a foto real entrar). Caixa `4/5` reservada → sem CLS.
+- **Gates:** typecheck, lint, **123 testes** (114 → +9: identidade do Hero,
+  PortraitSurface sem foto / alt / não-link, integridade das Experiences,
+  projeção `photo` na query), build — verdes. Nenhuma mutação de CMS publicada;
+  `drafts.profile` (só `headline`) criado, aguardando aprovação.

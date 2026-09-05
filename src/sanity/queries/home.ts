@@ -31,7 +31,8 @@ export const homeQuery = defineQuery(`{
     publicLocation,
     resumeUrl,
     professionalEmail,
-    "links": coalesce(links, [])
+    "links": coalesce(links, []),
+    photo{ "alt": coalesce(alt, ""), asset, hotspot, crop }
   },
 
   "projects": *[

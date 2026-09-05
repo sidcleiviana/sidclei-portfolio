@@ -983,7 +983,7 @@ export type ExperiencesQueryResult = Array<{
 
 // Source: ./src/sanity/queries/home.ts
 // Variable: homeQuery
-// Query: {  "profile": *[_type == "profile"][0] {    name,    headline,    shortSummary,    publicLocation,    resumeUrl,    professionalEmail,    "links": coalesce(links, [])  },  "projects": *[    _type == "project" && status == "published" && visibility != "private"  ] | order(featured desc, coalesce(publishedAt, period.startDate, "") desc, title asc)[0...6] {    _id,    title,    "slug": slug.current,    shortDescription,    projectType,    featured,    visibility,    period,    "roles": contribution.roles,    "technologies": technologies[]->{ _id, name, "slug": slug.current }  },  "experiences": *[_type == "experience"] | order(    coalesce(period.ongoing, false) desc,    period.startDate desc  )[0...4] {    _id,    company,    role,    period,    location,    summary,    responsibilities,    "skills": skills[]->{ _id, name, "slug": slug.current, category },    "technologies": technologies[]->{ _id, name, "slug": slug.current, category },    "projects": *[      _type == "project"      && references(^._id)      && status == "published"      && visibility != "private"    ] | order(coalesce(publishedAt, period.startDate, "") desc) {      _id, title, "slug": slug.current, visibility    }  },  "featuredSkills": *[_type == "skill" && featured == true && defined(slug.current)]    | order(lower(name) asc)[0...6] {      _id,      name,      "slug": slug.current,      category,      shortDescription,      "contextExperiences": *[_type == "experience" && references(^._id)]        | order(coalesce(period.ongoing, false) desc, period.startDate desc) {          _id, company, role        },      "contextProjects": *[        _type == "project" && references(^._id)        && status == "published" && visibility != "private"      ] | order(coalesce(publishedAt, period.startDate, "") desc) {        _id, title, "slug": slug.current, visibility      },      "contextTechnologies": array::unique(        *[_type == "experience" && references(^._id)].technologies[]->name        + *[            _type == "project" && references(^._id)            && status == "published" && visibility != "private"          ].technologies[]->name      )    }}
+// Query: {  "profile": *[_type == "profile"][0] {    name,    headline,    shortSummary,    publicLocation,    resumeUrl,    professionalEmail,    "links": coalesce(links, []),    photo{ "alt": coalesce(alt, ""), asset, hotspot, crop }  },  "projects": *[    _type == "project" && status == "published" && visibility != "private"  ] | order(featured desc, coalesce(publishedAt, period.startDate, "") desc, title asc)[0...6] {    _id,    title,    "slug": slug.current,    shortDescription,    projectType,    featured,    visibility,    period,    "roles": contribution.roles,    "technologies": technologies[]->{ _id, name, "slug": slug.current }  },  "experiences": *[_type == "experience"] | order(    coalesce(period.ongoing, false) desc,    period.startDate desc  )[0...4] {    _id,    company,    role,    period,    location,    summary,    responsibilities,    "skills": skills[]->{ _id, name, "slug": slug.current, category },    "technologies": technologies[]->{ _id, name, "slug": slug.current, category },    "projects": *[      _type == "project"      && references(^._id)      && status == "published"      && visibility != "private"    ] | order(coalesce(publishedAt, period.startDate, "") desc) {      _id, title, "slug": slug.current, visibility    }  },  "featuredSkills": *[_type == "skill" && featured == true && defined(slug.current)]    | order(lower(name) asc)[0...6] {      _id,      name,      "slug": slug.current,      category,      shortDescription,      "contextExperiences": *[_type == "experience" && references(^._id)]        | order(coalesce(period.ongoing, false) desc, period.startDate desc) {          _id, company, role        },      "contextProjects": *[        _type == "project" && references(^._id)        && status == "published" && visibility != "private"      ] | order(coalesce(publishedAt, period.startDate, "") desc) {        _id, title, "slug": slug.current, visibility      },      "contextTechnologies": array::unique(        *[_type == "experience" && references(^._id)].technologies[]->name        + *[            _type == "project" && references(^._id)            && status == "published" && visibility != "private"          ].technologies[]->name      )    }}
 export type HomeQueryResult = {
   profile: {
     name: string | null;
@@ -999,6 +999,17 @@ export type HomeQueryResult = {
           } & ExternalLink
         >
       | Array<never>;
+    photo: {
+      alt: string | "";
+      asset: {
+        _ref: string;
+        _type: "reference";
+        _weak?: boolean;
+        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+      } | null;
+      hotspot: SanityImageHotspot | null;
+      crop: SanityImageCrop | null;
+    } | null;
   } | null;
   projects: Array<{
     _id: string;

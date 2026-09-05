@@ -172,3 +172,58 @@ still missing (Sprint §54 — **do not auto-fill**):
   least one real role (editorial approval required — Sprint §20).
 - **Professional links / email / résumé** — none in `profile`; the `NextStep`
   contact row is hidden.
+
+---
+
+## Sprint 10 — Personal identity & positioning
+
+**Positioning vs job title.** `profile.headline` is the *public professional
+positioning* ("Engenheiro de Software & Soluções") and is the sole source for
+the hero `h1`, the footer line, the site `<title>` default and OpenGraph. It is
+**never** synced from `Experience.role`, which stays the factual title of each
+role ("Desenvolvedor · ISO Olhos"). Both appear in the hero: the headline as
+the `h1`, the current role as a separate "Atualmente ·" line. Governance: a code
+deploy must not surface a new positioning before the Profile document is
+published — every public read is `profile?.headline` with **no** code fallback
+to the new value (`FALLBACK_HEADLINE` stays at the currently published headline;
+it only shows on a CMS outage).
+
+**Territory line.** `FOCUS_LINE` ("Automação · Sistemas · Dados · IA",
+`src/features/home/identity.ts`) renders under the `h1` — the four transversal
+areas as one `.u-label` line, not a claim of seniority.
+
+**PortraitSurface** (`src/features/home/PortraitSurface.tsx`). A quiet framed
+surface (`data-surface="tonal"`, one hairline border, radius, the Living Agent
+anchor `portrait` at a corner) holding a `4/5` `next/image`. Not a card, not a
+link, not interactive (Sprint §15) — the future photograph is the protagonist.
+Renders `null` with no image, so the hero falls back to its without-photo
+composition (no "add a photo" placeholder). Real photo goes through the Sanity
+CDN pipeline with `fit("crop").crop("focalpoint")` (honours the hotspot);
+`sizes="(min-width:1024px) 38vw, 100vw"`; `alt` from `photo.alt` (schema) with a
+`"Sidclei Viana"` fallback. `previewSrc` is a DEV-only `data:` image used by
+`/dev/home-preview` so the frame can be homologated before a real photo exists.
+
+**Hero composition.** Without photo: unchanged left column + right column (live
+"Atualmente" card, four-axis grid, tech strip, `hero` agent anchor). With photo:
+grid `1.1fr / 0.9fr`, right column is the `PortraitSurface`, the four axes drop
+to a full-width strip below the grid, the current role becomes an "Atualmente ·"
+link line in the left column, and the single active agent anchor is `portrait`
+(not `hero`). Mobile order: name → positioning → territory → summary → CTAs →
+"Atualmente" → portrait (identity before photograph, Sprint §41).
+
+**SEO.** No Person JSON-LD (deliberate — `jobTitle` would risk diverging from
+the factual `Experience.role`). Root `metadata.title.default` is neutral
+("Sidclei Viana"); the titled default and the Home OG/Twitter title derive from
+`profile.headline` in `(site)/layout.tsx` and `(site)/page.tsx`. `canonical`
+and `robots` untouched.
+
+**Performance.** `/` First Load JS `174 kB → 180 kB` (+~6 kB): the `next/image`
+client runtime, pulled onto the Home route by `PortraitSurface` (mandated by
+Sprint §47). Shared First Load JS **103 kB — unchanged**. No LCP `priority` set
+yet — to be measured and enabled if the portrait is confirmed as the LCP
+element once a real photo lands (Sprint 10.1). `4/5` aspect box reserved → no
+CLS.
+
+**Content status.** `profile.headline` change to "Engenheiro de Software &
+Soluções" prepared as `drafts.profile` — awaiting `APROVADO PARA PUBLICAR
+PROFILE`. No photo this sprint (Sprint 10.1 — Portrait Publication).

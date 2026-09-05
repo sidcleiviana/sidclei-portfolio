@@ -104,3 +104,38 @@ horizontal overflow on every route, correct surface rhythm, the interactive
 selectors working (tab/chip selection, mobile accordion). Interactive modules
 break to a touch-first layout below `lg` — the trajectory becomes an accordion,
 the knowledge panel stacks under the chips.
+
+---
+
+## Sprint 10 — Identity: positioning vs job title, PortraitSurface
+
+**Positioning ≠ job title.** `profile.headline` is the public professional
+*positioning* ("Engenheiro de Software & Soluções") — the hero `h1`, the footer
+line, the `<title>` default and OpenGraph all read it, and only it. It is never
+derived from or synced to `Experience.role`, which remains the *factual* title
+of each role. Both are shown, deliberately distinct: the headline as `h1`, the
+current role as an "Atualmente ·" line. `FALLBACK_HEADLINE` is a technical
+outage fallback only and is kept at the *currently published* headline so a code
+deploy can't surface a new positioning before the Profile document is published.
+
+**`FOCUS_LINE`** — "Automação · Sistemas · Dados · IA" under the `h1`, one
+`.u-label` line. The four transversal areas, not a seniority claim.
+
+**`PortraitSurface`** (`src/features/home/PortraitSurface.tsx`) — the identity
+surface. `data-surface="tonal"`, one hairline border, `--radius`, a `4/5`
+`next/image`, the Living Agent anchor `portrait` at a corner. **Not** a card,
+**not** a link, **not** interactive (Sprint §15): quiet frame, the future
+photograph is the protagonist — no HUD, no grid overlay, no stamped annotation.
+`null` with no image (hero falls back to the without-photo composition). Real
+photo: Sanity CDN pipeline, `fit("crop").crop("focalpoint")` (honours hotspot),
+responsive `sizes`, `alt` from the schema with a name fallback. DEV-only
+`previewSrc` (a `data:` image) lets `/dev/home-preview` homologate the frame
+before a real photo exists.
+
+**Living Agent** — new anchor name `portrait`. When the hero shows a photo it is
+the single active anchor (the `hero` anchor is not rendered); the agent rests at
+the frame corner, `aria-hidden`, `pointer-events: none`, glances toward the
+pointer — never covers the face, never becomes interactive there.
+
+**No Person JSON-LD** — deliberate; `jobTitle` would risk diverging from the
+factual `Experience.role`.

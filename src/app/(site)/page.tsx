@@ -11,9 +11,23 @@ import { getHome } from "@/sanity/queries";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { profile } = await getHome();
+  const description = profile?.shortSummary ?? FALLBACK_SUMMARY;
+  // Positioning in the title / OG comes only from the published headline — no
+  // code fallback — so a deploy can't surface a new positioning early.
+  const headline = profile?.headline?.trim();
+  const title = headline ? `Sidclei Viana — ${headline}` : "Sidclei Viana";
+
   return {
-    description: profile?.shortSummary ?? FALLBACK_SUMMARY,
+    title: { absolute: title },
+    description,
     alternates: { canonical: "/" },
+    openGraph: {
+      type: "profile",
+      url: "/",
+      title,
+      description,
+    },
+    twitter: { card: "summary", title, description },
   };
 }
 

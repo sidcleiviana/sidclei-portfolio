@@ -8,6 +8,7 @@ export type AgentAnchorName =
   | "footer"
   | "collection"
   | "detail"
+  | "portrait"
   | "map-overview"
   | "map-node";
 

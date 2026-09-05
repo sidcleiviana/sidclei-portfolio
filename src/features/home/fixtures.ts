@@ -8,12 +8,15 @@ import type { HomeData } from "@/sanity/types";
 export const richHomeFixture: HomeData = {
   profile: {
     name: "Sidclei Viana",
-    headline: "Desenvolvedor de Software",
+    // Dev/test only — the new positioning, so the preview homologates the
+    // Sprint 10 identity. The public site still reads it from the CMS.
+    headline: "Engenheiro de Software & Soluções",
     shortSummary:
       "Resumo de exemplo: atuação entre software, automação, dados e sistemas. Texto sintético para homologação do layout.",
     publicLocation: "Brasil · Remoto",
     resumeUrl: "https://example.com/cv.pdf",
     professionalEmail: "contato@example.com",
+    photo: null,
     links: [
       { _key: "l1", _type: "externalLink", label: "GitHub", url: "https://example.com/gh", kind: "github" },
       { _key: "l2", _type: "externalLink", label: "LinkedIn", url: "https://example.com/in", kind: "linkedin" },

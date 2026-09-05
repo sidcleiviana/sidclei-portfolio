@@ -6,8 +6,11 @@ import "@/styles/globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  // The professional positioning is not hardcoded here — the `(site)` layout
+  // derives the titled default from the published `profile.headline`. This
+  // neutral default is the outage/other-route fallback only.
   title: {
-    default: "Sidclei Viana — Desenvolvedor de Software",
+    default: "Sidclei Viana",
     template: "%s — Sidclei Viana",
   },
   description:

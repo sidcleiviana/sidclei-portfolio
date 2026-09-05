@@ -114,6 +114,7 @@ export type ExperienceProjectRef = ExperienceEntry["projects"][number];
 
 export type HomeData = HomeQueryResult;
 export type HomeProfile = NonNullable<HomeData["profile"]>;
+export type HomePhoto = NonNullable<HomeProfile["photo"]>;
 export type HomeProjectRef = HomeData["projects"][number];
 export type HomeExperienceRef = HomeData["experiences"][number];
 

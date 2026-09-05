@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { AgentAnchor } from "@/components/agent/AgentAnchor";
 import { Container } from "@/components/ui/Container";
+import { FALLBACK_HEADLINE, FALLBACK_NAME } from "@/features/home/identity";
 import type { Profile } from "@/sanity/types";
 
 import { PRIMARY_NAV } from "./nav";
@@ -28,10 +29,10 @@ export function SiteFooter({
           <div className="relative max-w-[var(--container-prose)] pl-14">
             <AgentAnchor name="footer" active className="absolute top-3 left-4" />
             <p className="font-display text-xl font-bold sm:text-2xl">
-              {profile?.name ?? "Sidclei Viana"}
+              {profile?.name ?? FALLBACK_NAME}
             </p>
             <p className="text-fg-muted mt-1.5 text-md text-pretty">
-              {profile?.headline ?? "Desenvolvedor de Software"}
+              {profile?.headline ?? FALLBACK_HEADLINE}
             </p>
           </div>
 
