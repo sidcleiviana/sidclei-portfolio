@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 
 import { toGraphData } from "@/domain/knowledgeGraph";
 import { KnowledgeMap } from "@/features/knowledge/map/KnowledgeMap";
@@ -12,14 +11,18 @@ export const metadata: Metadata = {
   alternates: { canonical: "/conhecimento/mapa" },
 };
 
-export default async function KnowledgeMapPage() {
+export default async function KnowledgeMapPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ node?: string | string[] }>;
+}) {
   const data = await getKnowledgeMap();
   const graph = toGraphData(data);
 
-  // KnowledgeMap reads the `?node` deep link via useSearchParams.
-  return (
-    <Suspense fallback={null}>
-      <KnowledgeMap graph={graph} />
-    </Suspense>
-  );
+  // The `?node=type:slug` deep link is read on the server so the whole map —
+  // including the textual relation list — renders without client JS.
+  const raw = (await searchParams).node;
+  const initialNode = Array.isArray(raw) ? raw[0] : raw;
+
+  return <KnowledgeMap graph={graph} initialNode={initialNode ?? null} />;
 }

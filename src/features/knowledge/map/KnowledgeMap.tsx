@@ -15,8 +15,14 @@ import { useKnowledgeMap } from "./useKnowledgeMap";
 
 /** The route-local island (§39). Desktop = structured graph + panel; mobile =
  *  the explorer. A textual relation list is always present for a11y (§75). */
-export function KnowledgeMap({ graph }: { graph: GraphData }) {
-  const map = useKnowledgeMap(graph);
+export function KnowledgeMap({
+  graph,
+  initialNode = null,
+}: {
+  graph: GraphData;
+  initialNode?: string | null;
+}) {
+  const map = useKnowledgeMap(graph, initialNode);
   const [isDesktop, setIsDesktop] = useState(true);
   const firstRender = useRef(true);
 

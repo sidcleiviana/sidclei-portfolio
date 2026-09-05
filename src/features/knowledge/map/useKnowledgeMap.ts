@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 
 import {
@@ -46,15 +46,19 @@ function findByKey(graph: GraphData, key: string | null): GraphNode | null {
 
 /**
  * All map interaction state, local to the route (§39, §70). The fixed
- * selection is mirrored to `?node=type:slug` via `history.replaceState`
+ * selection is mirrored to `?node=type:slug` via `router.replace`
  * (one entry per explicit selection, never per hover). Hover is preview only.
+ * The initial selection comes from the server (page `searchParams`) so the
+ * deep link never forces client-side rendering of the route.
  */
-export function useKnowledgeMap(graph: GraphData): MapState {
+export function useKnowledgeMap(
+  graph: GraphData,
+  initialNode: string | null
+): MapState {
   const router = useRouter();
   const pathname = usePathname();
-  const params = useSearchParams();
 
-  const initialKey = findByKey(graph, params.get("node"))?.key ?? null;
+  const initialKey = findByKey(graph, initialNode)?.key ?? null;
   const [selectedKey, setSelectedKey] = useState<string | null>(initialKey);
   const [hovered, setHovered] = useState<string | null>(null);
   const [history, setHistory] = useState<string[]>(
@@ -86,13 +90,11 @@ export function useKnowledgeMap(graph: GraphData): MapState {
 
   const syncUrl = useCallback(
     (key: string | null) => {
-      const next = new URLSearchParams(params.toString());
-      if (key) next.set("node", key);
-      else next.delete("node");
-      const qs = next.toString();
-      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+      router.replace(key ? `${pathname}?node=${key}` : pathname, {
+        scroll: false,
+      });
     },
-    [params, pathname, router]
+    [pathname, router]
   );
 
   const select = useCallback(

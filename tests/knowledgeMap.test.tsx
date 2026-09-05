@@ -2,16 +2,11 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-let currentParams = new URLSearchParams();
-const replace = vi.fn((url: string) => {
-  const qs = url.split("?")[1] ?? "";
-  currentParams = new URLSearchParams(qs);
-});
+const replace = vi.fn();
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ replace }),
   usePathname: () => "/conhecimento/mapa",
-  useSearchParams: () => currentParams,
 }));
 
 import { toGraphData } from "@/domain/knowledgeGraph";
@@ -53,7 +48,6 @@ const data: KnowledgeMapData = {
 const graph = toGraphData(data);
 
 beforeEach(() => {
-  currentParams = new URLSearchParams();
   replace.mockClear();
 });
 
@@ -81,7 +75,7 @@ describe("KnowledgeMap (mobile explorer path — matchMedia stub reports no matc
       screen.getByRole("heading", { level: 2, name: "Backend Development" })
     ).toBeInTheDocument();
     expect(replace).toHaveBeenCalledWith(
-      "/conhecimento/mapa?node=skill%3Abackend-development",
+      "/conhecimento/mapa?node=skill:backend-development",
       expect.anything()
     );
     // its real contexts show, technologies are labelled as derived context
@@ -126,8 +120,7 @@ describe("KnowledgeMap (mobile explorer path — matchMedia stub reports no matc
   });
 
   it("deep link ?node=type:slug starts in the selected state", () => {
-    currentParams = new URLSearchParams("node=technology:python");
-    render(<KnowledgeMap graph={graph} />);
+    render(<KnowledgeMap graph={graph} initialNode="technology:python" />);
     expect(
       screen.getByRole("heading", { level: 2, name: "Python" })
     ).toBeInTheDocument();
