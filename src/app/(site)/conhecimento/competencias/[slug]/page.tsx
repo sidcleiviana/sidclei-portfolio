@@ -33,6 +33,7 @@ export default async function SkillDetailPage({ params }: Params) {
   return (
     <KnowledgeDetail
       kind="skill"
+      slug={slug}
       name={skill.name}
       category={skill.category}
       description={skill.shortDescription}

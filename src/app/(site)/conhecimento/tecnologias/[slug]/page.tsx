@@ -32,6 +32,7 @@ export default async function TechnologyDetailPage({ params }: Params) {
   return (
     <KnowledgeDetail
       kind="technology"
+      slug={slug}
       name={tech.name}
       category={tech.category}
       aside={

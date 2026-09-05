@@ -15,6 +15,7 @@ import type {
   ExperiencesQueryResult,
   HomeQueryResult,
   KnowledgeHubQueryResult,
+  KnowledgeMapQueryResult,
   ProfileQueryResult,
   Project,
   ProjectBySlugQueryResult,
@@ -124,6 +125,9 @@ export type KnowledgeTechnology = KnowledgeHubData["technologies"][number];
 
 export type SkillDetail = NonNullable<SkillBySlugQueryResult>;
 export type TechnologyDetail = NonNullable<TechnologyBySlugQueryResult>;
+
+/** Raw relational projection for `/conhecimento/mapa`; adapted by `src/domain/knowledgeGraph.ts`. */
+export type KnowledgeMapData = KnowledgeMapQueryResult;
 
 /** An experience as it appears on a knowledge detail page (light projection). */
 export type KnowledgeExperienceRef = SkillDetail["experiences"][number];

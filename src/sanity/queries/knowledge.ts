@@ -1,7 +1,12 @@
 import { defineQuery } from "next-sanity";
 
 import { CACHE_TAGS, sanityFetch } from "../fetch";
-import type { KnowledgeHubData, SkillDetail, TechnologyDetail } from "../types";
+import type {
+  KnowledgeHubData,
+  KnowledgeMapData,
+  SkillDetail,
+  TechnologyDetail,
+} from "../types";
 
 /**
  * `/conhecimento` — the explorer, in one round trip. Every skill and every
@@ -148,5 +153,61 @@ export function getKnowledgeSlugs() {
     query: knowledgeSlugsQuery,
     tags: [CACHE_TAGS.knowledge, CACHE_TAGS.skills, CACHE_TAGS.technologies],
     fallback: { skills: [], technologies: [] },
+  });
+}
+
+/**
+ * `/conhecimento/mapa` — one relational projection, no N+1 (Sprint 9 §B, §43).
+ * Just the entities and the reference lists needed to derive the 5 real edge
+ * types in `src/domain/knowledgeGraph.ts`. No content blocks, no evidence, no
+ * responsibilities. Projects pass the public gate inline; a private/unpublished
+ * project never appears here, so its edges never exist. No `Skill -> Technology`
+ * relation is queried (§3, §42).
+ */
+export const knowledgeMapQuery = defineQuery(`{
+  "experiences": *[_type == "experience"] | order(
+      coalesce(period.ongoing, false) desc, period.startDate desc
+    ) {
+    _id, company, role, period,
+    "skillRefs": skills[]._ref,
+    "technologyRefs": technologies[]._ref
+  },
+  "projects": *[
+    _type == "project" && status == "published" && visibility != "private"
+  ] | order(coalesce(publishedAt, period.startDate, "") desc) {
+    _id, title, "slug": slug.current, projectType, visibility,
+    "roles": contribution.roles,
+    "experienceRef": relatedExperience._ref,
+    "skillRefs": skills[]._ref,
+    "technologyRefs": technologies[]._ref
+  },
+  "skills": *[_type == "skill" && defined(slug.current)] | order(
+      featured desc, lower(name) asc
+    ) {
+    _id, name, "slug": slug.current, category, featured
+  },
+  "technologies": *[_type == "technology" && defined(slug.current)] | order(
+      lower(name) asc
+    ) {
+    _id, name, "slug": slug.current, category
+  }
+}`);
+
+export function getKnowledgeMap() {
+  return sanityFetch<KnowledgeMapData>({
+    query: knowledgeMapQuery,
+    tags: [
+      CACHE_TAGS.knowledge,
+      CACHE_TAGS.skills,
+      CACHE_TAGS.technologies,
+      CACHE_TAGS.experience,
+      CACHE_TAGS.projects,
+    ],
+    fallback: {
+      experiences: [],
+      projects: [],
+      skills: [],
+      technologies: [],
+    },
   });
 }

@@ -1243,6 +1243,63 @@ export type KnowledgeSlugsQueryResult = {
   skills: Array<string | null>;
   technologies: Array<string | null>;
 };
+// Variable: knowledgeMapQuery
+// Query: {  "experiences": *[_type == "experience"] | order(      coalesce(period.ongoing, false) desc, period.startDate desc    ) {    _id, company, role, period,    "skillRefs": skills[]._ref,    "technologyRefs": technologies[]._ref  },  "projects": *[    _type == "project" && status == "published" && visibility != "private"  ] | order(coalesce(publishedAt, period.startDate, "") desc) {    _id, title, "slug": slug.current, projectType, visibility,    "roles": contribution.roles,    "experienceRef": relatedExperience._ref,    "skillRefs": skills[]._ref,    "technologyRefs": technologies[]._ref  },  "skills": *[_type == "skill" && defined(slug.current)] | order(      featured desc, lower(name) asc    ) {    _id, name, "slug": slug.current, category, featured  },  "technologies": *[_type == "technology" && defined(slug.current)] | order(      lower(name) asc    ) {    _id, name, "slug": slug.current, category  }}
+export type KnowledgeMapQueryResult = {
+  experiences: Array<{
+    _id: string;
+    company: string | null;
+    role: string | null;
+    period: DateRange | null;
+    skillRefs: Array<string> | null;
+    technologyRefs: Array<string> | null;
+  }>;
+  projects: Array<{
+    _id: string;
+    title: string | null;
+    slug: string | null;
+    projectType: "lab" | "production" | "professional" | "study" | null;
+    visibility: "anonymized" | "private" | "public" | null;
+    roles: Array<string> | null;
+    experienceRef: string | null;
+    skillRefs: Array<string> | null;
+    technologyRefs: Array<string> | null;
+  }>;
+  skills: Array<{
+    _id: string;
+    name: string | null;
+    slug: string | null;
+    category:
+      | "Automa\xE7\xE3o"
+      | "Banco de Dados"
+      | "Cybersecurity"
+      | "Dados"
+      | "Desenvolvimento"
+      | "Gest\xE3o"
+      | "Infraestrutura"
+      | "Integra\xE7\xF5es"
+      | "Intelig\xEAncia Artificial"
+      | "Qualidade"
+      | "Redes"
+      | null;
+    featured: boolean | null;
+  }>;
+  technologies: Array<{
+    _id: string;
+    name: string | null;
+    slug: string | null;
+    category:
+      | "Banco de dados"
+      | "Biblioteca"
+      | "Ferramenta"
+      | "Framework"
+      | "Linguagem"
+      | "Plataforma"
+      | "Servi\xE7o"
+      | "Sistema / ERP"
+      | null;
+  }>;
+};
 
 // Source: ./src/sanity/queries/profile.ts
 // Variable: profileQuery

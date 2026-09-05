@@ -74,6 +74,7 @@ function DemonstratedIn({ projects }: { projects: KnowledgeProjectRef[] }) {
  */
 export function KnowledgeDetail({
   kind,
+  slug,
   name,
   category,
   description,
@@ -83,6 +84,7 @@ export function KnowledgeDetail({
   contextTechnologies = [],
 }: {
   kind: KnowledgeKind;
+  slug?: string | null;
   name: string;
   category?: string | null;
   description?: string | null;
@@ -93,6 +95,7 @@ export function KnowledgeDetail({
 }) {
   const crumb = CRUMB[kind];
   const contextTech = contextTechnologies.filter((t): t is string => Boolean(t));
+  const mapKind = kind === "skill" ? "skill" : "technology";
 
   return (
     <>
@@ -125,6 +128,14 @@ export function KnowledgeDetail({
             ) : null}
             {aside}
           </div>
+          {slug ? (
+            <Link
+              href={`/conhecimento/mapa?node=${mapKind}:${slug}`}
+              className="u-label text-accent mt-4 inline-flex items-center gap-1.5 rounded-sm hover:text-[var(--color-accent-strong)]"
+            >
+              Ver no mapa <span aria-hidden>→</span>
+            </Link>
+          ) : null}
           {description ? (
             <p className="text-fg-muted mt-5 max-w-[var(--container-prose)] text-md text-pretty">
               {description}

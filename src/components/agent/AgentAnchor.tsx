@@ -7,7 +7,9 @@ export type AgentAnchorName =
   | "relations"
   | "footer"
   | "collection"
-  | "detail";
+  | "detail"
+  | "map-overview"
+  | "map-node";
 
 /**
  * A zero-size marker that tells the Living Agent where it may land in this

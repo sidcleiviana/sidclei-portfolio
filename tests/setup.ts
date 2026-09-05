@@ -21,6 +21,40 @@ if (typeof globalThis.IntersectionObserver === "undefined") {
   });
 }
 
+// jsdom has no ResizeObserver; a no-op stub lets layout effects run quietly.
+if (typeof globalThis.ResizeObserver === "undefined") {
+  class ResizeObserverStub {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  }
+  Object.defineProperty(globalThis, "ResizeObserver", {
+    writable: true,
+    configurable: true,
+    value: ResizeObserverStub,
+  });
+}
+
+// jsdom's matchMedia is missing; default every query to "no match".
+if (typeof window !== "undefined" && typeof window.matchMedia !== "function") {
+  Object.defineProperty(window, "matchMedia", {
+    writable: true,
+    configurable: true,
+    value: (query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addEventListener() {},
+      removeEventListener() {},
+      addListener() {},
+      removeListener() {},
+      dispatchEvent() {
+        return false;
+      },
+    }),
+  });
+}
+
 afterEach(() => {
   cleanup();
 });

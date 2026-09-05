@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Container, Kicker, Section, Surface } from "@/components/ui";
 import { groupByCategory } from "@/domain/knowledge";
 import type { KnowledgeSkill, KnowledgeTechnology } from "@/sanity/types";
@@ -65,6 +67,25 @@ export function KnowledgeHub({
             Selecione uma competência ou tecnologia para ver as experiências e
             projetos reais em que apareceu.
           </p>
+
+          {hasSkills || hasTech ? (
+            <Link
+              href="/conhecimento/mapa"
+              className="group u-surface-interactive border-border mt-8 flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius)] border bg-[var(--color-navy)] p-5"
+            >
+              <span>
+                <span className="u-label">Mapa de Conhecimento</span>
+                <span className="text-fg-muted mt-1 block text-sm text-pretty">
+                  Explore como projetos, experiências, competências e tecnologias
+                  se conectam.
+                </span>
+              </span>
+              <span className="u-label text-accent inline-flex items-center gap-1.5">
+                Explorar mapa <span aria-hidden>→</span>
+              </span>
+            </Link>
+          ) : null}
+
           {!hasSkills && !hasTech ? (
             <p className="text-fg-muted border-border mt-8 border-t pt-6 font-mono text-sm">
               Ainda não há competências ou tecnologias publicadas.

@@ -501,6 +501,48 @@ h4 {
   }
 }
 
+/* -- Knowledge Map node emphasis (Sprint 9) ------------------------------
+   Overview: every node at full presence, edges barely there. Focus is
+   dim-in-place — nothing moves (§2); the cluster becomes the protagonist
+   through scale / border / opacity only. */
+.km-node {
+  transform: translate(-50%, -50%);
+  transition:
+    opacity 200ms var(--ease-out),
+    transform 200ms var(--ease-out),
+    border-color 200ms var(--ease-out),
+    box-shadow 200ms var(--ease-out);
+}
+.km-node:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  z-index: 30;
+}
+.km-node[data-emphasis="base"] {
+  opacity: 1;
+}
+.km-node[data-emphasis="connected"] {
+  opacity: 1;
+  border-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
+  z-index: 10;
+}
+.km-node[data-emphasis="focus"] {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.16);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 1px var(--color-accent);
+  z-index: 20;
+}
+.km-node[data-emphasis="dim"] {
+  opacity: 0.16;
+}
+@media (hover: hover) {
+  .km-node[data-emphasis="base"]:hover,
+  .km-node[data-emphasis="connected"]:hover {
+    border-color: var(--color-border-strong);
+  }
+}
+
 /* -- entrance cue: opt-in, tied to scroll where supported, no JS ------- */
 @keyframes u-rise {
   from {
@@ -562,6 +604,12 @@ h4 {
   }
   .hero-spotlight {
     display: none !important;
+  }
+  .km-node {
+    transition: opacity 0.01ms !important;
+  }
+  .km-node[data-emphasis="focus"] {
+    transform: translate(-50%, -50%) !important;
   }
   [data-rel-scope]:has([data-rel]:hover, [data-rel]:focus-visible)
     [data-rel]:not(:hover):not(:focus-visible):not([data-rel-active]) {

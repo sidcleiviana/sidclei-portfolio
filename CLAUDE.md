@@ -1618,3 +1618,65 @@ filtro (slug privado → `notFound()`). Validação de schema impede `private` +
   inerte sem anchor; + Experience move o anchor na seleção, Knowledge mantém
   anchor ativo), build — verdes. Shared First Load JS **103 kB —
   inalterado**. Home 3.4 kB de rota. Zero overflow em 375/1440 em toda rota.
+
+---
+
+## Atualização — Sprint 9 (Mapa de Conhecimento / Knowledge Map MVP)
+
+- **`/conhecimento/mapa`** — visualização das relações **reais** entre
+  experiências, projetos, competências e tecnologias. Sem force graph, sem
+  biblioteca, sem CMS novo, sem IA. Aprovado com 4 ajustes: (1) edges muito
+  discretos no overview, só o cluster selecionado é protagonista; (2)
+  estabilidade espacial — focus é **dim-in-place**, nenhum nó se move; (3)
+  deep link com chave pública `type:slug`, não `_id`; (4) o Living Agent
+  complementa, move só na seleção (não no hover).
+- **Data audit real**: 30 nós (4 experiences · 1 project público · 11 skills ·
+  14 technologies) · 52 edges dos 5 tipos (`experience_skill` 17,
+  `experience_technology` 22, `project_skill` 3, `project_technology` 9,
+  `project_experience` 1) · **0 `skill_technology`**. Grafo conexo.
+- **Query** `knowledgeMapQuery` + `getKnowledgeMap()` — uma projeção
+  relacional, um round trip, gate público inline, projeção leve. TypeGen
+  regenerado (`KnowledgeMapQueryResult`).
+- **Adapter** `src/domain/knowledgeGraph.ts` (puro, testado): `toGraphData`
+  (5 builders de edge; edge só existe se ambos endpoints forem nós → project
+  privado nunca contribui), `nodeKey` = `type:slug` (experience via
+  `slugify(company-role)`, sem `_id`), `parseNodeKey`, `connectedIds`
+  (1 hop), `applyFilter` (esconde tipo + edges órfãos), `computeLayout`
+  (determinístico, 3 faixas: skills / exp+proj / technologies; wrap quando
+  a faixa fica apertada).
+- **Client** (`src/features/knowledge/map/`, island de rota, fora do shared
+  bundle): `KnowledgeMap` (estado local, `?node` deep link via
+  `router.replace`, media hook desktop↔mobile, `repositionAgent()` só na
+  seleção), `KnowledgeMapCanvas` (nós HTML posicionados por `computeLayout`
+  medido no mount — `opacity:0` até medir, sem mismatch; `ResizeObserver`
+  debounced 150ms; focus = dim-in-place: `data-emphasis` base/connected/
+  focus/dim, nada se move), `KnowledgeMapNode` (`<button>` real, forma por
+  tipo — pill/retângulo/chip/tag), `KnowledgeMapEdges` (`<svg>` de `<path>`
+  bézier; overview opacity ~0.1, ativo ~0.85 indigo; `aria-hidden`),
+  `KnowledgeMapExplorer` (mobile: entidade focada + rails verticais +
+  tap-para-refocar encadeado + "← voltar" numa stack rasa),
+  `KnowledgeMapPanel` (vocabulário Apareceu em / Demonstrado em /
+  Relacionado à experiência / Tecnologias presentes nesses contextos —
+  **derivado, rotulado explicitamente, nunca edge**), `KnowledgeMapFilters`
+  (4 toggles + "Visão geral"), `KnowledgeMapTextMap` (fallback a11y sempre
+  presente: `<nav>` com cada nó → conexões diretas como links; SVG das
+  linhas é `aria-hidden`). Hook `useKnowledgeMap`.
+- **Living Agent**: novos anchors `map-overview` (perto do painel na visão
+  geral) e `map-node` (no nó selecionado). Reusa `AgentSvg`, movimentos,
+  reduced motion. Move → land → idle na seleção; hover não move o agente.
+- **Integração**: `/conhecimento` ganhou a superfície CTA "Mapa de
+  Conhecimento · Explorar mapa →"; skill/technology detail ganharam "Ver no
+  mapa →" com deep link `?node=type:slug`. Header **não** mudou (§6).
+- **Reduced motion**: `.km-node` sem transição/scale, agente estático,
+  edges instantâneos. Overview aparece completo.
+- **CMS intacto**: nenhum schema, conteúdo, slug, relação, ISR, webhook,
+  SEO ou regra de segurança alterado. `anonymized` participa só com dado já
+  público; `private`/`draft` excluído de nós e edges.
+- **Gates**: typecheck, lint, **114 testes** (99 → +15: `knowledgeGraph`
+  domain — os 5 edge types, **zero `skill_technology`** mesmo com
+  co-ocorrência, exclusão de project privado, `connectedIds` não-transitivo,
+  `computeLayout` determinístico; `knowledgeMap` component — overview,
+  seleção, deep link, filtro, cadeia mobile, text map), build — verdes.
+  Shared First Load JS **103 kB — inalterado**. `/conhecimento/mapa` 5,96 kB
+  de rota / 174 kB First Load. Sem physics loop, sem RAF idle, sem
+  mousemove global. Zero overflow em 375/1440.
