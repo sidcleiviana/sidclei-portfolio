@@ -26,7 +26,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero profile={profile} />
+      <Hero profile={profile} experiences={experiences} />
       <FocusAreas />
       <FeaturedProjects projects={projects} />
       <CareerSummary experiences={experiences} />

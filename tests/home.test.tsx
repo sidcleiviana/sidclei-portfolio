@@ -45,6 +45,24 @@ describe("Hero", () => {
     render(<Hero profile={richHomeFixture.profile} />);
     expect(screen.getByText(/Resumo de exemplo/)).toBeInTheDocument();
   });
+
+  it("shows no live-status line without an ongoing experience", () => {
+    render(<Hero profile={null} />);
+    expect(screen.queryByText(/Atualmente/)).not.toBeInTheDocument();
+  });
+
+  it("surfaces the ongoing experience as a live-status link", () => {
+    render(
+      <Hero profile={null} experiences={richHomeFixture.experiences} />
+    );
+    const link = screen.getByRole("link", { name: /Atualmente/ });
+    expect(link).toHaveAttribute(
+      "href",
+      "/experiencia#empresa-de-exemplo-desenvolvedor-de-software"
+    );
+    expect(link).toHaveTextContent("Empresa de exemplo");
+    expect(screen.queryByText(/Outra empresa/)).not.toBeInTheDocument();
+  });
 });
 
 describe("FeaturedProjects", () => {

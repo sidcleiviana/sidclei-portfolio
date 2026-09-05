@@ -189,6 +189,16 @@ h6 {
   color: var(--color-fg-muted);
 }
 
+/* A faint technical grid — evokes a blueprint/schematic rather than a flat
+   colour field or a decorative gradient. Very low presence; decorative only. */
+.bg-grid-texture {
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--color-border-strong) 55%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 28px 28px;
+}
+
 /* An "└" elbow that ties a relation label to the entity above it (Sprint 7.1
    §16). Decorative — the label text ("usado em …") carries the meaning. */
 .u-connect {
@@ -291,6 +301,21 @@ button:hover .u-arrow,
 [data-animate="line"] {
   animation: ds-line var(--dur-slow) var(--ease-out) both;
   transform-origin: left;
+}
+
+/* A slow, quiet pulse for the "currently at X" live-status dot — real content,
+   a small honest sign of life rather than a decorative glow. */
+@keyframes ds-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.u-live-dot {
+  animation: ds-pulse 2.2s var(--ease-in-out) infinite;
 }
 
 /* Where scroll-driven animations are supported, tie the entrance cues to

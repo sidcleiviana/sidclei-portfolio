@@ -1,5 +1,9 @@
-import { ArrowLink, Container, Section } from "@/components/ui";
-import type { HomeProfile } from "@/sanity/types";
+import Link from "next/link";
+
+import { ArrowLink, Container, Rule, Section } from "@/components/ui";
+import { experienceAnchor } from "@/domain/experienceAnchor";
+import { isCurrent } from "@/domain/monthRange";
+import type { HomeExperienceRef, HomeProfile } from "@/sanity/types";
 
 import {
   FALLBACK_HEADLINE,
@@ -13,18 +17,26 @@ import {
  * name as a quiet label, the profession set as a dominant graphic element, the
  * four axes as a small connected structure in the right column, a short intro,
  * one strong way forward. Header and hero read as one composition — the top
- * space is trimmed.
+ * space is trimmed. A live status line (7.3) surfaces the current role when
+ * one exists in the CMS — real data, not a fabricated "available now" badge.
  */
-export function Hero({ profile }: { profile: HomeProfile | null }) {
+export function Hero({
+  profile,
+  experiences = [],
+}: {
+  profile: HomeProfile | null;
+  experiences?: HomeExperienceRef[];
+}) {
   const name = profile?.name ?? FALLBACK_NAME;
   const headline = profile?.headline ?? FALLBACK_HEADLINE;
   const summary = profile?.shortSummary ?? FALLBACK_SUMMARY;
+  const current = experiences.find((e) => isCurrent(e.period));
 
   return (
     <Section
       spacing="lg"
       aria-labelledby="hero-title"
-      className="pt-8 sm:pt-12"
+      className="bg-grid-texture pt-8 sm:pt-12"
     >
       <Container size="editorial">
         <div
@@ -74,10 +86,33 @@ export function Hero({ profile }: { profile: HomeProfile | null }) {
           </div>
         </div>
 
+        {current ? (
+          <Link
+            href={`/experiencia#${experienceAnchor(current)}`}
+            data-animate="rise"
+            data-delay="2"
+            className="group u-label mt-8 inline-flex items-center gap-2.5"
+          >
+            <span
+              aria-hidden
+              className="u-live-dot h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-petrol)]"
+            />
+            <span className="text-fg-muted group-hover:text-fg transition-colors">
+              Atualmente {current.role ? `${current.role} · ` : ""}
+              {current.company}
+            </span>
+          </Link>
+        ) : null}
+
+        <Rule
+          weight="strong"
+          animate
+          className="mt-14"
+        />
         <div
           data-animate="rise"
           data-delay="3"
-          className="mt-14 grid gap-x-8 gap-y-8 border-t border-[var(--color-rule)] pt-8 lg:grid-cols-12"
+          className="grid gap-x-8 gap-y-8 pt-8 lg:grid-cols-12"
         >
           <p className="text-fg-muted max-w-[46ch] text-xl leading-8 text-pretty lg:col-span-7">
             {summary}
