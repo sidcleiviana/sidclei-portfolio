@@ -287,11 +287,15 @@ h4 {
 .agent--on {
   opacity: 1;
 }
-.agent[role="button"] {
+.agent-btn {
   pointer-events: auto;
   cursor: pointer;
+  border: 0;
+  background: none;
+  padding: 0;
+  color: inherit;
 }
-.agent[role="button"]:focus-visible {
+.agent-btn:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 4px;
   border-radius: var(--radius-sm);

@@ -8,7 +8,7 @@ type Phase = "idle" | "look" | "move" | "land" | "interact";
 
 const FAR = 1.2; // viewport-heights: beyond this, hop (fade) instead of slide
 const NEAR = 150; // px: pointer proximity that wakes the "look" state
-const HERO_LABEL = "explore";
+const HERO_LABEL = "Explorar conexões";
 
 /**
  * The Living Agent. One roaming entity per route: it lands at `[data-agent-anchor]`
@@ -191,8 +191,6 @@ export function LivingAgent() {
     setPhase((p) => (p === "interact" ? "idle" : "interact"));
   };
 
-  const interactive = atHero;
-
   return (
     <div
       ref={elRef}
@@ -200,25 +198,23 @@ export function LivingAgent() {
       data-agent-open={poked ? "" : undefined}
       className={`agent ${visible ? "agent--on" : "agent--off"}`}
       style={pos ? { transform: `translate(${pos.x}px, ${pos.y}px)` } : undefined}
-      {...(interactive
-        ? {
-            role: "button",
-            tabIndex: 0,
-            "aria-label": poked ? `${HERO_LABEL} — recolher` : HERO_LABEL,
-            "aria-pressed": poked,
-            onClick: poke,
-            onKeyDown: (e: React.KeyboardEvent) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                poke();
-              }
-            },
-          }
-        : { "aria-hidden": true })}
+      {...(atHero ? {} : { "aria-hidden": true })}
     >
-      <span className="agent-hit">
-        <AgentSvg />
-      </span>
+      {atHero ? (
+        <button
+          type="button"
+          className="agent-hit agent-btn"
+          aria-label={poked ? `${HERO_LABEL} — recolher` : HERO_LABEL}
+          aria-pressed={poked}
+          onClick={poke}
+        >
+          <AgentSvg />
+        </button>
+      ) : (
+        <span className="agent-hit">
+          <AgentSvg />
+        </span>
+      )}
       <span className="agent-label u-label">{HERO_LABEL}</span>
     </div>
   );
