@@ -68,7 +68,7 @@ export function ProjectCaseStudy({
     <article className="pb-8">
       <Section
         spacing="md"
-        className="pt-8 pb-16 sm:pt-12 sm:pb-20"
+        className="border-b-2 border-[var(--color-accent)] pt-8 pb-16 sm:pt-12 sm:pb-20"
         data-surface="dark"
       >
         <ProjectHeader project={project} />

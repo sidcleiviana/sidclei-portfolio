@@ -32,7 +32,7 @@ export function ProjectHeader({ project }: { project: ProjectDetail }) {
     <Container size="editorial" as="header">
       <div data-animate="rise">
         <p className="u-label">
-          <span className="text-fg-faint tabular-nums">01</span> /{" "}
+          <span className="text-accent tabular-nums">01</span> /{" "}
           {projectTypeLabel(project.projectType)}
           {authorshipLabel ? (
             <span className="text-fg-faint"> · {authorshipLabel}</span>
@@ -59,7 +59,7 @@ export function ProjectHeader({ project }: { project: ProjectDetail }) {
           </p>
         ) : null}
 
-        <Rule weight="strong" className="mt-14" />
+        <Rule weight="accent" className="mt-14" />
 
         <div className="mt-6 grid gap-x-10 gap-y-8 sm:grid-cols-12">
           {technologies.length ? (

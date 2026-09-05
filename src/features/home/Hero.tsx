@@ -36,7 +36,7 @@ export function Hero({
     <Section
       spacing="lg"
       aria-labelledby="hero-title"
-      className="bg-grid-texture pt-8 sm:pt-12"
+      className="bg-grid-texture border-b-2 border-[var(--color-accent)] pt-8 sm:pt-12"
     >
       <Container size="editorial">
         <div
@@ -70,7 +70,7 @@ export function Hero({
             data-delay="2"
             aria-label="Áreas de atuação"
             data-surface="tonal"
-            className="p-5 lg:col-span-3 lg:justify-self-end lg:pt-4"
+            className="border-t-2 border-[var(--color-accent)] p-6 lg:col-span-3 lg:justify-self-end lg:pt-5"
           >
             <p className="u-label text-fg-muted">Atuação</p>
             <ul className="mt-3 border-l border-[var(--color-accent)]/35 pl-3.5">

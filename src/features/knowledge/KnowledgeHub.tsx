@@ -36,7 +36,7 @@ function SkillChapter({
   items: KnowledgeSkill[];
 }) {
   return (
-    <div className="grid gap-x-10 gap-y-6 border-t-2 border-[var(--color-rule)] pt-8 sm:grid-cols-12">
+    <div className="grid gap-x-10 gap-y-6 border-t-2 border-[var(--color-accent)] pt-8 sm:grid-cols-12">
       <ChapterMark index={index} category={category} />
 
       <RelationalScope className="sm:col-span-9">
