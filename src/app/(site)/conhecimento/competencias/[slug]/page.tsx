@@ -38,11 +38,12 @@ export default async function SkillDetailPage({ params }: Params) {
       description={skill.shortDescription}
       aside={
         skill.featured ? (
-          <span className="u-label text-fg-faint">Em destaque</span>
+          <span className="u-label text-[var(--color-node)]">Em destaque</span>
         ) : null
       }
       experiences={skill.experiences}
       projects={skill.projects}
+      contextTechnologies={skill.contextTechnologies}
     />
   );
 }

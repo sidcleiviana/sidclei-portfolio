@@ -983,7 +983,7 @@ export type ExperiencesQueryResult = Array<{
 
 // Source: ./src/sanity/queries/home.ts
 // Variable: homeQuery
-// Query: {  "profile": *[_type == "profile"][0] {    name,    headline,    shortSummary,    publicLocation,    resumeUrl,    professionalEmail,    "links": coalesce(links, [])  },  "projects": *[    _type == "project" && status == "published" && visibility != "private"  ] | order(featured desc, coalesce(publishedAt, period.startDate, "") desc, title asc)[0...6] {    _id,    title,    "slug": slug.current,    shortDescription,    projectType,    featured,    visibility,    coverImage,    "technologies": technologies[]->{ _id, name, "slug": slug.current, category }  },  "experiences": *[_type == "experience"] | order(    coalesce(period.ongoing, false) desc,    period.startDate desc  )[0...2] {    _id,    company,    role,    period,    location  }}
+// Query: {  "profile": *[_type == "profile"][0] {    name,    headline,    shortSummary,    publicLocation,    resumeUrl,    professionalEmail,    "links": coalesce(links, [])  },  "projects": *[    _type == "project" && status == "published" && visibility != "private"  ] | order(featured desc, coalesce(publishedAt, period.startDate, "") desc, title asc)[0...6] {    _id,    title,    "slug": slug.current,    shortDescription,    projectType,    featured,    visibility,    period,    "roles": contribution.roles,    "technologies": technologies[]->{ _id, name, "slug": slug.current }  },  "experiences": *[_type == "experience"] | order(    coalesce(period.ongoing, false) desc,    period.startDate desc  )[0...4] {    _id,    company,    role,    period,    location,    summary,    responsibilities,    "skills": skills[]->{ _id, name, "slug": slug.current, category },    "technologies": technologies[]->{ _id, name, "slug": slug.current, category },    "projects": *[      _type == "project"      && references(^._id)      && status == "published"      && visibility != "private"    ] | order(coalesce(publishedAt, period.startDate, "") desc) {      _id, title, "slug": slug.current, visibility    }  },  "featuredSkills": *[_type == "skill" && featured == true && defined(slug.current)]    | order(lower(name) asc)[0...6] {      _id,      name,      "slug": slug.current,      category,      shortDescription,      "contextExperiences": *[_type == "experience" && references(^._id)]        | order(coalesce(period.ongoing, false) desc, period.startDate desc) {          _id, company, role        },      "contextProjects": *[        _type == "project" && references(^._id)        && status == "published" && visibility != "private"      ] | order(coalesce(publishedAt, period.startDate, "") desc) {        _id, title, "slug": slug.current, visibility      },      "contextTechnologies": array::unique(        *[_type == "experience" && references(^._id)].technologies[]->name        + *[            _type == "project" && references(^._id)            && status == "published" && visibility != "private"          ].technologies[]->name      )    }}
 export type HomeQueryResult = {
   profile: {
     name: string | null;
@@ -1008,20 +1008,40 @@ export type HomeQueryResult = {
     projectType: "lab" | "production" | "professional" | "study" | null;
     featured: boolean | null;
     visibility: "anonymized" | "private" | "public" | null;
-    coverImage: {
-      asset?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-      };
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      alt?: string;
-      caption?: string;
-      _type: "imageWithAlt";
-    } | null;
+    period: DateRange | null;
+    roles: Array<string> | null;
+    technologies: Array<{
+      _id: string;
+      name: string | null;
+      slug: string | null;
+    }> | null;
+  }>;
+  experiences: Array<{
+    _id: string;
+    company: string | null;
+    role: string | null;
+    period: DateRange | null;
+    location: string | null;
+    summary: string | null;
+    responsibilities: Array<string> | null;
+    skills: Array<{
+      _id: string;
+      name: string | null;
+      slug: string | null;
+      category:
+        | "Automa\xE7\xE3o"
+        | "Banco de Dados"
+        | "Cybersecurity"
+        | "Dados"
+        | "Desenvolvimento"
+        | "Gest\xE3o"
+        | "Infraestrutura"
+        | "Integra\xE7\xF5es"
+        | "Intelig\xEAncia Artificial"
+        | "Qualidade"
+        | "Redes"
+        | null;
+    }> | null;
     technologies: Array<{
       _id: string;
       name: string | null;
@@ -1037,19 +1057,49 @@ export type HomeQueryResult = {
         | "Sistema / ERP"
         | null;
     }> | null;
+    projects: Array<{
+      _id: string;
+      title: string | null;
+      slug: string | null;
+      visibility: "anonymized" | "private" | "public" | null;
+    }>;
   }>;
-  experiences: Array<{
+  featuredSkills: Array<{
     _id: string;
-    company: string | null;
-    role: string | null;
-    period: DateRange | null;
-    location: string | null;
+    name: string | null;
+    slug: string | null;
+    category:
+      | "Automa\xE7\xE3o"
+      | "Banco de Dados"
+      | "Cybersecurity"
+      | "Dados"
+      | "Desenvolvimento"
+      | "Gest\xE3o"
+      | "Infraestrutura"
+      | "Integra\xE7\xF5es"
+      | "Intelig\xEAncia Artificial"
+      | "Qualidade"
+      | "Redes"
+      | null;
+    shortDescription: string | null;
+    contextExperiences: Array<{
+      _id: string;
+      company: string | null;
+      role: string | null;
+    }>;
+    contextProjects: Array<{
+      _id: string;
+      title: string | null;
+      slug: string | null;
+      visibility: "anonymized" | "private" | "public" | null;
+    }>;
+    contextTechnologies: Array<string | null>;
   }>;
 };
 
 // Source: ./src/sanity/queries/knowledge.ts
 // Variable: knowledgeHubQuery
-// Query: {  "skills": *[_type == "skill" && defined(slug.current)] | order(featured desc, lower(name) asc) {    _id, name, "slug": slug.current, category, shortDescription, featured,    "contexts": array::unique(*[_type == "experience" && references(^._id)].company)  },  "technologies": *[_type == "technology" && defined(slug.current)] | order(lower(name) asc) {    _id, name, "slug": slug.current, category,    "contexts": array::unique(*[_type == "experience" && references(^._id)].company)  }}
+// Query: {  "skills": *[_type == "skill" && defined(slug.current)] | order(featured desc, lower(name) asc) {    _id, name, "slug": slug.current, category, shortDescription, featured,    "contextExperiences": *[_type == "experience" && references(^._id)]      | order(coalesce(period.ongoing, false) desc, period.startDate desc) {        _id, company, role      },    "contextProjects": *[      _type == "project" && references(^._id)      && status == "published" && visibility != "private"    ] | order(coalesce(publishedAt, period.startDate, "") desc) {      _id, title, "slug": slug.current, visibility    },    "contextTechnologies": array::unique(      *[_type == "experience" && references(^._id)].technologies[]->name      + *[          _type == "project" && references(^._id)          && status == "published" && visibility != "private"        ].technologies[]->name    )  },  "technologies": *[_type == "technology" && defined(slug.current)] | order(lower(name) asc) {    _id, name, "slug": slug.current, category,    "contextExperiences": *[_type == "experience" && references(^._id)]      | order(coalesce(period.ongoing, false) desc, period.startDate desc) {        _id, company, role      },    "contextProjects": *[      _type == "project" && references(^._id)      && status == "published" && visibility != "private"    ] | order(coalesce(publishedAt, period.startDate, "") desc) {      _id, title, "slug": slug.current, visibility    }  }}
 export type KnowledgeHubQueryResult = {
   skills: Array<{
     _id: string;
@@ -1070,7 +1120,18 @@ export type KnowledgeHubQueryResult = {
       | null;
     shortDescription: string | null;
     featured: boolean | null;
-    contexts: Array<string | null>;
+    contextExperiences: Array<{
+      _id: string;
+      company: string | null;
+      role: string | null;
+    }>;
+    contextProjects: Array<{
+      _id: string;
+      title: string | null;
+      slug: string | null;
+      visibility: "anonymized" | "private" | "public" | null;
+    }>;
+    contextTechnologies: Array<string | null>;
   }>;
   technologies: Array<{
     _id: string;
@@ -1086,11 +1147,21 @@ export type KnowledgeHubQueryResult = {
       | "Servi\xE7o"
       | "Sistema / ERP"
       | null;
-    contexts: Array<string | null>;
+    contextExperiences: Array<{
+      _id: string;
+      company: string | null;
+      role: string | null;
+    }>;
+    contextProjects: Array<{
+      _id: string;
+      title: string | null;
+      slug: string | null;
+      visibility: "anonymized" | "private" | "public" | null;
+    }>;
   }>;
 };
 // Variable: skillBySlugQuery
-// Query: *[  _type == "skill" && slug.current == $slug][0] {  _id, name, "slug": slug.current, category, shortDescription, featured,  "experiences": *[_type == "experience" && references(^._id)] | order(    coalesce(period.ongoing, false) desc, period.startDate desc  ) { _id, company, role, period },  "projects": *[    _type == "project" && references(^._id)    && status == "published" && visibility != "private"  ] | order(coalesce(publishedAt, period.startDate, "") desc) {    _id, title, "slug": slug.current, shortDescription, projectType, visibility,    "technologies": technologies[]->{ _id, name }  }}
+// Query: *[  _type == "skill" && slug.current == $slug][0] {  _id, name, "slug": slug.current, category, shortDescription, featured,  "experiences": *[_type == "experience" && references(^._id)] | order(    coalesce(period.ongoing, false) desc, period.startDate desc  ) { _id, company, role, period },  "projects": *[    _type == "project" && references(^._id)    && status == "published" && visibility != "private"  ] | order(coalesce(publishedAt, period.startDate, "") desc) {    _id, title, "slug": slug.current, shortDescription, projectType, visibility,    "technologies": technologies[]->{ _id, name }  },  "contextTechnologies": array::unique(    *[_type == "experience" && references(^._id)].technologies[]->name    + *[        _type == "project" && references(^._id)        && status == "published" && visibility != "private"      ].technologies[]->name  )}
 export type SkillBySlugQueryResult = {
   _id: string;
   name: string | null;
@@ -1128,6 +1199,7 @@ export type SkillBySlugQueryResult = {
       name: string | null;
     }> | null;
   }>;
+  contextTechnologies: Array<string | null>;
 } | null;
 // Variable: technologyBySlugQuery
 // Query: *[  _type == "technology" && slug.current == $slug][0] {  _id, name, "slug": slug.current, category, officialUrl,  "experiences": *[_type == "experience" && references(^._id)] | order(    coalesce(period.ongoing, false) desc, period.startDate desc  ) { _id, company, role, period },  "projects": *[    _type == "project" && references(^._id)    && status == "published" && visibility != "private"  ] | order(coalesce(publishedAt, period.startDate, "") desc) {    _id, title, "slug": slug.current, shortDescription, projectType, visibility,    "technologies": technologies[]->{ _id, name }  }}

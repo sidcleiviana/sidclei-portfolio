@@ -1,9 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import { Chip } from "@/components/ui/Chip";
 import { TextLink } from "@/components/ui/TextLink";
 
 describe("Button", () => {
@@ -51,9 +51,10 @@ describe("TextLink", () => {
   });
 });
 
-describe("Badge", () => {
-  it("renders its content", () => {
-    render(<Badge tone="accent">Produção</Badge>);
-    expect(screen.getByText("Produção")).toBeInTheDocument();
+describe("Chip", () => {
+  it("is a real button that reports its pressed state", () => {
+    render(<Chip selected>Backend</Chip>);
+    const chip = screen.getByRole("button", { name: "Backend" });
+    expect(chip).toHaveAttribute("aria-pressed", "true");
   });
 });

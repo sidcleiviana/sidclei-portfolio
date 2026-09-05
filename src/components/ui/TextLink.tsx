@@ -10,12 +10,12 @@ type Props = {
 } & Omit<ComponentProps<typeof Link>, "href" | "className" | "children">;
 
 const CLASS =
-  "text-accent underline decoration-[var(--color-accent)]/35 underline-offset-[3px] " +
+  "text-accent underline decoration-[var(--color-accent)]/30 underline-offset-[3px] " +
   "hover:decoration-[var(--color-accent)] rounded-sm";
 
 /**
  * Inline link. External links open in a new tab with a screen-reader hint and
- * safe `rel` (Design System §13).
+ * a safe `rel`.
  */
 export function TextLink({
   href,

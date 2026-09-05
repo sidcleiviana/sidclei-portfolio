@@ -1,4 +1,4 @@
-import { Container, Rule } from "@/components/ui";
+import { Container } from "@/components/ui";
 import { rolesSummary } from "@/domain/contribution";
 import { formatDateRange } from "@/domain/dateRange";
 import { projectTypeLabel } from "@/domain/projectType";
@@ -12,10 +12,9 @@ const AUTHORSHIP_SHORT: Record<string, string> = {
 };
 
 /**
- * The monumental top of the case (Sprint 7 §16): an index mark, the title set
- * as a graphic element, the roles, a strong rule, then the stack. Empty fields
- * never render; nothing is invented. The anonymised note is an editorial aside,
- * not a warning (Sprint 7 §48).
+ * The case opening — navy-deep. Type / authorship / period as mono meta, the
+ * title, the description, the roles, then the stack. Empty fields never
+ * render; nothing is invented. The anonymised note is a discreet aside.
  */
 export function ProjectHeader({ project }: { project: ProjectDetail }) {
   const period = formatDateRange(project.period);
@@ -29,58 +28,51 @@ export function ProjectHeader({ project }: { project: ProjectDetail }) {
       : null;
 
   return (
-    <Container size="editorial" as="header">
-      <div data-animate="rise">
-        <p className="u-label">
-          <span className="text-accent tabular-nums">01</span> /{" "}
-          {projectTypeLabel(project.projectType)}
-          {authorshipLabel ? (
-            <span className="text-fg-faint"> · {authorshipLabel}</span>
-          ) : null}
-          {period ? <span className="text-fg-faint"> · {period}</span> : null}
+    <Container size="wide" as="header">
+      <p className="u-label">
+        {projectTypeLabel(project.projectType)}
+        {authorshipLabel ? (
+          <span className="text-fg-faint"> · {authorshipLabel}</span>
+        ) : null}
+        {period ? <span className="text-fg-faint"> · {period}</span> : null}
+      </p>
+
+      <h1
+        id="project-title"
+        className="font-display mt-5 max-w-[20ch] text-[clamp(1.9rem,4.5vw,3rem)] font-extrabold leading-[1.03] tracking-[var(--tracking-tight)]"
+      >
+        {project.title}
+      </h1>
+
+      {project.shortDescription ? (
+        <p className="text-fg-muted mt-6 max-w-[var(--container-prose)] text-md text-pretty">
+          {project.shortDescription}
         </p>
+      ) : null}
 
-        <h1
-          id="project-title"
-          className="font-display mt-8 max-w-[16ch] text-[clamp(2.75rem,8.5vw,6.25rem)] leading-[0.98] tracking-[var(--tracking-display)] text-balance"
-        >
-          {project.title}
-        </h1>
+      {roles ? (
+        <p className="u-label mt-6">
+          <span className="text-fg-faint">Minha atuação</span> {roles}
+        </p>
+      ) : null}
 
-        {project.shortDescription ? (
-          <p className="text-fg-muted mt-10 max-w-[var(--container-prose)] text-xl leading-8 text-pretty">
-            {project.shortDescription}
-          </p>
+      <div className="border-border-strong mt-10 grid gap-x-10 gap-y-6 border-t pt-6 sm:grid-cols-12">
+        {technologies.length ? (
+          <div className="sm:col-span-8">
+            <p className="u-label mb-2">Stack</p>
+            <ul className="text-fg-faint flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs">
+              {technologies.map((tech) => (
+                <li key={tech._id}>{tech.name}</li>
+              ))}
+            </ul>
+          </div>
         ) : null}
 
-        {roles ? (
-          <p className="u-label mt-8">
-            <span className="text-fg-faint">Minha atuação</span> {roles}
+        {notice ? (
+          <p className="text-fg-muted border-border-strong border-l pl-4 text-sm text-pretty sm:col-span-4">
+            {notice}
           </p>
         ) : null}
-
-        <Rule weight="accent" className="mt-14" />
-
-        <div className="mt-6 grid gap-x-10 gap-y-8 sm:grid-cols-12">
-          {technologies.length ? (
-            <div className="sm:col-span-8">
-              <p className="u-label text-fg-faint mb-2.5 text-[0.65rem]">
-                Stack
-              </p>
-              <ul className="text-fg-faint flex flex-wrap gap-x-5 gap-y-1 font-mono text-xs">
-                {technologies.map((tech) => (
-                  <li key={tech._id}>{tech.name}</li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-
-          {notice ? (
-            <p className="text-fg-muted border-l border-[var(--color-border-strong)] pl-4 text-sm text-pretty sm:col-span-4">
-              {notice}
-            </p>
-          ) : null}
-        </div>
       </div>
     </Container>
   );

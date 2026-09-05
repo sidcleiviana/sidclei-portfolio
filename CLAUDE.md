@@ -1445,3 +1445,61 @@ filtro (slug privado → `notFound()`). Validação de schema impede `private` +
 - **Doc**: `docs/design-system.md` ganhou seção "Sprint 7.2 — chromatic art
   direction" com paleta, função de cada cor, superfícies, exemplos corretos/
   incorretos e contraste.
+
+---
+
+## Atualização — Sprint 8 (Modular Surfaces — nova identidade visual B+C)
+
+- **Identidade visual reconstruída.** A direção "Editorial Relational Premium"
+  (Sprint 7/7.1/7.2) foi **encerrada** após revisão visual. Nova direção
+  aprovada: **"Modular Surfaces"** — base B (superfícies modulares, contraste
+  graphite/off-white, densidade maior, hero compacto, projeto com presença
+  visual forte) + **~25–30% da lógica interativa de C** (seleção contextual,
+  painéis que atualizam in-place, sem Knowledge Graph). Detalhe completo em
+  `docs/design-system.md` (reescrito para v3).
+- **Tokens v3** (`src/styles/globals.css`): graphite `#14171F` como registro
+  primário; `data-surface="paper|tonal|deep"` repinta os tokens compartilhados
+  por escopo (mecanismo da Sprint 7.2 reaproveitado, proporção invertida).
+  Indigo `#4A3AFF`/`#8B90FF` = única cor de interação/relação; petrol `#22D3C5`
+  = só status "ao vivo" (pulse, "· Atual"). Sem gradiente, sem glow, sem KPI
+  falso, sem cor por categoria.
+- **Tipografia**: **Hanken Grotesk** (display/interface) · **Inter** (corpo) ·
+  **JetBrains Mono** (metadata). **Newsreader removido** (`src/styles/fonts.ts`).
+  Escala reduzida — h1 da Home `clamp(2rem,4.5vw,2.9rem)`, nunca monumental.
+- **Primitivos** (`src/components/ui`): novos `Surface`, `Kicker`, `Chip`,
+  `Tag`/`TagLink`; `Container`/`Section`/`Button`/`buttonClass`/`TextLink`
+  reescritos. **Removidos**: `ArrowLink`, `Badge`, `Rule`, `SectionHeading`,
+  `SectionMarker`, `MonoHeading`, `Stack`, `Panel`.
+- **3 módulos interativos** (os únicos desta Sprint, todos com estado de
+  repouso pleno — progressive enhancement obrigatório):
+  `FeaturedProjectCard` (integrações do projeto como chips → nota contextual;
+  **não** é architecture diagram), `TrajectorySelector` (`features/experience` —
+  lista de papéis → painel in-place no desktop, accordion no mobile; usado na
+  Home e em `/experiencia`), `KnowledgeExplorer` (`features/knowledge` — chips
+  por categoria → contextos reais + "tecnologias presentes nesses contextos",
+  **nunca** edge Skill→Technology; usado na Home e em `/conhecimento`).
+- **Queries**: `homeQuery` ganhou projeção de `roles`/`period` nos projetos,
+  projeção completa das experiências `[0...4]` e `featuredSkills` com contextos
+  (um round trip). `knowledgeHubQuery` ganhou `contextExperiences`/
+  `contextProjects` por entidade + `contextTechnologies` por skill.
+  `skillBySlugQuery` ganhou `contextTechnologies`. **Sem mudança de schema.**
+  Gate público inline em toda projeção de projeto. TypeGen regenerado.
+- **Superfícies públicas reconstruídas** na ordem de prioridade: Home
+  (`Hero → FeaturedProject → HomeTrajectory → HomeKnowledge → HomeOutro`),
+  Projects (feature em paper + linhas), Experience (`TrajectorySelector` pleno),
+  Knowledge (`KnowledgeExplorer`: Competências em tonal, Tecnologias em
+  graphite), Case Study (abertura navy + spine contextual `ProjectToc` +
+  sistema de blocos da Sprint 2 preservado + seção "Relações"), Knowledge
+  Detail (cabeçalho tonal + "Apareceu em"/"Demonstrado em"), Header/Footer.
+- **Command Palette / busca ⌘K**: **não implementada** (possibilidade futura;
+  nenhum componente, dependência, atalho ou placeholder criado).
+- **Preservado**: schema/conteúdo/slugs/relações/confidencialidade/ISR/webhook/
+  SEO/segurança intactos; sistema de blocos do case study; infra de
+  acessibilidade; helpers de domínio; `RelationalScope`. Rotas `/dev/*`
+  (sandboxes da identidade antiga) removidas.
+- **Gates**: typecheck, lint, 91 testes (85 → +6, adaptados à nova estrutura),
+  build verdes. Shared First Load JS **103 kB — inalterado** (os 3 islands
+  somam ~1–3 kB por rota). Homologação: verificação estrutural + de superfície
+  + de overflow via JS em 375/1440 (zero overflow em toda rota, ritmo
+  cromático correto, seletores funcionando); screenshots reais a 582px
+  (limitação do painel de browser da sessão para viewports emulados).

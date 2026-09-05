@@ -68,7 +68,7 @@ export function Timeline({ block }: { block: TimelineBlock }) {
   if (!entries.length) return null;
   return (
     <BlockShell heading={block.heading ?? "Processo"}>
-      <ol className="space-y-6 border-l border-[var(--color-rule)] pl-6">
+      <ol className="space-y-6 border-l border-border-strong pl-6">
         {entries.map((entry) => (
           <li key={entry._key} className="relative">
             <span

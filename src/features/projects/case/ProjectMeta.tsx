@@ -1,19 +1,21 @@
 import Link from "next/link";
 
-import { Rule, TextLink } from "@/components/ui";
+import { TextLink } from "@/components/ui";
 import { experienceAnchor } from "@/domain/experienceAnchor";
 import { KnowledgeBadge } from "@/features/knowledge/KnowledgeBadge";
 import type { ProjectDetail } from "@/sanity/types";
 
+import { CaseHeading } from "./CaseHeading";
+
 function MetaLabel({ children }: { children: React.ReactNode }) {
-  return <p className="u-label text-fg-faint mb-3">{children}</p>;
+  return <p className="u-label mb-2.5">{children}</p>;
 }
 
 /**
- * The closing metadata of a case. Skills and Technologies stay separate
- * concepts (Sprint 7 §16): a Skill is what was done, a Technology is what it
- * was done with. Related projects are never inferred — only explicit CMS
- * relations. Badges deep-link into the Knowledge Hub.
+ * The relational close of a case. Skills and Technologies stay separate
+ * concepts: a Skill is what was done, a Technology is what it was done with.
+ * Related work is never inferred — only explicit CMS relations. Badges
+ * deep-link into the Knowledge Hub.
  */
 export function ProjectMeta({ project }: { project: ProjectDetail }) {
   const skills = (project.skills ?? []).filter((s) => s?.name);
@@ -33,19 +35,14 @@ export function ProjectMeta({ project }: { project: ProjectDetail }) {
 
   return (
     <>
-      <Rule weight="strong" className="mt-20" />
-      <div className="mt-8 grid gap-x-10 gap-y-10 sm:grid-cols-2">
+      <CaseHeading>Relações</CaseHeading>
+      <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
         {skills.length ? (
           <div>
             <MetaLabel>Competências</MetaLabel>
-            <div className="flex flex-wrap gap-x-4 gap-y-2">
+            <div className="flex flex-wrap gap-x-4 gap-y-1.5">
               {skills.map((s) => (
-                <KnowledgeBadge
-                  key={s._id}
-                  kind="skill"
-                  slug={s.slug}
-                  name={s.name}
-                />
+                <KnowledgeBadge key={s._id} kind="skill" slug={s.slug} name={s.name} />
               ))}
             </div>
           </div>
@@ -54,7 +51,7 @@ export function ProjectMeta({ project }: { project: ProjectDetail }) {
         {technologies.length ? (
           <div>
             <MetaLabel>Tecnologias</MetaLabel>
-            <div className="flex flex-wrap gap-x-4 gap-y-2">
+            <div className="flex flex-wrap gap-x-4 gap-y-1.5">
               {technologies.map((t) => (
                 <KnowledgeBadge
                   key={t._id}
@@ -72,11 +69,9 @@ export function ProjectMeta({ project }: { project: ProjectDetail }) {
             <MetaLabel>Experiência relacionada</MetaLabel>
             <Link
               href={`/experiencia#${experienceAnchor(experience)}`}
-              className="font-display hover:text-accent rounded-sm text-lg"
+              className="font-display hover:text-accent rounded-sm text-md font-bold"
             >
-              {[experience.role, experience.company]
-                .filter(Boolean)
-                .join(" · ")}
+              {[experience.role, experience.company].filter(Boolean).join(" · ")}
             </Link>
           </div>
         ) : null}

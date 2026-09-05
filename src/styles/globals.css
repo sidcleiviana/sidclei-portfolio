@@ -1,53 +1,47 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   Design System v2 — "Editorial Relational Premium" (Sprint 7)
-   + Chromatic Art Direction (Sprint 7.2)
-   A technology publication crossed with an engineering portfolio: type as the
-   graphic element, thin rules as structure, generous vertical rhythm. Colour
-   has a job — identity + structure + relation, ~80/15/5 neutral / indigo /
-   petrol. Dark surfaces are *chapters within the light identity*, not a dark
-   mode. Tokens are the only source of truth — components never hardcode a
-   colour; a `[data-surface]` scope repaints the shared vars so the same
-   components render correctly on paper, tonal and dark.
+   Design System v3 — "Modular Surfaces" (B + ~25–30% of C)
+   A technological interface you want to explore, not an article you read.
+   Graphite is the primary ground; paper, tonal and navy surfaces give the
+   page rhythm. Colour has one job: indigo = interaction / relation; petrol
+   = the live "current" status, rare. Tokens are the only source of truth —
+   components never hardcode a colour; a [data-surface] scope repaints the
+   shared vars so the same component renders correctly on every surface.
    ========================================================================== */
 
 @theme {
-  /* -- colour · base -----------------------------------------------------
-     Warm paper, warm near-black ink. `faint` is for section numbers and the
-     quietest meta; `rule` is the strong editorial hairline used sparingly. */
-  --color-bg: #e9e7e0;
-  --color-bg-subtle: #dedcd3;
-  --color-bg-tonal: #ecebfb; /* indigo-soft surface */
-  --color-surface: #f2f0ea;
-  --color-fg: #16150f;
-  --color-fg-muted: #55534a;
-  --color-fg-faint: #666352;
-  --color-border: #cac7ba;
-  --color-border-strong: #a8a494;
-  --color-rule: #1b1a14;
+  /* -- palette (literal values, one place) ------------------------------ */
+  --color-graphite: #14171f;
+  --color-graphite-raised: #1a1e2a;
+  --color-navy: #0b0e15;
+  --color-paper: #ece9e2;
+  --color-paper-raised: #f4f2ec;
+  --color-ink: #15161c;
+  --color-tint: #191d2e; /* graphite with an indigo cast — relational panels */
 
-  /* -- colour · indigo (the site colour — relation, structure, identity) - */
-  --color-accent: #2d2ae2;
-  --color-accent-strong: #1f1eb2;
-  --color-accent-on-dark: #9b9aff; /* luminous indigo, for dark chapters */
+  --color-indigo: #4a3aff;
+  --color-indigo-bright: #8b90ff; /* legible indigo on dark surfaces */
+  --color-indigo-deep: #3527d9;
+  --color-petrol: #22d3c5;
 
-  /* -- colour · dark chapter ------------------------------------------- */
-  --color-surface-dark: #16152f; /* deep indigo-ink */
-  --color-on-dark: #f4f3ef;
-  --color-on-dark-muted: #b9b8c6;
-  --color-on-dark-faint: #8b8aa0;
-  --color-rule-on-dark: rgb(244 243 239 / 0.16);
+  /* -- semantic tokens — components use ONLY these -------------------- */
+  --color-bg: var(--color-graphite);
+  --color-bg-subtle: #212634;
+  --color-surface: var(--color-graphite-raised);
+  --color-fg: #eceae1;
+  --color-fg-muted: #9da0b2;
+  --color-fg-faint: #6c6f82;
+  --color-border: #2b2f3d;
+  --color-border-strong: #3b4052;
+  --color-accent: var(--color-indigo-bright);
+  --color-accent-strong: #aab0ff;
+  --color-node: var(--color-petrol);
 
-  /* -- colour · petrol (secondary — rare: relational nodes / markers) -- */
-  --color-petrol: #0f6e6a;
-  --color-node-on-dark: #4fd0c4;
-
-  /* -- typography ------------------------------------------------------------
-     display = Newsreader (serif) · sans = Inter · mono = JetBrains Mono */
+  /* -- typography ---------------------------------------------------------
+     display / interface = Hanken Grotesk · body = Inter · meta = JetBrains Mono */
   --font-display:
-    var(--font-display-src), ui-serif, Georgia, Cambria, "Times New Roman",
-    serif;
+    var(--font-display-src), ui-sans-serif, system-ui, sans-serif;
   --font-sans:
     var(--font-sans-src), ui-sans-serif, system-ui, -apple-system, "Segoe UI",
     Roboto, Helvetica, Arial, sans-serif;
@@ -58,54 +52,46 @@
   --text-xs: 0.75rem;
   --text-xs--line-height: 1.5;
   --text-sm: 0.8125rem;
-  --text-sm--line-height: 1.55;
-  --text-base: 1rem;
-  --text-base--line-height: 1.68;
-  --text-lg: 1.1875rem;
-  --text-lg--line-height: 1.6;
-  --text-xl: 1.5rem;
-  --text-xl--line-height: 1.35;
+  --text-sm--line-height: 1.5;
+  --text-base: 0.9375rem;
+  --text-base--line-height: 1.62;
+  --text-md: 1.0625rem;
+  --text-md--line-height: 1.55;
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.4;
+  --text-xl: 1.625rem;
+  --text-xl--line-height: 1.22;
   --text-2xl: 2rem;
-  --text-2xl--line-height: 1.18;
-  --text-3xl: 2.75rem;
-  --text-3xl--line-height: 1.1;
-  --text-4xl: 3.75rem;
-  --text-4xl--line-height: 1.04;
-  --text-5xl: 5rem;
-  --text-5xl--line-height: 1;
+  --text-2xl--line-height: 1.12;
+  --text-3xl: 2.5rem;
+  --text-3xl--line-height: 1.06;
+  --text-4xl: 3.25rem;
+  --text-4xl--line-height: 1.02;
 
-  --tracking-display: -0.028em;
-  --tracking-tight: -0.012em;
-  --tracking-label: 0.16em;
+  --tracking-tight: -0.02em;
+  --tracking-label: 0.12em;
 
-  /* -- radius (editorial surfaces are square; controls keep a hint) -------- */
-  --radius-none: 0;
+  /* -- radius / elevation -------------------------------------------------
+     Near-square. A hint of radius on interactive surfaces only. */
+  --radius: 0.375rem;
   --radius-sm: 0.25rem;
-  --radius-md: 0.375rem;
+  --shadow-panel:
+    0 1px 0 rgb(255 255 255 / 0.03) inset, 0 22px 44px -30px rgb(0 0 0 / 0.55);
 
-  /* -- elevation (borders and space carry structure) --------------------- */
-  --shadow-sm: 0 1px 2px rgb(20 20 15 / 0.05);
+  /* -- layout --------------------------------------------------------- */
+  --container: 78rem;
+  --container-wide: 88rem;
+  --container-prose: 40rem;
 
-  /* -- layout -------------------------------------------------------------
-     editorial = the wide canvas for hero / projects / case top / trajectory.
-     max = general content. wide = wide media. prose = reading measure. */
-  --container-editorial: 88rem;
-  --container-max: 72rem;
-  --container-wide: 52rem;
-  --container-prose: 42rem;
-
-  /* -- motion ----------------------------------------------------------- */
+  /* -- motion (fast, purposeful, never a hijack) --------------------- */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --dur-fast: 120ms;
-  --dur: 200ms;
-  --dur-slow: 420ms;
+  --dur: 180ms;
 }
 
-/* Fluid page gutter — a little air on phones, a lot on wide editorial screens. */
 :root {
-  --gutter: clamp(1.25rem, 6vw, 4.5rem);
-  color-scheme: light;
+  --gutter: clamp(1.25rem, 5vw, 3.5rem);
+  color-scheme: dark;
 }
 
 html {
@@ -123,63 +109,57 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* -- surface scopes (Sprint 7.2) ----------------------------------------
-   A section (or the footer) opts into a chromatic surface with
-   `data-surface`. Inside the scope the shared vars are locally redefined,
-   so `text-fg`, `text-fg-muted`, `border-border`, `text-accent`, `.u-label`
-   etc. keep working with no per-component change. Not a dark mode — a
-   chapter. Editorial surfaces stay square (no radius). */
+/* -- surface scopes ---------------------------------------------------------
+   A section / panel opts into a surface with `data-surface`. Inside the
+   scope the shared vars are locally repainted, so `text-fg`, `bg-surface`,
+   `border-border`, `text-accent`, `.u-label` keep working with no
+   per-component change. The default (no attribute) is graphite. */
 [data-surface] {
-  background: var(--surface-bg);
+  background: var(--color-bg);
   color: var(--color-fg);
 }
+[data-surface="paper"] {
+  --color-bg: var(--color-paper);
+  --color-bg-subtle: #e2ded0;
+  --color-surface: var(--color-paper-raised);
+  --color-fg: var(--color-ink);
+  --color-fg-muted: #565764;
+  --color-fg-faint: #8a8b96;
+  --color-border: #d5d1c3;
+  --color-border-strong: #b7b2a1;
+  --color-accent: var(--color-indigo);
+  --color-accent-strong: var(--color-indigo-deep);
+}
 [data-surface="tonal"] {
-  --surface-bg: var(--color-bg-tonal);
+  --color-bg: var(--color-tint);
+  --color-surface: #20263a;
+  --color-border: #2f3550;
+  --color-border-strong: #434a74;
 }
-[data-surface="dark"] {
-  --surface-bg: var(--color-surface-dark);
-  --color-fg: var(--color-on-dark);
-  --color-fg-muted: var(--color-on-dark-muted);
-  --color-fg-faint: var(--color-on-dark-faint);
-  --color-border: var(--color-rule-on-dark);
-  --color-border-strong: rgb(244 243 239 / 0.3);
-  --color-rule: var(--color-on-dark);
-  --color-accent: var(--color-accent-on-dark);
-  --color-accent-strong: var(--color-on-dark);
-  --color-node: var(--color-node-on-dark);
-}
-[data-surface="dark"] :focus-visible {
-  outline-color: var(--color-on-dark);
-}
-/* the relational elbow follows the surface */
-[data-surface="dark"] .u-connect::before {
-  border-color: var(--color-rule-on-dark);
+[data-surface="deep"] {
+  --color-bg: var(--color-navy);
+  --color-surface: #12151f;
+  --color-border: #232734;
+  --color-border-strong: #333a4b;
 }
 
-/* Display headings: serif, tight, set as graphic elements. Components opt into
-   the serif with `font-display`; bare h1..h3 get it by default so prose blocks
-   read editorially without extra classes. */
+/* -- headings: technical grotesk, tight, never monumental by default ---- */
 h1,
 h2,
-h3 {
+h3,
+h4 {
   font-family: var(--font-display);
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: var(--tracking-tight);
   text-wrap: balance;
-}
-h4,
-h5,
-h6 {
-  font-weight: 600;
-  letter-spacing: var(--tracking-tight);
-  text-wrap: balance;
+  line-height: 1.08;
 }
 
 .font-display {
   font-family: var(--font-display);
 }
 
-/* A utility for the recurring mono label ("01", "PRODUÇÃO", "APARECEU EM"). */
+/* -- the recurring mono metadata label -------------------------------- */
 .u-label {
   font-family: var(--font-mono);
   font-size: var(--text-xs);
@@ -189,42 +169,9 @@ h6 {
   color: var(--color-fg-muted);
 }
 
-/* A faint technical grid — evokes a blueprint/schematic rather than a flat
-   colour field or a decorative gradient. Very low presence; decorative only. */
-.bg-grid-texture {
-  background-image: radial-gradient(
-    color-mix(in srgb, var(--color-border-strong) 55%, transparent) 1px,
-    transparent 1px
-  );
-  background-size: 28px 28px;
-}
-
-/* An "└" elbow that ties a relation label to the entity above it (Sprint 7.1
-   §16). Decorative — the label text ("usado em …") carries the meaning. */
-.u-connect {
-  position: relative;
-  padding-left: 1.15rem;
-}
-.u-connect::before {
-  content: "";
-  position: absolute;
-  left: 1px;
-  top: -0.5rem;
-  bottom: 0.5rem;
-  width: 0.65rem;
-  border-left: 1px solid var(--color-border-strong);
-  border-bottom: 1px solid var(--color-border-strong);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-  }
-}
-
-/* -- interaction language ------------------------------------------------
-   Colour / border / opacity transitions everywhere; transform only for small
-   editorial cues (an arrow nudging, a row shifting a few px). No lifts. */
+/* -- interaction language --------------------------------------------------
+   Colour / border / opacity transitions; transform only for a small lift on
+   surfaces that respond to the pointer. Fast. */
 :where(a, button, input, textarea, select, [data-interactive]) {
   transition:
     color var(--dur-fast) var(--ease-out),
@@ -234,16 +181,18 @@ h6 {
     transform var(--dur) var(--ease-out);
 }
 
-/* The recurring "→" affordance on editorial links: nudges on hover/focus. */
-.u-arrow {
-  display: inline-block;
-  transition: transform var(--dur) var(--ease-out);
+/* A surface that responds to the pointer — a hint of lift + brighter edge. */
+.u-surface-interactive {
+  transition:
+    border-color var(--dur) var(--ease-out),
+    background-color var(--dur) var(--ease-out),
+    transform var(--dur) var(--ease-out);
 }
-a:hover .u-arrow,
-a:focus-visible .u-arrow,
-button:hover .u-arrow,
-[data-interactive]:hover .u-arrow {
-  transform: translateX(0.25rem);
+@media (hover: hover) {
+  .u-surface-interactive:hover {
+    border-color: var(--color-border-strong);
+    transform: translateY(-2px);
+  }
 }
 
 /* Visible focus, everywhere, keyboard-only. */
@@ -253,86 +202,67 @@ button:hover .u-arrow,
   border-radius: var(--radius-sm);
 }
 
-/* -- relational highlight (Sprint 7 §12, §25) --------------------------------
-   A container marked [data-rel-scope] can, while one of its [data-rel] items
-   is hovered/focused, dim the siblings that don't share the active key. The
-   key wiring is CSS-only where possible; the knowledge pages add a tiny island
-   for cross-list highlighting. Purely presentational — every relation also has
-   a real link and visible text (§26, §42). */
+/* -- relational highlight ------------------------------------------------
+   Inside [data-rel-scope], hovering / focusing one [data-rel] item dims the
+   siblings that don't share an active key. The dimming is CSS; an island
+   marks the relatives via [data-rel-active]. Every relation is also a real
+   link with visible text, so JS-off degrades gracefully. */
+[data-rel-scope] [data-rel] {
+  transition:
+    opacity var(--dur) var(--ease-out),
+    color var(--dur) var(--ease-out);
+}
 [data-rel-scope]:has([data-rel]:hover, [data-rel]:focus-visible)
   [data-rel]:not(:hover):not(:focus-visible):not([data-rel-active]) {
-  opacity: 0.5;
-}
-[data-rel-scope] [data-rel] {
-  transition: opacity var(--dur) var(--ease-out);
+  opacity: 0.4;
 }
 
-/* -- entrance cues (opt-in, never carry information) ----------------------- */
-@keyframes ds-rise {
+/* -- live status pulse (real data — a sign of life, not a glow) -------- */
+@keyframes u-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+.u-pulse {
+  animation: u-pulse 2.4s var(--ease-out) infinite;
+}
+
+/* A quick cross-fade for content that swaps in place on selection. */
+@keyframes u-fade {
   from {
     opacity: 0;
-    transform: translateY(0.6rem);
+    transform: translateY(0.25rem);
   }
   to {
     opacity: 1;
     transform: none;
   }
 }
-@keyframes ds-line {
+.u-fade {
+  animation: u-fade var(--dur) var(--ease-out) both;
+}
+
+/* -- entrance cue: opt-in, tied to scroll where supported, no JS ------- */
+@keyframes u-rise {
   from {
-    transform: scaleX(0);
+    opacity: 0;
+    transform: translateY(0.5rem);
   }
   to {
-    transform: scaleX(1);
-  }
-}
-[data-animate="rise"] {
-  animation: ds-rise var(--dur-slow) var(--ease-out) both;
-}
-[data-animate="rise"][data-delay="1"] {
-  animation-delay: 70ms;
-}
-[data-animate="rise"][data-delay="2"] {
-  animation-delay: 140ms;
-}
-[data-animate="rise"][data-delay="3"] {
-  animation-delay: 210ms;
-}
-[data-animate="line"] {
-  animation: ds-line var(--dur-slow) var(--ease-out) both;
-  transform-origin: left;
-}
-
-/* A slow, quiet pulse for the "currently at X" live-status dot — real content,
-   a small honest sign of life rather than a decorative glow. */
-@keyframes ds-pulse {
-  0%,
-  100% {
     opacity: 1;
-  }
-  50% {
-    opacity: 0.35;
+    transform: none;
   }
 }
-.u-live-dot {
-  animation: ds-pulse 2.2s var(--ease-in-out) infinite;
-}
-
-/* Where scroll-driven animations are supported, tie the entrance cues to
-   scroll position instead of firing once on load — visible throughout the
-   page, not just above the fold on first paint. No JS, no library; browsers
-   without support keep the reveal-on-load behaviour above unchanged. */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
     [data-animate="rise"] {
-      animation: ds-rise linear both;
+      animation: u-rise linear both;
       animation-timeline: view();
-      animation-range: entry 0% entry 40%;
-    }
-    [data-animate="line"] {
-      animation: ds-line linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 40%;
+      animation-range: entry 0% entry 32%;
     }
   }
 }
@@ -351,8 +281,8 @@ button:hover .u-arrow,
     opacity: 1 !important;
     transform: none !important;
   }
-  .u-arrow {
-    transition: none !important;
+  .u-surface-interactive:hover {
+    transform: none !important;
   }
   [data-rel-scope]:has([data-rel]:hover, [data-rel]:focus-visible)
     [data-rel]:not(:hover):not(:focus-visible):not([data-rel-active]) {
@@ -368,8 +298,9 @@ button:hover .u-arrow,
   z-index: 100;
   padding: 0.5rem 0.875rem;
   border-radius: var(--radius-sm);
-  background: var(--color-fg);
-  color: var(--color-bg);
+  background: var(--color-accent);
+  color: #0b0c12;
+  font-family: var(--font-mono);
   font-size: var(--text-sm);
   transform: translateY(-150%);
 }

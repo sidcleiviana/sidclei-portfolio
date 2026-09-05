@@ -6,32 +6,27 @@ type Neighbor = { slug: string; title: string } | null;
 
 /**
  * End-of-case navigation. Neighbours come from the public project list only, so
- * a private project can never appear here (Sprint 7 §47).
+ * a private project can never appear here.
  */
 export function ProjectNav({ prev, next }: { prev: Neighbor; next: Neighbor }) {
   return (
-    <Container
-      size="editorial"
-      as="nav"
-      aria-label="Navegação entre projetos"
-      className="mt-28"
-    >
+    <Container size="wide" as="nav" aria-label="Navegação entre projetos" className="mt-20">
       <Link
         href="/projects"
-        className="u-label text-fg-muted hover:text-fg inline-flex items-center gap-2 rounded-sm"
+        className="u-label hover:text-fg inline-flex items-center gap-2 rounded-sm"
       >
         <span aria-hidden>←</span> Todos os projetos
       </Link>
 
       {prev || next ? (
-        <div className="mt-6 grid gap-px border-t border-[var(--color-rule)] sm:grid-cols-2">
+        <div className="border-border mt-5 grid gap-px border-t sm:grid-cols-2">
           {prev ? (
             <Link
               href={`/projects/${prev.slug}`}
-              className="group border-b border-[var(--color-border)] py-6"
+              className="group border-border border-b py-5"
             >
               <span className="u-label text-fg-faint">Anterior</span>
-              <span className="font-display group-hover:text-accent mt-1 block text-lg">
+              <span className="font-display group-hover:text-accent mt-1 block text-md font-bold">
                 {prev.title}
               </span>
             </Link>
@@ -41,10 +36,10 @@ export function ProjectNav({ prev, next }: { prev: Neighbor; next: Neighbor }) {
           {next ? (
             <Link
               href={`/projects/${next.slug}`}
-              className="group border-b border-[var(--color-border)] py-6 sm:col-start-2 sm:text-right"
+              className="group border-border border-b py-5 sm:col-start-2 sm:text-right"
             >
               <span className="u-label text-fg-faint">Próximo</span>
-              <span className="font-display group-hover:text-accent mt-1 block text-lg">
+              <span className="font-display group-hover:text-accent mt-1 block text-md font-bold">
                 {next.title}
               </span>
             </Link>

@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 
 import { PRIMARY_NAV } from "./nav";
 
-/** The numbered index — everything except "Início", which the wordmark covers. */
 const ITEMS = PRIMARY_NAV.filter((i) => i.href !== "/");
 
 function isActive(pathname: string, href: string) {
@@ -16,30 +15,21 @@ export function DesktopNav() {
   const pathname = usePathname();
   return (
     <nav aria-label="Navegação principal" className="hidden md:block">
-      <ul className="flex items-center gap-8">
-        {ITEMS.map((item, i) => {
+      <ul className="flex items-center gap-7">
+        {ITEMS.map((item) => {
           const active = isActive(pathname, item.href);
           return (
             <li key={item.href}>
               <Link
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`u-label group inline-flex items-center gap-2 rounded-sm ${
-                  active ? "text-fg" : "hover:text-fg"
+                className={`u-label rounded-sm border-b pb-0.5 transition-colors ${
+                  active
+                    ? "text-fg border-[var(--color-accent)]"
+                    : "hover:text-fg border-transparent hover:border-[var(--color-border-strong)]"
                 }`}
               >
-                <span aria-hidden className="text-fg-faint tabular-nums">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span
-                  className={`border-b pb-0.5 ${
-                    active
-                      ? "border-[var(--color-accent)]"
-                      : "border-transparent group-hover:border-[var(--color-border-strong)]"
-                  }`}
-                >
-                  {item.label}
-                </span>
+                {item.label}
               </Link>
             </li>
           );

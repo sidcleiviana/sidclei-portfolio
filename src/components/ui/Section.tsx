@@ -1,12 +1,12 @@
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
-type Spacing = "sm" | "md" | "lg" | "xl";
+type Spacing = "none" | "sm" | "md" | "lg";
 
 const PAD: Record<Spacing, string> = {
-  sm: "py-10 sm:py-14",
-  md: "py-16 sm:py-24",
-  lg: "py-24 sm:py-36",
-  xl: "py-28 sm:py-44",
+  none: "",
+  sm: "py-8 sm:py-10",
+  md: "py-12 sm:py-16",
+  lg: "py-16 sm:py-24",
 };
 
 type Props = {
@@ -15,10 +15,7 @@ type Props = {
   className?: string;
 } & Omit<ComponentPropsWithoutRef<"section">, "className" | "children">;
 
-/**
- * A vertical rhythm unit. Pages are a stack of `<Section>`s; the space between
- * them comes from here, not ad-hoc margins.
- */
+/** A vertical rhythm unit. Spacing comes from here, not ad-hoc margins. */
 export function Section({
   spacing = "md",
   children,

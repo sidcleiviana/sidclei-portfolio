@@ -50,26 +50,20 @@ export function ProjectToc({ sections }: { sections: CaseSection[] }) {
   if (!sections.length) return null;
 
   const list = (
-    <ol className="border-t border-[var(--color-border)]">
-      {sections.map((section, i) => {
+    <ol className="flex flex-col">
+      {sections.map((section) => {
         const active = section.id === activeId;
         return (
-          <li
-            key={section.id}
-            className="border-b border-[var(--color-border)]"
-          >
+          <li key={section.id}>
             <a
               href={`#${section.id}`}
               aria-current={active ? "location" : undefined}
-              className={`u-label flex items-center gap-2.5 py-2.5 ${
-                active ? "text-fg" : "text-fg-muted hover:text-fg"
+              className={`u-label block border-l-2 py-2 pl-3 transition-colors ${
+                active
+                  ? "border-[var(--color-accent)] text-fg"
+                  : "border-border text-fg-muted hover:text-fg hover:border-border-strong"
               }`}
             >
-              <span
-                className={`tabular-nums ${active ? "text-accent" : "text-fg-faint"}`}
-              >
-                {String(i + 1).padStart(2, "0")}
-              </span>
               {section.label}
             </a>
           </li>
@@ -90,8 +84,8 @@ export function ProjectToc({ sections }: { sections: CaseSection[] }) {
       </nav>
 
       {/* Mobile disclosure */}
-      <details className="mb-10 border-y border-[var(--color-rule)] xl:hidden">
-        <summary className="u-label text-fg-muted cursor-pointer list-none py-3">
+      <details className="border-border mb-10 border-y xl:hidden">
+        <summary className="u-label cursor-pointer list-none py-3">
           Índice do projeto
         </summary>
         <nav aria-label="Índice do projeto" className="pb-4">

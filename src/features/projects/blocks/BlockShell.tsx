@@ -25,7 +25,7 @@ export function BlockShell({
   return (
     <div className={`w-full ${MAX[width]}`}>
       {heading ? (
-        <h2 className="u-label mb-6 border-t border-[var(--color-rule)] pt-4">
+        <h2 className="u-label mb-6 border-t border-border-strong pt-4">
           {heading}
         </h2>
       ) : null}

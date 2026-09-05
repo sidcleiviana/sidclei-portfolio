@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { Container, Section, SectionHeading } from "@/components/ui";
+import { Container, Kicker, Section } from "@/components/ui";
 import { filterPubliclyVisible } from "@/domain/visibility";
 import { ProjectList } from "@/features/projects/ProjectList";
 import { getProjects } from "@/sanity/queries";
@@ -16,23 +16,20 @@ export default async function ProjectsPage() {
   const projects = filterPubliclyVisible(await getProjects());
 
   return (
-    <Section
-      spacing="lg"
-      aria-labelledby="projects-title"
-      className="pt-8 sm:pt-12"
-    >
-      <Container size="editorial">
-        <SectionHeading
-          as="h1"
-          id="projects-title"
-          eyebrow="Trabalho"
-          title="Projetos"
-          description="Cada projeto indica sua natureza — produção, profissional, lab ou estudo — e, quando aplicável, qual foi a contribuição de Sidclei."
-        />
-        <div className="mt-16">
-          <ProjectList projects={projects} />
-        </div>
+    <Section spacing="lg" aria-labelledby="projects-title">
+      <Container size="wide">
+        <Kicker>Trabalho</Kicker>
+        <h1 className="font-display mt-3 text-2xl font-extrabold sm:text-3xl" id="projects-title">
+          Projetos
+        </h1>
+        <p className="text-fg-muted mt-3 max-w-[54ch] text-md text-pretty">
+          Cada projeto indica sua natureza — produção, profissional, lab ou
+          estudo — e, quando aplicável, qual foi a contribuição de Sidclei.
+        </p>
       </Container>
+      <div className="mt-2">
+        <ProjectList projects={projects} />
+      </div>
     </Section>
   );
 }

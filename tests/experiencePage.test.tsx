@@ -1,77 +1,86 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
-import { CareerJourney } from "@/features/experience/CareerJourney";
+import {
+  TrajectorySelector,
+  type TrajectoryEntry,
+} from "@/features/experience/TrajectorySelector";
 import {
   experienceFixtures,
   richExperienceFixture,
   sparseExperienceFixture,
 } from "@/features/experience/fixtures";
 import { experiencesQuery } from "@/sanity/queries/experience";
-import type { ExperienceEntry } from "@/sanity/types";
 
-describe("CareerJourney — empty (Sprint §42)", () => {
-  it("renders an editorial state, not an error", () => {
-    render(<CareerJourney experiences={[]} />);
-    expect(screen.getByText(/ainda não foi publicada/i)).toBeInTheDocument();
+const entries = experienceFixtures as unknown as TrajectoryEntry[];
+
+describe("TrajectorySelector — empty", () => {
+  it("renders nothing without entries", () => {
+    const { container } = render(<TrajectorySelector experiences={[]} />);
+    expect(container).toBeEmptyDOMElement();
   });
 });
 
-describe("CareerJourney — sparse experience (Sprint §27)", () => {
-  it("shows role / company / period and hides empty sub-sections", () => {
-    render(<CareerJourney experiences={[sparseExperienceFixture]} />);
+describe("TrajectorySelector — selection", () => {
+  it("shows the current role by default with its rich detail", () => {
+    render(<TrajectorySelector experiences={entries} />);
+    const tabs = screen.getAllByRole("tab");
+    expect(tabs[0]).toHaveAttribute("aria-selected", "true");
+
+    // rich detail for the ongoing role
+    expect(screen.getAllByText("Competências").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Backend Development").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("PostgreSQL").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Projetos deste período").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Projeto de exemplo 1").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Atual/).length).toBeGreaterThan(0);
+  });
+
+  it("switches the panel in place when another role is chosen", async () => {
+    const user = userEvent.setup();
+    render(<TrajectorySelector experiences={entries} />);
+    const tabs = screen.getAllByRole("tab");
+    await user.click(tabs[1]!);
+    expect(tabs[1]).toHaveAttribute("aria-selected", "true");
     expect(
-      screen.getByRole("heading", { name: "Analista de Sistemas" })
-    ).toBeInTheDocument();
-    expect(screen.getByText("Outra empresa de exemplo")).toBeInTheDocument();
-    expect(screen.getByText(/fev 2020 — abr 2023/)).toBeInTheDocument();
-    expect(screen.queryByText("O que eu fazia")).not.toBeInTheDocument();
-    expect(screen.queryByText("Competências")).not.toBeInTheDocument();
-    expect(
-      screen.queryByText("Projetos deste período")
-    ).not.toBeInTheDocument();
+      screen.getAllByRole("heading", { name: "Analista de Sistemas" }).length
+    ).toBeGreaterThan(0);
   });
 });
 
-describe("CareerJourney — rich experience (Sprint §28)", () => {
-  it("composes responsibilities, skills, technologies and related projects", () => {
-    const { container } = render(
-      <CareerJourney experiences={experienceFixtures} />
-    );
-    expect(screen.getByText("O que eu fazia")).toBeInTheDocument();
-    expect(screen.getByText("Backend Development")).toBeInTheDocument();
-    expect(screen.getByText("PostgreSQL")).toBeInTheDocument();
-    expect(screen.getByText("Projetos deste período")).toBeInTheDocument();
-    expect(screen.getByText("Projeto de exemplo 1")).toBeInTheDocument();
-    // ongoing role marked "Atual"
-    expect(screen.getByText("Atual")).toBeInTheDocument();
-    // deterministic anchor
-    expect(
-      container.querySelector("#empresa-de-exemplo-desenvolvedor-de-software")
-    ).toBeTruthy();
-  });
-});
-
-describe("CareerJourney — confidentiality (Sprint §8)", () => {
-  it("never renders a private related project even if the data slips one in", () => {
-    const withPrivate: ExperienceEntry = {
-      ...richExperienceFixture,
+describe("TrajectorySelector — confidentiality", () => {
+  it("never renders a private related project", () => {
+    const withPrivate = {
+      ...(richExperienceFixture as unknown as TrajectoryEntry),
       projects: [
         {
           _id: "leak",
           title: "PROJETO PRIVADO",
           slug: "leak",
-          shortDescription: "não deveria aparecer",
-          projectType: "lab",
-          visibility: "private",
-          technologies: null,
+          visibility: "private" as const,
         },
-        ...richExperienceFixture.projects,
+        ...((richExperienceFixture as unknown as TrajectoryEntry).projects ?? []),
       ],
     };
-    render(<CareerJourney experiences={[withPrivate]} />);
+    render(<TrajectorySelector experiences={[withPrivate]} />);
     expect(screen.queryByText("PROJETO PRIVADO")).not.toBeInTheDocument();
-    expect(screen.getByText("Projeto de exemplo 1")).toBeInTheDocument();
+    expect(screen.getAllByText("Projeto de exemplo 1").length).toBeGreaterThan(0);
+  });
+});
+
+describe("TrajectorySelector — sparse", () => {
+  it("hides empty sub-sections", () => {
+    render(
+      <TrajectorySelector
+        experiences={[sparseExperienceFixture as unknown as TrajectoryEntry]}
+      />
+    );
+    expect(
+      screen.getAllByRole("heading", { name: "Analista de Sistemas" }).length
+    ).toBeGreaterThan(0);
+    expect(screen.queryByText("Competências")).not.toBeInTheDocument();
+    expect(screen.queryByText("Projetos deste período")).not.toBeInTheDocument();
   });
 });
 

@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/Badge";
+import { Tag } from "@/components/ui/Tag";
 import { TextLink } from "@/components/ui/TextLink";
 import type { Evidence } from "@/sanity/types";
 
@@ -28,12 +28,12 @@ export function EvidenceList({ evidence }: { evidence: Evidence[] }) {
       {items.map((item, index) => (
         <li
           key={item._key ?? index}
-          className="border-t border-[var(--color-rule)] py-5"
+          className="border-t border-border-strong py-5"
         >
-          <Badge tone="neutral" mono className="mb-2">
+          <Tag className="mb-2 block">
             {EVIDENCE_LABEL[item.type ?? "other"] ?? item.type ?? "Link"}
-          </Badge>
-          <p className="font-display text-lg">
+          </Tag>
+          <p className="font-display text-md font-bold">
             {item.url ? (
               <TextLink href={item.url}>{item.label || item.url}</TextLink>
             ) : (

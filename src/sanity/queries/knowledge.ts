@@ -4,24 +4,46 @@ import { CACHE_TAGS, sanityFetch } from "../fetch";
 import type { KnowledgeHubData, SkillDetail, TechnologyDetail } from "../types";
 
 /**
- * The public gate for related projects. A Skill / Technology must never reveal
- * that a private or unpublished project exists (Sprint §21). Inlined into every
- * relational subquery, exactly as `src/sanity/queries/projects.ts` does.
- */
-
-/**
- * `/conhecimento` in one round trip (Sprint §23). Just the entities and their
- * categories — the hub does not show relation counts (a count would read as a
- * proficiency signal, Sprint §3). Relations live on the detail pages.
+ * `/conhecimento` — the explorer, in one round trip. Every skill and every
+ * technology carries its **real contexts**: the experiences and public
+ * projects that reference it. A skill additionally carries the technologies
+ * present *in those contexts* — never a `Skill -> Technology` edge (Sprint §7):
+ * co-occurrence in the same experience/project is a context, not a relation.
+ * The public gate is inlined into every project subquery.
  */
 export const knowledgeHubQuery = defineQuery(`{
   "skills": *[_type == "skill" && defined(slug.current)] | order(featured desc, lower(name) asc) {
     _id, name, "slug": slug.current, category, shortDescription, featured,
-    "contexts": array::unique(*[_type == "experience" && references(^._id)].company)
+    "contextExperiences": *[_type == "experience" && references(^._id)]
+      | order(coalesce(period.ongoing, false) desc, period.startDate desc) {
+        _id, company, role
+      },
+    "contextProjects": *[
+      _type == "project" && references(^._id)
+      && status == "published" && visibility != "private"
+    ] | order(coalesce(publishedAt, period.startDate, "") desc) {
+      _id, title, "slug": slug.current, visibility
+    },
+    "contextTechnologies": array::unique(
+      *[_type == "experience" && references(^._id)].technologies[]->name
+      + *[
+          _type == "project" && references(^._id)
+          && status == "published" && visibility != "private"
+        ].technologies[]->name
+    )
   },
   "technologies": *[_type == "technology" && defined(slug.current)] | order(lower(name) asc) {
     _id, name, "slug": slug.current, category,
-    "contexts": array::unique(*[_type == "experience" && references(^._id)].company)
+    "contextExperiences": *[_type == "experience" && references(^._id)]
+      | order(coalesce(period.ongoing, false) desc, period.startDate desc) {
+        _id, company, role
+      },
+    "contextProjects": *[
+      _type == "project" && references(^._id)
+      && status == "published" && visibility != "private"
+    ] | order(coalesce(publishedAt, period.startDate, "") desc) {
+      _id, title, "slug": slug.current, visibility
+    }
   }
 }`);
 
@@ -29,7 +51,7 @@ export const knowledgeHubQuery = defineQuery(`{
  * Skill detail: the competence, plus every real context it appears in —
  * experiences (inverse of `experience.skills`) and public projects (inverse of
  * `project.skills`). No `Skill -> Technology` edge is queried or implied
- * (Sprint §7): co-occurrence in the same experience is not a relation.
+ * (Sprint §7).
  */
 export const skillBySlugQuery = defineQuery(`*[
   _type == "skill" && slug.current == $slug
@@ -44,10 +66,17 @@ export const skillBySlugQuery = defineQuery(`*[
   ] | order(coalesce(publishedAt, period.startDate, "") desc) {
     _id, title, "slug": slug.current, shortDescription, projectType, visibility,
     "technologies": technologies[]->{ _id, name }
-  }
+  },
+  "contextTechnologies": array::unique(
+    *[_type == "experience" && references(^._id)].technologies[]->name
+    + *[
+        _type == "project" && references(^._id)
+        && status == "published" && visibility != "private"
+      ].technologies[]->name
+  )
 }`);
 
-/** Technology detail — same shape as {@link skillBySlugQuery}. */
+/** Technology detail — same shape as {@link skillBySlugQuery} without context tech. */
 export const technologyBySlugQuery = defineQuery(`*[
   _type == "technology" && slug.current == $slug
 ][0] {
@@ -73,7 +102,13 @@ export const knowledgeSlugsQuery = defineQuery(`{
 export function getKnowledgeHub() {
   return sanityFetch<KnowledgeHubData>({
     query: knowledgeHubQuery,
-    tags: [CACHE_TAGS.knowledge, CACHE_TAGS.skills, CACHE_TAGS.technologies],
+    tags: [
+      CACHE_TAGS.knowledge,
+      CACHE_TAGS.skills,
+      CACHE_TAGS.technologies,
+      CACHE_TAGS.experience,
+      CACHE_TAGS.projects,
+    ],
     fallback: { skills: [], technologies: [] },
   });
 }

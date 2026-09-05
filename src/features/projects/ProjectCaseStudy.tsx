@@ -1,5 +1,5 @@
 import { SanityImage } from "@/components/content/SanityImage";
-import { Container, Section } from "@/components/ui";
+import { Container, Section, Surface } from "@/components/ui";
 import {
   buildCaseSections,
   shouldShowToc,
@@ -19,16 +19,14 @@ import { ProjectNav } from "./case/ProjectNav";
 import { ProjectToc } from "./case/ProjectToc";
 
 const PROSE = "max-w-[var(--container-prose)]";
-const WIDE = "max-w-[var(--container-wide)]";
 
 type Neighbor = { slug: string; title: string } | null;
 
 /**
- * The whole case study, composed from whatever the CMS provided (Sprint 2
- * modular system, preserved). Sprint 7: a monumental header, framing sections
- * carry an editorial number, measures separate narrative (prose) from media
- * (wide). Every section is conditional — a lean project still reads as a
- * finished editorial page.
+ * The case study as a navigable technical piece, not an article. A navy
+ * opening, then modular sections on graphite with a contextual side nav. The
+ * Sprint 2 CMS-driven block system is preserved unchanged. Every section is
+ * conditional — a lean project still reads as a finished page.
  */
 export function ProjectCaseStudy({
   project,
@@ -49,6 +47,12 @@ export function ProjectCaseStudy({
   const problem = project.problem?.trim() || null;
   const hasResults = metrics.length > 0;
   const hasEvidence = evidence.length > 0;
+  const hasRelations = Boolean(
+    (project.skills ?? []).some((s) => s?.name) ||
+      (project.technologies ?? []).some((t) => t?.name) ||
+      (project.links ?? []).some((l) => l?.url) ||
+      project.relatedExperience
+  );
 
   const sections: CaseSection[] = buildCaseSections({
     hasContribution: Boolean(contribution),
@@ -57,97 +61,94 @@ export function ProjectCaseStudy({
     blocks,
     hasResults,
     hasEvidence,
+    hasRelations,
   });
   const showToc = shouldShowToc(sections);
 
-  // Editorial numbering for the fixed framing sections, in render order.
-  let n = 0;
-  const num = () => (n += 1);
-
   return (
-    <article className="pb-8">
-      <Section
-        spacing="md"
-        className="border-b-2 border-[var(--color-accent)] pt-8 pb-16 sm:pt-12 sm:pb-20"
-        data-surface="dark"
-      >
+    <article className="pb-4">
+      <Surface kind="deep" pad="md" className="pb-14 sm:pb-16">
         <ProjectHeader project={project} />
-      </Section>
+      </Surface>
 
       {project.coverImage?.asset ? (
-        <Container size="editorial" className="mb-12">
+        <Container size="wide" className="mt-10">
           <SanityImage
             image={project.coverImage}
             priority
             sizes="(min-width: 900px) 60rem, 100vw"
             ratio={16 / 9}
-            className="w-full"
+            className="w-full rounded-[var(--radius)]"
           />
         </Container>
       ) : null}
 
-      <Container size="editorial">
-        <div
-          className={
-            showToc
-              ? "xl:grid xl:grid-cols-[12rem_minmax(0,1fr)] xl:gap-16"
-              : undefined
-          }
-        >
-          {showToc ? (
-            <div>
-              <ProjectToc sections={sections} />
-            </div>
-          ) : null}
-
-          <div className="flex min-w-0 flex-col gap-20 sm:gap-24">
-            {contribution ? (
-              <section id="contribuicao" className={`scroll-mt-24 ${WIDE}`}>
-                <CaseHeading index={num()}>Contribuição</CaseHeading>
-                <ProjectContribution contribution={contribution} />
-              </section>
+      <Section spacing="lg">
+        <Container size="wide">
+          <div
+            className={
+              showToc
+                ? "xl:grid xl:grid-cols-[13rem_minmax(0,1fr)] xl:gap-16"
+                : undefined
+            }
+          >
+            {showToc ? (
+              <div>
+                <ProjectToc sections={sections} />
+              </div>
             ) : null}
 
-            {context ? (
-              <section id="contexto" className={`scroll-mt-24 ${PROSE}`}>
-                <CaseHeading index={num()}>Contexto</CaseHeading>
-                <p className="text-fg-muted text-lg leading-8 text-pretty">
-                  {context}
-                </p>
-              </section>
-            ) : null}
+            <div className="flex min-w-0 flex-col gap-16 sm:gap-20">
+              {contribution ? (
+                <section id="contribuicao" className="scroll-mt-24">
+                  <CaseHeading>Minha contribuição</CaseHeading>
+                  <ProjectContribution contribution={contribution} />
+                </section>
+              ) : null}
 
-            {problem ? (
-              <section id="problema" className={`scroll-mt-24 ${PROSE}`}>
-                <CaseHeading index={num()}>Problema</CaseHeading>
-                <p className="text-fg-muted text-lg leading-8 text-pretty">
-                  {problem}
-                </p>
-              </section>
-            ) : null}
+              {context ? (
+                <section id="contexto" className={`scroll-mt-24 ${PROSE}`}>
+                  <CaseHeading>Contexto</CaseHeading>
+                  <p className="text-fg-muted text-md leading-7 text-pretty">
+                    {context}
+                  </p>
+                </section>
+              ) : null}
 
-            {blocks.length ? <ProjectContentBlocks blocks={blocks} /> : null}
+              {problem ? (
+                <section id="problema" className={`scroll-mt-24 ${PROSE}`}>
+                  <CaseHeading>Problema</CaseHeading>
+                  <p className="text-fg-muted text-md leading-7 text-pretty">
+                    {problem}
+                  </p>
+                </section>
+              ) : null}
 
-            {hasResults ? (
-              <section id="resultados" className={`scroll-mt-24 ${WIDE}`}>
-                <CaseHeading index={num()}>Resultados</CaseHeading>
-                <MetricList metrics={metrics} />
-              </section>
-            ) : null}
+              {blocks.length ? <ProjectContentBlocks blocks={blocks} /> : null}
 
-            {hasEvidence ? (
-              <section id="evidencias" className={`scroll-mt-24 ${WIDE}`}>
-                <CaseHeading index={num()}>Evidências</CaseHeading>
-                <EvidenceList evidence={evidence} />
-              </section>
-            ) : null}
+              {hasResults ? (
+                <section id="resultados" className="scroll-mt-24">
+                  <CaseHeading>Resultados</CaseHeading>
+                  <MetricList metrics={metrics} />
+                </section>
+              ) : null}
 
-            <div className={WIDE}>
-              <ProjectMeta project={project} />
+              {hasEvidence ? (
+                <section id="evidencias" className="scroll-mt-24">
+                  <CaseHeading>Evidências</CaseHeading>
+                  <EvidenceList evidence={evidence} />
+                </section>
+              ) : null}
+
+              {hasRelations ? (
+                <section id="relacoes" className="scroll-mt-24">
+                  <ProjectMeta project={project} />
+                </section>
+              ) : null}
             </div>
           </div>
-        </div>
-      </Container>
+        </Container>
+      </Section>
 
       <ProjectNav prev={prev} next={next} />
     </article>

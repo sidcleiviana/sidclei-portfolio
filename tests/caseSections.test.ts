@@ -63,7 +63,7 @@ describe("buildCaseSections", () => {
       "resultados",
     ]);
     expect(sections.map((s) => s.label)).toEqual([
-      "Contribuição",
+      "Minha contribuição",
       "Contexto",
       "Processo",
       "Resultados",
@@ -72,6 +72,21 @@ describe("buildCaseSections", () => {
 
   it("anchors block ids off the block key", () => {
     expect(blockAnchorId({ _key: "xyz" })).toBe("sec-xyz");
+  });
+
+  it("lists Relações last, only when there are relations", () => {
+    const base = {
+      hasContribution: false,
+      hasContext: false,
+      hasProblem: false,
+      blocks: [],
+      hasResults: false,
+      hasEvidence: false,
+    };
+    expect(buildCaseSections(base).map((s) => s.id)).toEqual([]);
+    expect(
+      buildCaseSections({ ...base, hasRelations: true }).map((s) => s.id)
+    ).toEqual(["relacoes"]);
   });
 });
 

@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 
-import { Container, Section } from "@/components/ui";
+import { Container, Kicker, Section, Surface, Tag } from "@/components/ui";
 import { experienceAnchor } from "@/domain/experienceAnchor";
+import { formatMonthRange } from "@/domain/monthRange";
 import { isPubliclyVisible } from "@/domain/visibility";
-import { PeriodBadge } from "@/features/experience/PeriodBadge";
 import { ProjectCard } from "@/features/projects/ProjectCard";
 import type {
   KnowledgeExperienceRef,
@@ -18,47 +18,30 @@ const CRUMB: Record<KnowledgeKind, { label: string; href: string }> = {
   technology: { label: "Tecnologias", href: "/conhecimento#tecnologias" },
 };
 
-function RelationLabel({ children }: { children: ReactNode }) {
-  return (
-    <h2 className="u-label text-fg grid gap-x-6 border-t-2 border-[var(--color-accent)] pt-3 sm:grid-cols-12">
-      <span className="sm:col-span-3">{children}</span>
-    </h2>
-  );
-}
-
-function AppearedIn({
-  experiences,
-}: {
-  experiences: KnowledgeExperienceRef[];
-}) {
+function AppearedIn({ experiences }: { experiences: KnowledgeExperienceRef[] }) {
   if (!experiences.length) return null;
   return (
     <div>
-      <RelationLabel>Apareceu em</RelationLabel>
-      <ol className="mt-2">
-        {experiences.map((exp, i) => (
-          <li key={exp._id} className="border-b border-[var(--color-border)]">
+      <Kicker as="h2" className="mb-4">
+        Apareceu em
+      </Kicker>
+      <ul className="border-border border-t">
+        {experiences.map((exp) => (
+          <li key={exp._id} className="border-border border-b">
             <Link
               href={`/experiencia#${experienceAnchor(exp)}`}
-              className="group grid gap-x-6 gap-y-1 py-6 sm:grid-cols-12 sm:items-baseline"
+              className="group flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 py-4"
             >
-              <span
-                aria-hidden
-                className="font-display text-fg-faint text-2xl tabular-nums sm:col-span-1 sm:text-3xl"
-              >
-                {String(i + 1).padStart(2, "0")}
+              <span className="font-display group-hover:text-accent text-md font-bold">
+                {[exp.role, exp.company].filter(Boolean).join(" · ")}
               </span>
-              <span className="font-display group-hover:text-accent text-2xl sm:col-span-7 sm:text-3xl">
-                {exp.role ?? exp.company}
-              </span>
-              <span className="u-label text-fg-muted flex flex-wrap gap-x-2 sm:col-span-4 sm:justify-end">
-                <PeriodBadge period={exp.period} />
-                {exp.role && exp.company ? <span>{exp.company}</span> : null}
+              <span className="text-fg-faint font-mono text-xs">
+                {formatMonthRange(exp.period)}
               </span>
             </Link>
           </li>
         ))}
-      </ol>
+      </ul>
     </div>
   );
 }
@@ -68,10 +51,12 @@ function DemonstratedIn({ projects }: { projects: KnowledgeProjectRef[] }) {
   if (!visible.length) return null;
   return (
     <div>
-      <RelationLabel>Demonstrado em</RelationLabel>
-      <div className="mt-6 grid gap-x-10 gap-y-6 sm:grid-cols-2">
+      <Kicker as="h2" className="mb-2">
+        Demonstrado em
+      </Kicker>
+      <div>
         {visible.map((project) => (
-          <ProjectCard key={project._id} project={project} variant="compact" />
+          <ProjectCard key={project._id} project={project} />
         ))}
       </div>
     </div>
@@ -79,10 +64,11 @@ function DemonstratedIn({ projects }: { projects: KnowledgeProjectRef[] }) {
 }
 
 /**
- * A relational fiche for a skill or technology (Sprint 7 §22): the name set
- * large, the category, and the real contexts — the experiences it appeared in
- * and the public projects that demonstrate it. Empty relations are omitted,
- * never shown as zero. Related projects pass the public gate again (§47).
+ * A relational fiche for a skill or technology. A tonal header, then the real
+ * contexts — the experiences it appeared in and the public projects that
+ * demonstrate it. For a skill, the technologies present in those contexts,
+ * labelled as such (never attributed to the skill directly). Empty relations
+ * are omitted, never shown as zero.
  */
 export function KnowledgeDetail({
   kind,
@@ -92,6 +78,7 @@ export function KnowledgeDetail({
   aside,
   experiences,
   projects,
+  contextTechnologies = [],
 }: {
   kind: KnowledgeKind;
   name: string;
@@ -100,64 +87,81 @@ export function KnowledgeDetail({
   aside?: ReactNode;
   experiences: KnowledgeExperienceRef[];
   projects: KnowledgeProjectRef[];
+  contextTechnologies?: (string | null)[];
 }) {
   const crumb = CRUMB[kind];
+  const contextTech = contextTechnologies.filter((t): t is string => Boolean(t));
 
   return (
-    <Section
-      spacing="lg"
-      aria-labelledby="knowledge-detail-title"
-      className="pt-8 sm:pt-12"
-    >
-      <Container size="editorial">
-        <nav aria-label="Trilha de navegação">
-          <ol className="u-label text-fg-muted flex flex-wrap items-center gap-2">
-            <li>
-              <Link href="/conhecimento" className="hover:text-fg rounded-sm">
-                Conhecimento
-              </Link>
-            </li>
-            <li aria-hidden className="text-fg-faint">
-              /
-            </li>
-            <li>
-              <Link href={crumb.href} className="hover:text-fg rounded-sm">
-                {crumb.label}
-              </Link>
-            </li>
-          </ol>
-        </nav>
+    <>
+      <Surface kind="tonal" pad="md">
+        <Container size="wide">
+          <nav aria-label="Trilha de navegação">
+            <ol className="u-label flex flex-wrap items-center gap-2">
+              <li>
+                <Link href="/conhecimento" className="hover:text-fg rounded-sm">
+                  Conhecimento
+                </Link>
+              </li>
+              <li aria-hidden className="text-fg-faint">/</li>
+              <li>
+                <Link href={crumb.href} className="hover:text-fg rounded-sm">
+                  {crumb.label}
+                </Link>
+              </li>
+            </ol>
+          </nav>
 
-        <div
-          data-surface="tonal"
-          className="mt-10 border-b-2 border-[var(--color-accent)] px-6 py-8 sm:px-10 sm:py-10"
-        >
-          <h1
-            id="knowledge-detail-title"
-            className="font-display max-w-[16ch] text-[clamp(2.25rem,6vw,4.5rem)] leading-[1.02] tracking-[var(--tracking-display)] text-balance"
-          >
+          <h1 className="font-display mt-5 text-2xl font-extrabold sm:text-3xl">
             {name}
           </h1>
-          <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-1">
+          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1">
             {category ? (
-              <p className="u-label text-fg-muted">
+              <p className="u-label">
                 <span className="text-fg-faint">Categoria</span> {category}
               </p>
             ) : null}
             {aside}
           </div>
           {description ? (
-            <p className="text-fg-muted mt-6 max-w-[var(--container-prose)] text-lg leading-8 text-pretty">
+            <p className="text-fg-muted mt-5 max-w-[var(--container-prose)] text-md text-pretty">
               {description}
             </p>
           ) : null}
-        </div>
+        </Container>
+      </Surface>
 
-        <div className="mt-14 flex flex-col gap-16">
-          <AppearedIn experiences={experiences} />
-          <DemonstratedIn projects={projects} />
-        </div>
-      </Container>
-    </Section>
+      <Section spacing="lg">
+        <Container size="wide">
+          <div className="flex flex-col gap-12">
+            <AppearedIn experiences={experiences} />
+            <DemonstratedIn projects={projects} />
+
+            {kind === "skill" && contextTech.length ? (
+              <div>
+                <Kicker as="h2" className="mb-2">
+                  Tecnologias presentes nesses contextos
+                </Kicker>
+                <p className="text-fg-faint mb-3 max-w-[54ch] text-xs leading-snug">
+                  Ferramentas usadas nas experiências e projetos acima — não
+                  atribuídas diretamente à competência.
+                </p>
+                <div className="flex flex-wrap gap-x-3 gap-y-1.5">
+                  {contextTech.map((t) => (
+                    <Tag key={t}>{t}</Tag>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {!experiences.length && !projects.length ? (
+              <p className="text-fg-muted border-border border-t pt-6 font-mono text-sm">
+                Ainda sem contexto público registrado.
+              </p>
+            ) : null}
+          </div>
+        </Container>
+      </Section>
+    </>
   );
 }

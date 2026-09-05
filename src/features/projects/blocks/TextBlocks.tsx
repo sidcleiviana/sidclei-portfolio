@@ -84,7 +84,7 @@ export function Callout({ block }: { block: CalloutBlock }) {
   const rule =
     block.tone === "warning"
       ? "border-amber-500/60"
-      : "border-[var(--color-rule)]";
+      : "border-border-strong";
   return (
     <BlockShell>
       <aside className={`border-l-2 pl-5 ${rule}`}>

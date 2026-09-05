@@ -8,8 +8,8 @@ import { PRIMARY_NAV } from "./nav";
 
 /**
  * Accessible disclosure menu for narrow viewports. Keyboard: Enter/Space
- * toggles, Escape closes and returns focus to the trigger. Restyled for the
- * editorial identity, behaviour unchanged (Sprint 7 §29).
+ * toggles, Escape closes and returns focus to the trigger. Outside-pointer
+ * closes. Behaviour preserved from the previous identity.
  */
 export function MobileNav() {
   const [open, setOpen] = useState(false);
@@ -79,14 +79,14 @@ export function MobileNav() {
         <div
           ref={panelRef}
           id={panelId}
-          className="border-border bg-bg absolute inset-x-0 top-full border-b"
+          className="border-border bg-[var(--color-bg)] absolute inset-x-0 top-full border-b"
         >
           <nav
             aria-label="Navegação principal"
-            className="px-[var(--gutter)] py-4"
+            className="px-[var(--gutter)] py-3"
           >
             <ul className="flex flex-col">
-              {PRIMARY_NAV.map((item, i) => {
+              {PRIMARY_NAV.map((item) => {
                 const active =
                   item.href === "/"
                     ? pathname === "/"
@@ -96,14 +96,11 @@ export function MobileNav() {
                     <Link
                       href={item.href}
                       aria-current={active ? "page" : undefined}
-                      className={`flex items-baseline gap-3 py-3.5 ${
-                        active ? "text-fg" : "text-fg-muted"
+                      className={`font-display block py-3.5 text-lg font-bold ${
+                        active ? "text-accent" : "text-fg"
                       }`}
                     >
-                      <span aria-hidden className="u-label text-fg-faint">
-                        {String(i).padStart(2, "0")}
-                      </span>
-                      <span className="font-display text-xl">{item.label}</span>
+                      {item.label}
                     </Link>
                   </li>
                 );

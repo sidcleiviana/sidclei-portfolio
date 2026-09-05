@@ -42,20 +42,8 @@ describe("ProjectCard", () => {
           projectType: "production",
           period: { _type: "dateRange", startDate: "2023-01", ongoing: true },
           technologies: [
-            {
-              _id: "t1",
-              name: "Python",
-              slug: "python",
-              category: "Linguagem",
-              icon: null,
-            },
-            {
-              _id: "t2",
-              name: "Oracle",
-              slug: "oracle",
-              category: "Banco de dados",
-              icon: null,
-            },
+            { _id: "t1", name: "Python", slug: "python", category: "Linguagem", icon: null },
+            { _id: "t2", name: "Oracle", slug: "oracle", category: "Banco de dados", icon: null },
           ],
           contribution: {
             _type: "projectContribution",
@@ -68,7 +56,6 @@ describe("ProjectCard", () => {
     expect(screen.getByText("Produção")).toBeInTheDocument();
     expect(screen.getByText("Python")).toBeInTheDocument();
     expect(screen.getByText("Oracle")).toBeInTheDocument();
-    // period + roles appear in the meta label
     const label = screen.getByText("Produção").closest("p");
     expect(label?.textContent).toContain("2023 — atual");
     expect(label?.textContent).toContain("Backend · QA / Testes");
@@ -80,29 +67,5 @@ describe("ProjectCard", () => {
       "href",
       "/projects/projeto-a"
     );
-  });
-
-  it("compact variant keeps a heading link and technologies", () => {
-    render(
-      <ProjectCard
-        variant="compact"
-        project={makeProject({
-          technologies: [
-            {
-              _id: "t1",
-              name: "Python",
-              slug: "python",
-              category: "Linguagem",
-              icon: null,
-            },
-          ],
-        })}
-      />
-    );
-    expect(screen.getByRole("link", { name: "Projeto A" })).toHaveAttribute(
-      "href",
-      "/projects/projeto-a"
-    );
-    expect(screen.getByText("Python")).toBeInTheDocument();
   });
 });

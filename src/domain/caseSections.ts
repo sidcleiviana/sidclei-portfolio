@@ -46,10 +46,11 @@ export function buildCaseSections(input: {
   blocks: ContentBlock[];
   hasResults: boolean;
   hasEvidence: boolean;
+  hasRelations?: boolean;
 }): CaseSection[] {
   const sections: CaseSection[] = [];
   if (input.hasContribution)
-    sections.push({ id: "contribuicao", label: "Contribuição" });
+    sections.push({ id: "contribuicao", label: "Minha contribuição" });
   if (input.hasContext) sections.push({ id: "contexto", label: "Contexto" });
   if (input.hasProblem) sections.push({ id: "problema", label: "Problema" });
   for (const block of input.blocks) {
@@ -60,6 +61,8 @@ export function buildCaseSections(input: {
     sections.push({ id: "resultados", label: "Resultados" });
   if (input.hasEvidence)
     sections.push({ id: "evidencias", label: "Evidências" });
+  if (input.hasRelations)
+    sections.push({ id: "relacoes", label: "Relações" });
   return sections;
 }
 

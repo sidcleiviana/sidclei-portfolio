@@ -24,7 +24,7 @@ export function MetricList({ metrics }: { metrics: Metric[] }) {
       {usable.map(({ metric, value }, index) => (
         <div
           key={metric._key ?? index}
-          className="border-t border-[var(--color-rule)] py-5"
+          className="border-t border-border-strong py-5"
         >
           <dd className="font-display text-3xl">{value}</dd>
           {metric.label ? (

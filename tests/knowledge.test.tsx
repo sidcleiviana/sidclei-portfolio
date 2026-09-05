@@ -1,13 +1,14 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
 import { groupByCategory } from "@/domain/knowledge";
-import { ExperienceItem } from "@/features/experience/ExperienceItem";
 import {
   KnowledgeBadge,
   knowledgeHref,
 } from "@/features/knowledge/KnowledgeBadge";
 import { KnowledgeDetail } from "@/features/knowledge/KnowledgeDetail";
+import { KnowledgeExplorer } from "@/features/knowledge/KnowledgeExplorer";
 import { KnowledgeHub } from "@/features/knowledge/KnowledgeHub";
 import {
   knowledgeHubQuery,
@@ -15,7 +16,6 @@ import {
   technologyBySlugQuery,
 } from "@/sanity/queries/knowledge";
 import type {
-  ExperienceEntry,
   KnowledgeExperienceRef,
   KnowledgeProjectRef,
   KnowledgeSkill,
@@ -30,7 +30,9 @@ const skill = (
   category: "Desenvolvimento",
   shortDescription: null,
   featured: false,
-  contexts: [],
+  contextExperiences: [],
+  contextProjects: [],
+  contextTechnologies: [],
   ...over,
 });
 
@@ -40,20 +42,8 @@ const tech = (
   name: over._id,
   slug: over._id,
   category: "Linguagem",
-  contexts: [],
-  ...over,
-});
-
-const exp = (
-  over: Partial<KnowledgeExperienceRef> & { _id: string }
-): KnowledgeExperienceRef => ({
-  company: "ISO Olhos",
-  role: "Desenvolvedor",
-  period: {
-    _type: "dateRange",
-    startDate: "2025-11-01",
-    ongoing: true,
-  } as never,
+  contextExperiences: [],
+  contextProjects: [],
   ...over,
 });
 
@@ -74,6 +64,98 @@ describe("groupByCategory", () => {
   });
 });
 
+describe("KnowledgeExplorer", () => {
+  it("selects the first item and reveals its real contexts", () => {
+    render(
+      <KnowledgeExplorer
+        groups={[
+          {
+            label: null,
+            items: [
+              {
+                _id: "s1",
+                kind: "skill",
+                name: "Backend Development",
+                slug: "backend-development",
+                category: "Desenvolvimento",
+                shortDescription: null,
+                contextExperiences: [
+                  { _id: "e1", company: "ISO Olhos", role: "Desenvolvedor" },
+                ],
+                contextProjects: [
+                  {
+                    _id: "p1",
+                    title: "Chatbot IA",
+                    slug: "chatbot-ia",
+                    visibility: "public",
+                  },
+                ],
+                contextTechnologies: ["Python", "FastAPI"],
+              },
+            ],
+          },
+        ]}
+      />
+    );
+    expect(screen.getByText("Apareceu em")).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /Desenvolvedor · ISO Olhos/ })
+    ).toHaveAttribute("href", "/experiencia#iso-olhos-desenvolvedor");
+    expect(screen.getByRole("link", { name: "Chatbot IA" })).toHaveAttribute(
+      "href",
+      "/projects/chatbot-ia"
+    );
+    // technologies are framed as context, never as the skill's own
+    expect(
+      screen.getByText("Tecnologias presentes nesses contextos")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/não atribuídas diretamente à competência/)
+    ).toBeInTheDocument();
+  });
+
+  it("swaps the panel when another chip is chosen", async () => {
+    const user = userEvent.setup();
+    render(
+      <KnowledgeExplorer
+        groups={[
+          {
+            label: null,
+            items: [
+              {
+                _id: "a",
+                kind: "technology",
+                name: "Python",
+                slug: "python",
+                category: "Linguagem",
+                contextExperiences: [],
+                contextProjects: [],
+              },
+              {
+                _id: "b",
+                kind: "technology",
+                name: "Docker",
+                slug: "docker",
+                category: "Plataforma",
+                contextExperiences: [],
+                contextProjects: [],
+              },
+            ],
+          },
+        ]}
+      />
+    );
+    await user.click(screen.getByRole("button", { name: "Docker" }));
+    expect(screen.getByRole("button", { name: "Docker" })).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    );
+    expect(
+      screen.getByRole("heading", { name: "Docker" })
+    ).toBeInTheDocument();
+  });
+});
+
 describe("KnowledgeHub", () => {
   const skills = [
     skill({ _id: "s1", name: "Backend Development", featured: true }),
@@ -84,58 +166,35 @@ describe("KnowledgeHub", () => {
     tech({ _id: "t2", name: "Power BI", category: "Ferramenta" }),
   ];
 
-  it("renders both sections with category headings and deep links", () => {
+  it("renders both explorer sections with headings", () => {
     render(<KnowledgeHub skills={skills} technologies={technologies} />);
     expect(
-      screen.getByRole("heading", { level: 1, name: "Conhecimento" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: "Competências" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: "Tecnologias" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("link", { name: /Backend Development/ })
-    ).toHaveAttribute("href", "/conhecimento/competencias/s1");
-    expect(screen.getByRole("link", { name: "Python" })).toHaveAttribute(
-      "href",
-      "/conhecimento/tecnologias/t1"
-    );
-    // featured marker, neutral wording (Sprint §11) — no percentages/levels
-    expect(screen.getByText("(em destaque)")).toBeInTheDocument();
+      screen.getByRole("heading", { level: 1 })
+    ).toHaveTextContent(/contexto/i);
+    expect(screen.getByRole("heading", { name: "Competências" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Tecnologias" })).toBeInTheDocument();
+    // no proficiency signal
     expect(screen.queryByText(/%/)).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Backend Development" })).toBeInTheDocument();
   });
 
-  it("renders an editorial empty state, not a crash (Sprint §4)", () => {
+  it("renders an empty state, not a crash", () => {
     render(<KnowledgeHub skills={[]} technologies={[]} />);
     expect(screen.getByText(/Ainda não há competências/i)).toBeInTheDocument();
-  });
-
-  it("shows the real usage contexts, not a count (Sprint 7 §21)", () => {
-    render(
-      <KnowledgeHub
-        skills={[
-          skill({
-            _id: "s1",
-            name: "Backend Development",
-            contexts: ["ISO Olhos", "Freelance"],
-          }),
-        ]}
-        technologies={[]}
-      />
-    );
-    expect(screen.getByText("ISO Olhos · Freelance")).toBeInTheDocument();
-    expect(screen.getByText(/usado em/i)).toBeInTheDocument();
   });
 });
 
 describe("KnowledgeDetail", () => {
   const experiences: KnowledgeExperienceRef[] = [
-    exp({ _id: "e1", role: "Desenvolvedor", company: "ISO Olhos" }),
+    {
+      _id: "e1",
+      company: "ISO Olhos",
+      role: "Desenvolvedor",
+      period: { _type: "dateRange", startDate: "2025-11-01", ongoing: true } as never,
+    },
   ];
 
-  it("links each context back to the trajectory anchor (Sprint §18)", () => {
+  it("links each context back to the trajectory anchor", () => {
     render(
       <KnowledgeDetail
         kind="skill"
@@ -146,18 +205,16 @@ describe("KnowledgeDetail", () => {
       />
     );
     expect(screen.getByText("Apareceu em")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Desenvolvedor/ })).toHaveAttribute(
-      "href",
-      "/experiencia#iso-olhos-desenvolvedor"
-    );
-    // breadcrumb
+    expect(
+      screen.getByRole("link", { name: /Desenvolvedor · ISO Olhos/ })
+    ).toHaveAttribute("href", "/experiencia#iso-olhos-desenvolvedor");
     expect(screen.getByRole("link", { name: "Conhecimento" })).toHaveAttribute(
       "href",
       "/conhecimento"
     );
   });
 
-  it("omits empty relation sections — never '0 experiências' (Sprint §27)", () => {
+  it("omits empty relation sections — never '0 experiências'", () => {
     render(
       <KnowledgeDetail
         kind="technology"
@@ -174,7 +231,7 @@ describe("KnowledgeDetail", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("never renders a private related project (Sprint §21)", () => {
+  it("never renders a private related project", () => {
     const projects: KnowledgeProjectRef[] = [
       {
         _id: "p-priv",
@@ -207,10 +264,26 @@ describe("KnowledgeDetail", () => {
     expect(screen.getByText("Projeto público")).toBeInTheDocument();
     expect(screen.queryByText("PROJETO PRIVADO")).not.toBeInTheDocument();
   });
+
+  it("frames a skill's context technologies as such", () => {
+    render(
+      <KnowledgeDetail
+        kind="skill"
+        name="Backend Development"
+        experiences={experiences}
+        projects={[]}
+        contextTechnologies={["Python", "Redis"]}
+      />
+    );
+    expect(
+      screen.getByText("Tecnologias presentes nesses contextos")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Redis")).toBeInTheDocument();
+  });
 });
 
 describe("KnowledgeBadge", () => {
-  it("links when a slug is present, plain badge otherwise", () => {
+  it("links when a slug is present, plain text otherwise", () => {
     const { rerender } = render(
       <KnowledgeBadge kind="skill" slug="python" name="Python" />
     );
@@ -225,61 +298,19 @@ describe("KnowledgeBadge", () => {
 
   it("builds the right route per kind", () => {
     expect(knowledgeHref("skill", "x")).toBe("/conhecimento/competencias/x");
-    expect(knowledgeHref("technology", "x")).toBe(
-      "/conhecimento/tecnologias/x"
-    );
-  });
-});
-
-describe("Experience badges are now knowledge links (Sprint §17, §32)", () => {
-  const experience = {
-    _id: "x1",
-    company: "ISO Olhos",
-    role: "Desenvolvedor",
-    period: { _type: "dateRange", startDate: "2025-11-01", ongoing: true },
-    location: null,
-    summary: "resumo",
-    responsibilities: ["fazer coisas"],
-    skills: [
-      {
-        _id: "sk",
-        name: "Backend Development",
-        slug: "backend-development",
-        category: "Desenvolvimento",
-      },
-    ],
-    technologies: [
-      { _id: "te", name: "Python", slug: "python", category: "Linguagem" },
-    ],
-    projects: [],
-  } as unknown as ExperienceEntry;
-
-  it("renders skill and technology badges as deep links", () => {
-    render(
-      <ExperienceItem
-        experience={experience}
-        anchor="iso-olhos-desenvolvedor"
-      />
-    );
-    expect(
-      screen.getByRole("link", { name: "Backend Development" })
-    ).toHaveAttribute("href", "/conhecimento/competencias/backend-development");
-    expect(screen.getByRole("link", { name: "Python" })).toHaveAttribute(
-      "href",
-      "/conhecimento/tecnologias/python"
-    );
+    expect(knowledgeHref("technology", "x")).toBe("/conhecimento/tecnologias/x");
   });
 });
 
 describe("knowledge queries", () => {
-  it("hub fetches no relation counts (Sprint §3) and orders featured-first", () => {
+  it("hub fetches no relation counts and orders featured-first", () => {
     expect(knowledgeHubQuery).toContain('_type == "skill"');
     expect(knowledgeHubQuery).toContain('_type == "technology"');
     expect(knowledgeHubQuery).toContain("order(featured desc");
     expect(knowledgeHubQuery).not.toContain("count(");
   });
 
-  it("detail queries apply the public gate to related projects (Sprint §21)", () => {
+  it("detail queries apply the public gate to related projects", () => {
     for (const q of [skillBySlugQuery, technologyBySlugQuery]) {
       expect(q).toContain("references(^._id)");
       expect(q).toContain('status == "published"');
@@ -287,9 +318,7 @@ describe("knowledge queries", () => {
     }
   });
 
-  it("detail queries never traverse skill<->technology (Sprint §7)", () => {
-    // no cross-edge: a skill query must not reference technology and vice-versa
-    expect(skillBySlugQuery).not.toContain('_type == "technology"');
+  it("the technology detail query never traverses to skills", () => {
     expect(technologyBySlugQuery).not.toContain('_type == "skill"');
   });
 });
