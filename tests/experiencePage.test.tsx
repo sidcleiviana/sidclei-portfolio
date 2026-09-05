@@ -58,6 +58,21 @@ describe("TrajectorySelector — selection", () => {
     await user.keyboard("{ArrowUp}");
     expect(tabs[0]).toHaveAttribute("aria-selected", "true");
   });
+
+  it("moves the agent anchor to the selected role", async () => {
+    const user = userEvent.setup();
+    const { container } = render(<TrajectorySelector experiences={entries} />);
+    const anchors = () =>
+      Array.from(
+        container.querySelectorAll("[data-agent-anchor='experience']")
+      );
+    expect(anchors()[0]).toHaveAttribute("data-agent-here");
+    expect(anchors()[1]).not.toHaveAttribute("data-agent-here");
+
+    await user.click(screen.getAllByRole("tab")[1]!);
+    expect(anchors()[0]).not.toHaveAttribute("data-agent-here");
+    expect(anchors()[1]).toHaveAttribute("data-agent-here");
+  });
 });
 
 describe("TrajectorySelector — confidentiality", () => {

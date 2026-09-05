@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { AgentAnchor } from "@/components/agent/AgentAnchor";
 import { Container, Kicker, Section } from "@/components/ui";
 import { filterPubliclyVisible } from "@/domain/visibility";
 import { ProjectList } from "@/features/projects/ProjectList";
@@ -17,7 +18,8 @@ export default async function ProjectsPage() {
 
   return (
     <Section spacing="lg" aria-labelledby="projects-title">
-      <Container size="wide">
+      <Container size="wide" className="relative">
+        <AgentAnchor name="collection" active className="absolute top-0 right-2 sm:right-4" />
         <Kicker>Trabalho</Kicker>
         <h1 className="font-display mt-3 text-2xl font-extrabold sm:text-3xl" id="projects-title">
           Projetos

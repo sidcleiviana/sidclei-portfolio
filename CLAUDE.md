@@ -1559,3 +1559,62 @@ filtro (slug privado → `notFound()`). Validação de schema impede `private` +
 - **Gates**: typecheck, lint, **95 testes** (91 → +4: NODE a11y + teclado,
   TrajectorySelector arrow-keys), build — verdes. Shared First Load JS
   **103 kB — inalterado**. Home 3.5 kB / 174 kB de rota (+~1 kB dos 2 islands).
+
+---
+
+## Atualização — Sprint 8.2 (Living Agent — o NODE vira um agente)
+
+- **O NODE virou um pequeno agente digital roaming.** Não é redesign, não é
+  chatbot, não é IA, não é grafo. Um único agente "vivo" por viewport que
+  pousa em `[data-agent-anchor]`, segue a seleção dentro de um contexto,
+  olha na direção do ponteiro quando ele se aproxima, e pode ser cutucado no
+  Hero. Continuidade narrativa (Hero → Project → Experience → Knowledge →
+  Footer), não `position: fixed` seguindo scroll.
+- **Anatomia** (`src/components/agent/AgentSvg.tsx`, SVG inline ~0.4 kB):
+  corpo geométrico (rounded rect), 2 sensores mínimos, antena com ponta
+  petrol (o elemento "vivo"), 2 apoios, 2 satélites de conexão. Indigo +
+  graphite; petrol só na antena. Sem rosto, sem emoji, sem robô genérico.
+- **Máquina de estados** (CSS, dirigida por `[data-agent-state]`): `idle`
+  (breathing 5s + pulse petrol 3.6s) · `look` (sensores/corpo inclinam até
+  3px em `--lx/--ly`) · `move` (transição de `translate` num salto curto,
+  fade num salto longo) · `land` (bounce 240ms) · `interact` (sensores
+  abrem, satélites afastam, antena flare, tilt −2.5°).
+- **Anchor system**: `<AgentAnchor name="hero|project|experience|knowledge|
+  case|relations|footer|collection|detail" active />` — span 0×0,
+  server-rendered, `aria-hidden`, sem footprint. `repositionAgent()`
+  dispara `agent:reposition` (deferido 1 frame para o React commitar).
+- **Coordenador** (`LivingAgent.tsx`, client, ~180 linhas, carregado como
+  chunk async via `AgentMount` → **fora do shared bundle**): 1
+  `IntersectionObserver` sobre todos os anchors + 1 `pointermove` escopado
+  à `<section>` do contexto ativo (trocado quando o contexto muda). Sem
+  listener global de scroll, sem RAF idle (breathing é CSS); RAF só durante
+  pointermove ativo. `pick()` escolhe o contexto mais central e, dentro
+  dele, o anchor com `data-agent-here` (a seleção atual).
+- **Interativo só no Hero**: quando o anchor ativo é `hero`, o agente vira
+  `role="button"` + `aria-label="explore"` + teclado (Enter/Space) + hit
+  area 44px; toggle abre os sensores e revela a label. Nos outros anchors é
+  `aria-hidden` + `pointer-events: none` (nunca cobre conteúdo; z-10, abaixo
+  do header).
+- **Jornada por contexto**: Hero (acordado, à direita, cutucável) → Featured
+  Project (dentro do módulo; anda para a integração selecionada — sem
+  pipeline falso) → Experience (na trilha do seletor; **desliza até o papel
+  selecionado**, o momento-vitrine do §16) → Knowledge (na trilha de chips
+  no desktop; sobe/desce até o chip escolhido; no mobile pousa no cabeçalho
+  do painel) → Footer (parado, "fim da viagem"). Case: abertura + "Relações".
+  `/projects` e `/conhecimento/[slug]`: um pouso discreto.
+- **Reduced motion**: sem viagem (snap instantâneo), sem breathing, sem
+  pulse, sem look, sem land bounce — permanece visível e estático em cada
+  contexto. `[overflow-x:clip]` no wrapper de `<main>` impede que um agente
+  ancorado perto da borda cause scroll horizontal (não quebra o sticky do
+  `ProjectToc`).
+- **Removido**: `src/components/node/` (Node estático + NodeButton) — para
+  não ter "clones". Reaproveitados: palette, tokens, semântica a11y,
+  `RelationalScope`, o padrão de reduced-motion.
+- **Client Components novos**: 2 — `LivingAgent` (coordenação anchor↔pos↔
+  estado, impossível em CSS) e `AgentMount` (o `dynamic(ssr:false)`
+  wrapper). `HeroSpotlight` mantido.
+- **Gates**: typecheck, lint, **99 testes** (95 → +4: AgentSvg decorativo,
+  AgentAnchor toggle, `repositionAgent` dispara evento, `LivingAgent` monta
+  inerte sem anchor; + Experience move o anchor na seleção, Knowledge mantém
+  anchor ativo), build — verdes. Shared First Load JS **103 kB —
+  inalterado**. Home 3.4 kB de rota. Zero overflow em 375/1440 em toda rota.

@@ -1,7 +1,7 @@
 import Link from "next/link";
 
+import { AgentAnchor } from "@/components/agent/AgentAnchor";
 import { HeroSpotlight } from "@/components/motion/HeroSpotlight";
-import { NodeButton } from "@/components/node/NodeButton";
 import { ButtonLink, Container, Kicker, Section } from "@/components/ui";
 import { experienceAnchor } from "@/domain/experienceAnchor";
 import { formatMonthRange, isCurrent } from "@/domain/monthRange";
@@ -97,7 +97,7 @@ export function Hero({
               ))}
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            <div className="relative flex flex-wrap items-center justify-between gap-x-4 gap-y-2 pr-14 sm:pr-12">
               {technologies.length ? (
                 <p className="text-fg-faint font-mono text-xs leading-relaxed">
                   {technologies.slice(0, 6).join(" · ")}
@@ -105,7 +105,11 @@ export function Hero({
               ) : (
                 <span />
               )}
-              <NodeButton />
+              <AgentAnchor
+                name="hero"
+                active
+                className="absolute top-1/2 right-6 sm:right-3"
+              />
             </div>
           </div>
         </div>

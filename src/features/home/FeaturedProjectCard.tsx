@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
-import { Node } from "@/components/node/Node";
+import { AgentAnchor, repositionAgent } from "@/components/agent/AgentAnchor";
 import { Chip } from "@/components/ui";
 
 export type FeaturedProjectView = {
@@ -40,6 +40,11 @@ export function FeaturedProjectCard({ project }: { project: FeaturedProjectView 
     ? (CONTEXT[active] ?? "Integração declarada do projeto.")
     : "As integrações declaradas do projeto e a camada em que atuei.";
 
+  const select = (name: string | null) => {
+    setActive(name);
+    repositionAgent();
+  };
+
   return (
     <div className="group grid gap-10 lg:grid-cols-[1.5fr_1fr] lg:gap-14">
       <div>
@@ -69,31 +74,40 @@ export function FeaturedProjectCard({ project }: { project: FeaturedProjectView 
       </div>
 
       {/* right column — facets tied to the project by one thin connector */}
-      <div className="relative border-border rounded-[var(--radius)] border p-4 transition-colors group-hover:border-[var(--color-border-strong)] sm:p-5">
+      <div className="relative border-border rounded-[var(--radius)] border p-4 pr-10 transition-colors group-hover:border-[var(--color-border-strong)] sm:p-5 sm:pr-12">
         <span
           aria-hidden
           data-animate="draw-y"
           className="absolute top-5 bottom-5 left-0 w-px bg-[var(--color-accent)]/40"
         />
+        <AgentAnchor
+          name="project"
+          active={active === null}
+          className="absolute top-6 right-4"
+        />
 
         {integrations.length ? (
           <div>
-            <p className="u-label flex items-center gap-2">
-              Integrações <Node size="sm" className="opacity-80" />
-            </p>
+            <p className="u-label">Integrações</p>
             <div className="mt-2.5 flex flex-wrap gap-2">
               {integrations.map((name) => (
-                <Chip
-                  key={name}
-                  selected={active === name}
-                  onPointerEnter={() => setActive(name)}
-                  onFocus={() => setActive(name)}
-                  onPointerLeave={() => setActive(null)}
-                  onBlur={() => setActive(null)}
-                  onClick={() => setActive((cur) => (cur === name ? null : name))}
-                >
-                  {name}
-                </Chip>
+                <span key={name} className="relative">
+                  <Chip
+                    selected={active === name}
+                    onPointerEnter={() => select(name)}
+                    onFocus={() => select(name)}
+                    onPointerLeave={() => select(null)}
+                    onBlur={() => select(null)}
+                    onClick={() => select(active === name ? null : name)}
+                  >
+                    {name}
+                  </Chip>
+                  <AgentAnchor
+                    name="project"
+                    active={active === name}
+                    className="absolute top-1/2 -right-1"
+                  />
+                </span>
               ))}
             </div>
             <p className="text-fg-faint mt-2.5 min-h-[2.4em] text-xs leading-snug">

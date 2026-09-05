@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useId, useRef, useState } from "react";
 
+import { AgentAnchor, repositionAgent } from "@/components/agent/AgentAnchor";
 import { TagLink } from "@/components/ui";
 import { formatMonthRange, isCurrent } from "@/domain/monthRange";
 
@@ -146,6 +147,11 @@ export function TrajectorySelector({
 
   if (!experiences.length) return null;
 
+  const choose = (i: number) => {
+    setSelected(i);
+    repositionAgent();
+  };
+
   const onKey = (e: React.KeyboardEvent) => {
     const last = experiences.length - 1;
     let next = selected;
@@ -155,7 +161,7 @@ export function TrajectorySelector({
     else if (e.key === "End") next = last;
     else return;
     e.preventDefault();
-    setSelected(next);
+    choose(next);
     tabsRef.current
       ?.querySelectorAll<HTMLButtonElement>("[role='tab']")
       [next]?.focus();
@@ -163,21 +169,29 @@ export function TrajectorySelector({
 
   return (
     <div className="lg:grid lg:grid-cols-[minmax(0,19rem)_1fr] lg:gap-12">
-      {/* selector */}
+      {/* selector — the agent rides this rail */}
       <div
         ref={tabsRef}
         role="tablist"
         aria-orientation="vertical"
         aria-label="Selecionar experiência"
         onKeyDown={onKey}
-        className="border-border flex flex-col border-t lg:border-t-0"
+        className="border-border relative flex flex-col border-t lg:border-t-0 lg:pl-10"
       >
         {experiences.map((entry, i) => {
           const on = i === selected;
           const panelId = `${base}-p-${i}`;
           const tabId = `${base}-t-${i}`;
           return (
-            <div key={entry._id} className="border-border border-b lg:border-b-0">
+            <div
+              key={entry._id}
+              className="border-border relative border-b lg:border-b-0"
+            >
+              <AgentAnchor
+                name="experience"
+                active={on}
+                className="absolute top-7 right-3 lg:top-1/2 lg:right-auto lg:-left-8"
+              />
               <button
                 id={tabId}
                 role="tab"
@@ -185,7 +199,7 @@ export function TrajectorySelector({
                 aria-selected={on}
                 aria-controls={panelId}
                 tabIndex={on ? 0 : -1}
-                onClick={() => setSelected(i)}
+                onClick={() => choose(i)}
                 className={`group flex w-full flex-col items-start gap-0.5 py-4 text-left transition-colors lg:border-l-2 lg:pl-4 ${
                   on
                     ? "lg:border-[var(--color-accent)]"

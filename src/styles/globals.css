@@ -261,83 +261,155 @@ h4 {
   animation-delay: 120ms;
 }
 
-/* -- NODE --------------------------------------------------------------
-   An abstract entity: core + satellites + thin links. Ambient breathing is
-   tiny and slow. A [data-node-react] ancestor on hover/focus, or [data-node-open]
-   on tap, opens the satellites and lifts the link opacity; petrol briefly
-   brightens. Never louder than the content next to it. */
-.node {
+/* -- LIVING AGENT ----------------------------------------------------------
+   One roaming entity per route. It is absolutely positioned inside <main>
+   (so it scrolls with the page — never fixed) and only *moves* when the
+   active [data-agent-anchor] changes: a translate transition for a short
+   hop, a fade for a long one. `--lx/--ly` are set by a scoped pointermove
+   listener for the "look" glance. Idle breathing is pure CSS. Everything
+   here collapses to a still, visible agent under reduced motion. */
+.agent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: -0.5rem 0 0 -0.5rem; /* centre the body on the anchor point */
+  pointer-events: none;
+  transition: transform 420ms var(--ease-out), opacity 220ms var(--ease-out);
+  will-change: transform;
+}
+.agent--off {
+  opacity: 0;
+}
+.agent--on {
+  opacity: 1;
+}
+.agent[role="button"] {
+  pointer-events: auto;
+  cursor: pointer;
+}
+.agent[role="button"]:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+.agent-hit {
+  display: inline-grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+}
+.agent-label {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  color: var(--color-fg-faint);
+  transition:
+    max-width 220ms var(--ease-out),
+    opacity 220ms var(--ease-out);
+}
+.agent[data-agent-open] .agent-label {
+  max-width: 10rem;
+  opacity: 1;
+}
+
+.agent-svg {
   overflow: visible;
 }
-.node .node-links {
-  opacity: 0.32;
-  transition: opacity var(--dur) var(--ease-out);
-}
-.node .node-sat,
-.node .node-live,
-.node .node-core {
-  transition: transform var(--dur) var(--ease-out);
+.agent-svg .agent-core,
+.agent-svg .agent-sensors,
+.agent-svg .agent-sat,
+.agent-svg .agent-live,
+.agent-svg .agent-sats,
+.agent-svg .agent-feet,
+.agent-svg .agent-antenna {
   transform-box: fill-box;
   transform-origin: center;
+  transition: transform var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out);
 }
+.agent-svg .agent-sats {
+  opacity: 0.4;
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  .node .node-core {
-    animation: node-breathe 4.5s var(--ease-out) infinite;
+  .agent-svg .agent-core {
+    animation: agent-breathe 5s var(--ease-out) infinite;
   }
-  .node .node-live {
-    animation: node-live 3.2s var(--ease-out) infinite;
+  .agent-svg .agent-live {
+    animation: agent-live 3.6s var(--ease-out) infinite;
+  }
+  /* a small bounce when it arrives */
+  .agent[data-agent-state="land"] .agent-svg {
+    animation: agent-land 240ms var(--ease-out);
   }
 }
-@keyframes node-breathe {
+@keyframes agent-breathe {
   0%,
+  100% {
+    transform: scale(1) translateY(0);
+  }
+  50% {
+    transform: scale(1.04) translateY(-0.4px);
+  }
+}
+@keyframes agent-live {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+@keyframes agent-land {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(0.93);
+  }
+  75% {
+    transform: scale(1.03);
+  }
   100% {
     transform: scale(1);
   }
-  50% {
-    transform: scale(1.12);
-  }
 }
-@keyframes node-live {
-  0%,
-  100% {
-    opacity: 0.85;
-  }
-  50% {
-    opacity: 0.35;
-  }
+
+/* look — the sensors and core lean toward the pointer */
+.agent[data-agent-state="look"] .agent-sensors,
+.agent[data-agent-state="look"] .agent-core {
+  transform: translate(var(--lx, 0), var(--ly, 0));
 }
-[data-node-react]:hover .node .node-links,
-[data-node-react]:focus-visible .node .node-links,
-[data-node-open] .node .node-links {
-  opacity: 0.7;
+
+/* interact — sensors open, satellites spread, antenna tip flares, slight tilt */
+.agent[data-agent-state="interact"] .agent-svg,
+.agent[data-agent-open] .agent-svg {
+  transform: rotate(-2.5deg);
 }
-[data-node-react]:hover .node .node-core,
-[data-node-react]:focus-visible .node .node-core,
-[data-node-open] .node .node-core {
-  transform: translate(1.5px, -1.5px);
+.agent[data-agent-state="interact"] .agent-sats,
+.agent[data-agent-open] .agent-sats {
+  opacity: 0.9;
 }
-[data-node-react]:hover .node .node-sat:nth-child(1),
-[data-node-open] .node .node-sat:nth-child(1) {
+.agent[data-agent-state="interact"] .agent-sat:first-of-type,
+.agent[data-agent-open] .agent-sat:first-of-type {
   transform: translate(2px, -2px);
 }
-[data-node-react]:hover .node .node-sat:nth-child(2),
-[data-node-open] .node .node-sat:nth-child(2) {
-  transform: translate(2px, 1px);
-}
-[data-node-react]:hover .node .node-sat:nth-child(3),
-[data-node-open] .node .node-sat:nth-child(3) {
+.agent[data-agent-state="interact"] .agent-sat:last-of-type,
+.agent[data-agent-open] .agent-sat:last-of-type {
   transform: translate(-2px, 2px);
 }
-[data-node-react]:hover .node .node-live,
-[data-node-open] .node .node-live {
-  opacity: 1;
-  transform: translate(-2px, -1px) scale(1.15);
+.agent[data-agent-state="interact"] .agent-sensors,
+.agent[data-agent-open] .agent-sensors {
+  transform: scaleX(1.25);
 }
-.node-btn {
-  color: inherit;
-}
-.node-btn:focus-visible {
-  outline-offset: 4px;
+.agent[data-agent-state="interact"] .agent-live,
+.agent[data-agent-open] .agent-live {
+  transform: scale(1.3);
 }
 
 /* -- connector draw: a thin line/elbow that draws itself in as it enters
@@ -468,13 +540,21 @@ h4 {
   .u-row:focus-within .u-row-arrow {
     transform: none !important;
   }
-  .node .node-core,
-  .node .node-live,
-  .node .node-sat,
-  [data-node-react]:hover .node *,
-  [data-node-open] .node * {
+  .agent {
+    transition: none !important;
+  }
+  .agent-svg,
+  .agent-svg *,
+  .agent[data-agent-state] .agent-svg,
+  .agent[data-agent-state] .agent-svg *,
+  .agent[data-agent-open] .agent-svg,
+  .agent[data-agent-open] .agent-svg * {
     animation: none !important;
     transform: none !important;
+  }
+  .agent[data-agent-open] .agent-label {
+    max-width: 10rem;
+    opacity: 1;
   }
   .hero-spotlight {
     display: none !important;

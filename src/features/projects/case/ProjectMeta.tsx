@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { Node } from "@/components/node/Node";
+import { AgentAnchor } from "@/components/agent/AgentAnchor";
 import { TextLink } from "@/components/ui";
 import { experienceAnchor } from "@/domain/experienceAnchor";
 import { KnowledgeBadge } from "@/features/knowledge/KnowledgeBadge";
@@ -35,13 +35,9 @@ export function ProjectMeta({ project }: { project: ProjectDetail }) {
   }
 
   return (
-    <>
-      <CaseHeading>
-        <span className="inline-flex items-center gap-2">
-          <Node size="sm" className="opacity-80" />
-          Relações
-        </span>
-      </CaseHeading>
+    <div className="relative">
+      <AgentAnchor name="relations" active className="absolute -top-1 -left-6" />
+      <CaseHeading>Relações</CaseHeading>
       <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
         {skills.length ? (
           <div>
@@ -95,6 +91,6 @@ export function ProjectMeta({ project }: { project: ProjectDetail }) {
           </div>
         ) : null}
       </div>
-    </>
+    </div>
   );
 }

@@ -1,3 +1,4 @@
+import { AgentAnchor } from "@/components/agent/AgentAnchor";
 import { Container } from "@/components/ui";
 import { rolesSummary } from "@/domain/contribution";
 import { formatDateRange } from "@/domain/dateRange";
@@ -28,7 +29,8 @@ export function ProjectHeader({ project }: { project: ProjectDetail }) {
       : null;
 
   return (
-    <Container size="wide" as="header">
+    <Container size="wide" as="header" className="relative">
+      <AgentAnchor name="case" active className="absolute top-0 right-2 sm:right-4" />
       <p className="u-label">
         {projectTypeLabel(project.projectType)}
         {authorshipLabel ? (

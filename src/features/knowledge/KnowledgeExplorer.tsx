@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
-import { Node } from "@/components/node/Node";
+import { AgentAnchor, repositionAgent } from "@/components/agent/AgentAnchor";
 import { Chip, Tag } from "@/components/ui";
 import { experienceAnchor } from "@/domain/experienceAnchor";
 
@@ -52,9 +52,15 @@ function DetailPanel({ entity }: { entity: ExplorerEntity }) {
   );
 
   return (
-    <div className="u-stagger">
-      <p className="u-label flex items-center gap-2">
-        <Node size="sm" className="opacity-80" />
+    <div className="u-stagger relative pl-8 lg:pl-0">
+      {/* mobile: the agent rides the panel header (its own space); desktop
+          uses the per-chip anchors on the rail */}
+      <AgentAnchor
+        name="knowledge"
+        active
+        className="absolute top-1.5 left-1 lg:hidden"
+      />
+      <p className="u-label">
         {entity.kind === "skill" ? "Competência" : "Tecnologia"}
         {entity.category ? (
           <span className="text-fg-faint"> · {entity.category}</span>
@@ -177,15 +183,24 @@ export function KnowledgeExplorer({
                   .filter(Boolean)
                   .join(",");
                 return (
-                  <Chip
-                    key={entity._id}
-                    data-rel=""
-                    data-rel-keys={keys}
-                    selected={on}
-                    onClick={() => setSelectedId(entity._id)}
-                  >
-                    {entity.name}
-                  </Chip>
+                  <span key={entity._id} className="relative">
+                    <Chip
+                      data-rel=""
+                      data-rel-keys={keys}
+                      selected={on}
+                      onClick={() => {
+                        setSelectedId(entity._id);
+                        repositionAgent();
+                      }}
+                    >
+                      {entity.name}
+                    </Chip>
+                    <AgentAnchor
+                      name="knowledge"
+                      active={on}
+                      className="absolute top-1/2 -right-1.5 hidden lg:inline-block"
+                    />
+                  </span>
                 );
               })}
             </div>

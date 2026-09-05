@@ -154,6 +154,34 @@ describe("KnowledgeExplorer", () => {
       screen.getByRole("heading", { name: "Docker" })
     ).toBeInTheDocument();
   });
+
+  it("keeps an active agent anchor in the detail panel", () => {
+    const { container } = render(
+      <KnowledgeExplorer
+        groups={[
+          {
+            label: null,
+            items: [
+              {
+                _id: "s1",
+                kind: "skill",
+                name: "Backend Development",
+                slug: "backend-development",
+                category: "Desenvolvimento",
+                shortDescription: null,
+                contextExperiences: [],
+                contextProjects: [],
+                contextTechnologies: [],
+              },
+            ],
+          },
+        ]}
+      />
+    );
+    expect(
+      container.querySelector("[data-agent-anchor='knowledge'][data-agent-here]")
+    ).toBeTruthy();
+  });
 });
 
 describe("KnowledgeHub", () => {

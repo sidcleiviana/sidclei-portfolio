@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 
+import { AgentAnchor } from "@/components/agent/AgentAnchor";
 import { Container, Kicker, Section, Surface, Tag } from "@/components/ui";
 import { experienceAnchor } from "@/domain/experienceAnchor";
 import { formatMonthRange } from "@/domain/monthRange";
@@ -21,7 +22,8 @@ const CRUMB: Record<KnowledgeKind, { label: string; href: string }> = {
 function AppearedIn({ experiences }: { experiences: KnowledgeExperienceRef[] }) {
   if (!experiences.length) return null;
   return (
-    <div>
+    <div className="relative pl-8">
+      <AgentAnchor name="detail" active className="absolute top-1 left-1" />
       <Kicker as="h2" className="mb-4">
         Apareceu em
       </Kicker>
