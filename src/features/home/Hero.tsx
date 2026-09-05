@@ -31,7 +31,10 @@ export function Hero({ profile }: { profile: HomeProfile | null }) {
           className="flex items-baseline justify-between"
           data-animate="rise"
         >
-          <p className="u-label">{name}</p>
+          <p className="u-label flex items-center gap-2.5">
+            <span aria-hidden className="h-px w-4 bg-[var(--color-accent)]" />
+            {name}
+          </p>
           <p className="u-label text-fg-faint">
             <span aria-hidden className="tabular-nums">
               01
@@ -45,7 +48,7 @@ export function Hero({ profile }: { profile: HomeProfile | null }) {
             id="hero-title"
             data-animate="rise"
             data-delay="1"
-            className="font-display text-[clamp(3rem,11vw,8.5rem)] leading-[0.94] tracking-[var(--tracking-display)] text-balance lg:col-span-9"
+            className="font-display text-[clamp(2.75rem,7.5vw,6rem)] leading-[0.98] tracking-[var(--tracking-display)] text-balance lg:col-span-9"
           >
             {headline}
           </h1>
@@ -62,7 +65,7 @@ export function Hero({ profile }: { profile: HomeProfile | null }) {
               {FOCUS_AREAS.map((area) => (
                 <li
                   key={area.name}
-                  className="u-label text-fg relative py-1.5 before:absolute before:top-1/2 before:-left-3.5 before:h-px before:w-2.5 before:bg-[var(--color-accent)] before:content-['']"
+                  className="u-label text-fg hover:text-accent relative py-1.5 transition-colors before:absolute before:top-1/2 before:-left-3.5 before:h-px before:w-2.5 before:bg-[var(--color-accent)] before:content-['']"
                 >
                   {area.name}
                 </li>

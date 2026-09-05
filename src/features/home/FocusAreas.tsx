@@ -24,16 +24,16 @@ export function FocusAreas() {
           {FOCUS_AREAS.map((area, i) => (
             <li
               key={area.name}
-              className="group grid grid-cols-12 items-baseline gap-x-6 gap-y-2 border-t border-[var(--color-rule)] py-8 first:border-t-2"
+              className="group grid grid-cols-12 items-baseline gap-x-6 gap-y-2 border-t border-[var(--color-rule)] py-8 transition-colors first:border-t-2 hover:border-[var(--color-accent)]"
             >
               <span
                 aria-hidden
-                className="font-display text-fg-faint col-span-2 text-2xl tabular-nums sm:col-span-1 sm:text-3xl"
+                className="font-display text-fg-faint group-hover:text-accent col-span-2 text-2xl tabular-nums transition-colors sm:col-span-1 sm:text-3xl"
               >
                 {String(i + 1).padStart(2, "0")}
               </span>
               <h3
-                className="font-display col-span-10 text-[clamp(1.75rem,4vw,2.75rem)] leading-[1.05] sm:col-span-6 lg:col-span-5"
+                className="font-display group-hover:text-accent col-span-10 text-[clamp(1.75rem,4vw,2.75rem)] leading-[1.05] transition-colors sm:col-span-6 lg:col-span-5"
                 style={{ paddingLeft: `${i * 0.4}rem` }}
               >
                 {area.name}

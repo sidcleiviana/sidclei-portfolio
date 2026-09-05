@@ -22,7 +22,7 @@
   --color-surface: #f2f0ea;
   --color-fg: #16150f;
   --color-fg-muted: #55534a;
-  --color-fg-faint: #86847a;
+  --color-fg-faint: #666352;
   --color-border: #cac7ba;
   --color-border-strong: #a8a494;
   --color-rule: #1b1a14;
@@ -291,6 +291,25 @@ button:hover .u-arrow,
 [data-animate="line"] {
   animation: ds-line var(--dur-slow) var(--ease-out) both;
   transform-origin: left;
+}
+
+/* Where scroll-driven animations are supported, tie the entrance cues to
+   scroll position instead of firing once on load — visible throughout the
+   page, not just above the fold on first paint. No JS, no library; browsers
+   without support keep the reveal-on-load behaviour above unchanged. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    [data-animate="rise"] {
+      animation: ds-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+    [data-animate="line"] {
+      animation: ds-line linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
