@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { Node } from "@/components/node/Node";
 import { Container } from "@/components/ui/Container";
 import type { Profile } from "@/sanity/types";
 
@@ -24,13 +25,16 @@ export function SiteFooter({
     <footer data-surface="deep" className="mt-24 border-t border-[var(--color-border)]">
       <Container size="wide" className="py-14 sm:py-20">
         <div className="grid gap-10 sm:grid-cols-[1fr_auto] sm:gap-16">
-          <div className="max-w-[var(--container-prose)]">
-            <p className="font-display text-xl font-bold sm:text-2xl">
-              {profile?.name ?? "Sidclei Viana"}
-            </p>
-            <p className="text-fg-muted mt-1.5 text-md text-pretty">
-              {profile?.headline ?? "Desenvolvedor de Software"}
-            </p>
+          <div className="flex max-w-[var(--container-prose)] items-start gap-5">
+            <Node size="lg" className="mt-1 shrink-0 opacity-90" />
+            <div>
+              <p className="font-display text-xl font-bold sm:text-2xl">
+                {profile?.name ?? "Sidclei Viana"}
+              </p>
+              <p className="text-fg-muted mt-1.5 text-md text-pretty">
+                {profile?.headline ?? "Desenvolvedor de Software"}
+              </p>
+            </div>
           </div>
 
           <nav

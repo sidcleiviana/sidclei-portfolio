@@ -49,6 +49,11 @@ export function ProjectToc({ sections }: { sections: CaseSection[] }) {
 
   if (!sections.length) return null;
 
+  const activeIndex = Math.max(
+    0,
+    sections.findIndex((s) => s.id === activeId)
+  );
+
   const list = (
     <ol className="flex flex-col">
       {sections.map((section) => {
@@ -79,7 +84,24 @@ export function ProjectToc({ sections }: { sections: CaseSection[] }) {
         aria-label="Índice do projeto"
         className="sticky top-24 hidden xl:block"
       >
-        <p className="u-label text-fg-faint mb-4">Neste projeto</p>
+        <p className="u-label text-fg-faint mb-1 flex items-center justify-between">
+          <span>Neste projeto</span>
+          <span aria-hidden className="tabular-nums">
+            {String(activeIndex + 1).padStart(2, "0")}/
+            {String(sections.length).padStart(2, "0")}
+          </span>
+        </p>
+        <span
+          aria-hidden
+          className="mb-3 block h-px w-full bg-[var(--color-border)]"
+        >
+          <span
+            className="block h-px bg-[var(--color-accent)] transition-[width] duration-300"
+            style={{
+              width: `${((activeIndex + 1) / sections.length) * 100}%`,
+            }}
+          />
+        </span>
         {list}
       </nav>
 

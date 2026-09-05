@@ -246,6 +246,185 @@ h4 {
   animation: u-fade var(--dur) var(--ease-out) both;
 }
 
+/* A short staggered entrance for a group's children (skills, chips, rows)
+   when a panel swaps in. Capped so it never delays reading. */
+.u-stagger > * {
+  animation: u-fade var(--dur) var(--ease-out) both;
+}
+.u-stagger > *:nth-child(2) {
+  animation-delay: 40ms;
+}
+.u-stagger > *:nth-child(3) {
+  animation-delay: 80ms;
+}
+.u-stagger > *:nth-child(n + 4) {
+  animation-delay: 120ms;
+}
+
+/* -- NODE --------------------------------------------------------------
+   An abstract entity: core + satellites + thin links. Ambient breathing is
+   tiny and slow. A [data-node-react] ancestor on hover/focus, or [data-node-open]
+   on tap, opens the satellites and lifts the link opacity; petrol briefly
+   brightens. Never louder than the content next to it. */
+.node {
+  overflow: visible;
+}
+.node .node-links {
+  opacity: 0.32;
+  transition: opacity var(--dur) var(--ease-out);
+}
+.node .node-sat,
+.node .node-live,
+.node .node-core {
+  transition: transform var(--dur) var(--ease-out);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .node .node-core {
+    animation: node-breathe 4.5s var(--ease-out) infinite;
+  }
+  .node .node-live {
+    animation: node-live 3.2s var(--ease-out) infinite;
+  }
+}
+@keyframes node-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+@keyframes node-live {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+[data-node-react]:hover .node .node-links,
+[data-node-react]:focus-visible .node .node-links,
+[data-node-open] .node .node-links {
+  opacity: 0.7;
+}
+[data-node-react]:hover .node .node-core,
+[data-node-react]:focus-visible .node .node-core,
+[data-node-open] .node .node-core {
+  transform: translate(1.5px, -1.5px);
+}
+[data-node-react]:hover .node .node-sat:nth-child(1),
+[data-node-open] .node .node-sat:nth-child(1) {
+  transform: translate(2px, -2px);
+}
+[data-node-react]:hover .node .node-sat:nth-child(2),
+[data-node-open] .node .node-sat:nth-child(2) {
+  transform: translate(2px, 1px);
+}
+[data-node-react]:hover .node .node-sat:nth-child(3),
+[data-node-open] .node .node-sat:nth-child(3) {
+  transform: translate(-2px, 2px);
+}
+[data-node-react]:hover .node .node-live,
+[data-node-open] .node .node-live {
+  opacity: 1;
+  transform: translate(-2px, -1px) scale(1.15);
+}
+.node-btn {
+  color: inherit;
+}
+.node-btn:focus-visible {
+  outline-offset: 4px;
+}
+
+/* -- connector draw: a thin line/elbow that draws itself in as it enters
+   the viewport. animation-timeline, no JS; the fallback is the finished
+   (fully drawn) line. Used sparingly — relational moments only. */
+@keyframes u-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes u-draw-y {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+[data-animate="draw"] {
+  transform-origin: left center;
+}
+[data-animate="draw-y"] {
+  transform-origin: top center;
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    [data-animate="draw"] {
+      animation: u-draw var(--ease-out) both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 30%;
+    }
+    [data-animate="draw-y"] {
+      animation: u-draw-y var(--ease-out) both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 30%;
+    }
+  }
+}
+
+/* -- Hero grid spotlight: a soft radial light that follows the pointer,
+   only in the Hero, only where hover is real. `--sx/--sy` are set by a
+   tiny island on pointermove; with no island the layer is simply absent. */
+.hero-spotlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 400ms var(--ease-out);
+  background: radial-gradient(
+    18rem 18rem at var(--sx, 50%) var(--sy, 0%),
+    color-mix(in srgb, var(--color-accent) 12%, transparent),
+    transparent 70%
+  );
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .hero-spotlight[data-active] {
+    opacity: 1;
+  }
+}
+
+/* -- interactive row: /projects and case modules react to hover/focus - */
+.u-row {
+  transition:
+    background-color var(--dur) var(--ease-out),
+    border-color var(--dur) var(--ease-out);
+}
+.u-row .u-row-arrow {
+  transition: transform var(--dur) var(--ease-out);
+}
+@media (hover: hover) {
+  .u-row:hover,
+  .u-row:focus-within {
+    background-color: color-mix(
+      in srgb,
+      var(--color-fg) 4%,
+      transparent
+    );
+  }
+  .u-row:hover .u-row-arrow,
+  .u-row:focus-within .u-row-arrow {
+    transform: translateX(3px);
+  }
+}
+
 /* -- entrance cue: opt-in, tied to scroll where supported, no JS ------- */
 @keyframes u-rise {
   from {
@@ -276,13 +455,29 @@ h4 {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  [data-animate] {
+  [data-animate],
+  .u-stagger > * {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
   }
-  .u-surface-interactive:hover {
+  .u-surface-interactive:hover,
+  .u-row:hover,
+  .u-row:focus-within,
+  .u-row:hover .u-row-arrow,
+  .u-row:focus-within .u-row-arrow {
     transform: none !important;
+  }
+  .node .node-core,
+  .node .node-live,
+  .node .node-sat,
+  [data-node-react]:hover .node *,
+  [data-node-open] .node * {
+    animation: none !important;
+    transform: none !important;
+  }
+  .hero-spotlight {
+    display: none !important;
   }
   [data-rel-scope]:has([data-rel]:hover, [data-rel]:focus-visible)
     [data-rel]:not(:hover):not(:focus-visible):not([data-rel-active]) {

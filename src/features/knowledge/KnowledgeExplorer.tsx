@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import { Node } from "@/components/node/Node";
 import { Chip, Tag } from "@/components/ui";
 import { experienceAnchor } from "@/domain/experienceAnchor";
 
@@ -51,8 +52,9 @@ function DetailPanel({ entity }: { entity: ExplorerEntity }) {
   );
 
   return (
-    <div className="u-fade">
-      <p className="u-label">
+    <div className="u-stagger">
+      <p className="u-label flex items-center gap-2">
+        <Node size="sm" className="opacity-80" />
         {entity.kind === "skill" ? "Competência" : "Tecnologia"}
         {entity.category ? (
           <span className="text-fg-faint"> · {entity.category}</span>
@@ -63,9 +65,12 @@ function DetailPanel({ entity }: { entity: ExplorerEntity }) {
         {entity.slug ? (
           <Link
             href={`/conhecimento/${SEGMENT[entity.kind]}/${entity.slug}`}
-            className="u-label text-accent rounded-sm hover:text-[var(--color-accent-strong)]"
+            className="u-label text-accent rounded-sm hover:text-[var(--color-accent-strong)] [&:hover_>span]:translate-x-0.5"
           >
-            Página →
+            Página{" "}
+            <span aria-hidden className="inline-block transition-transform">
+              →
+            </span>
           </Link>
         ) : null}
       </div>

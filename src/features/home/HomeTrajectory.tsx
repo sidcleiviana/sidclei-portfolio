@@ -25,7 +25,7 @@ export function HomeTrajectory({
   return (
     <Surface kind="tonal" pad="lg">
       <Container size="wide">
-        <div className="mb-8 flex flex-wrap items-baseline justify-between gap-3">
+        <div data-animate="rise" className="mb-8 flex flex-wrap items-baseline justify-between gap-3">
           <Kicker>Trajetória</Kicker>
           <Link
             href="/experiencia"

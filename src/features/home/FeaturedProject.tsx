@@ -30,7 +30,7 @@ export function FeaturedProject({ projects }: { projects: HomeProjectRef[] }) {
   return (
     <Surface kind="paper" pad="lg">
       <Container size="wide">
-        <Kicker className="mb-8">Trabalho em destaque</Kicker>
+        <div data-animate="rise"><Kicker className="mb-8">Trabalho em destaque</Kicker></div>
         <FeaturedProjectCard project={view} />
       </Container>
     </Surface>

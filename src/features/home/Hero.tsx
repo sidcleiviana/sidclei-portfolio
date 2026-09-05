@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { HeroSpotlight } from "@/components/motion/HeroSpotlight";
+import { NodeButton } from "@/components/node/NodeButton";
 import { ButtonLink, Container, Kicker, Section } from "@/components/ui";
 import { experienceAnchor } from "@/domain/experienceAnchor";
 import { formatMonthRange, isCurrent } from "@/domain/monthRange";
@@ -10,8 +12,8 @@ import { FALLBACK_HEADLINE, FALLBACK_NAME, FALLBACK_SUMMARY, FOCUS_AREAS } from 
 /**
  * The masthead band — a compact composition, not a monumental headline.
  * Identity + one line + a way in on the left; a live status panel, the four
- * axes and a technology strip on the right. Everything here is static; the
- * modules below carry the interaction.
+ * axes, a technology strip and the NODE on the right. A pointer-tracked
+ * radial light plays over the band on desktop (ambient, opt-out on touch).
  */
 export function Hero({
   profile,
@@ -36,12 +38,16 @@ export function Hero({
       : null;
 
   return (
-    <Section className="pt-10 pb-14 sm:pt-14 sm:pb-20">
-      <Container size="wide">
+    <Section className="relative overflow-hidden pt-10 pb-14 sm:pt-14 sm:pb-20">
+      <HeroSpotlight />
+      <Container size="wide" className="relative">
         <div className="grid gap-10 lg:grid-cols-[1.35fr_1fr] lg:gap-14">
           <div className="flex flex-col">
             <Kicker>{name}</Kicker>
-            <h1 className="font-display mt-4 text-[clamp(2rem,4.5vw,2.9rem)] font-extrabold leading-[1.02] tracking-[var(--tracking-tight)]">
+            <h1
+              data-animate="rise"
+              className="font-display mt-4 text-[clamp(2rem,4.5vw,2.9rem)] font-extrabold leading-[1.02] tracking-[var(--tracking-tight)]"
+            >
               {headline}
             </h1>
             <p className="text-fg-muted mt-5 max-w-[46ch] text-md text-pretty">
@@ -91,11 +97,16 @@ export function Hero({
               ))}
             </div>
 
-            {technologies.length ? (
-              <p className="text-fg-faint font-mono text-xs leading-relaxed">
-                {technologies.slice(0, 8).join(" · ")}
-              </p>
-            ) : null}
+            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+              {technologies.length ? (
+                <p className="text-fg-faint font-mono text-xs leading-relaxed">
+                  {technologies.slice(0, 6).join(" · ")}
+                </p>
+              ) : (
+                <span />
+              )}
+              <NodeButton />
+            </div>
           </div>
         </div>
       </Container>

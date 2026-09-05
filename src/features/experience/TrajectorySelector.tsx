@@ -47,11 +47,11 @@ function Detail({ entry, id }: { entry: TrajectoryEntry; id?: string }) {
   );
 
   return (
-    <div id={id} className="u-fade">
+    <div id={id} className="u-stagger">
       <p className="u-label">
         {formatMonthRange(entry.period) ?? year(entry.period)}
         {isCurrent(entry.period) ? (
-          <span className="text-[var(--color-node)]"> · Atual</span>
+          <span className="text-fg-muted"> · Atual</span>
         ) : null}
       </p>
       <h3 className="font-display mt-2 text-xl font-bold sm:text-2xl">
@@ -193,8 +193,14 @@ export function TrajectorySelector({
                 }`}
               >
                 <span
-                  className={`font-mono text-xs ${on ? "text-[var(--color-accent)]" : "text-fg-faint"}`}
+                  className={`flex items-center gap-1.5 font-mono text-xs ${on ? "text-[var(--color-accent)]" : "text-fg-faint"}`}
                 >
+                  {isCurrent(entry.period) ? (
+                    <span
+                      aria-hidden
+                      className="u-pulse inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-node)]"
+                    />
+                  ) : null}
                   {year(entry.period)}
                 </span>
                 <span

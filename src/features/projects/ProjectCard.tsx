@@ -35,20 +35,23 @@ export function ProjectCard({ project }: { project: CardProject }) {
     .filter((n): n is string => Boolean(n));
 
   return (
-    <article className="group border-border relative grid gap-x-8 gap-y-4 border-t py-8 sm:grid-cols-[1fr_auto]">
+    <article className="group u-row border-border relative -mx-4 grid gap-x-8 gap-y-4 rounded-[var(--radius)] border-t px-4 py-8 sm:grid-cols-[1fr_auto]">
       <div>
         <p className="u-label">
           {type}
           {year ? <span className="text-fg-faint"> · {year}</span> : null}
           {roles ? <span className="text-fg-faint"> · {roles}</span> : null}
         </p>
-        <h2 className="font-display mt-2 text-lg font-bold sm:text-xl">
+        <h2 className="font-display mt-2 flex items-center gap-2 text-lg font-bold sm:text-xl">
           <Link
             href={`/projects/${project.slug}`}
             className="group-hover:text-accent rounded-sm after:absolute after:inset-0 focus-visible:outline-none"
           >
             {project.title}
           </Link>
+          <span aria-hidden className="u-row-arrow text-fg-faint group-hover:text-accent text-base">
+            →
+          </span>
         </h2>
         {project.shortDescription ? (
           <p className="text-fg-muted mt-2 max-w-[58ch] text-sm text-pretty">

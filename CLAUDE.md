@@ -1503,3 +1503,59 @@ filtro (slug privado → `notFound()`). Validação de schema impede `private` +
   + de overflow via JS em 375/1440 (zero overflow em toda rota, ritmo
   cromático correto, seletores funcionando); screenshots reais a 582px
   (limitação do painel de browser da sessão para viewports emulados).
+
+---
+
+## Atualização — Sprint 8.1 (Interactive Layer & NODE)
+
+- **Camada de interação** sobre "Modular Surfaces" — sem redesign, sem mudança
+  de arquitetura visual, sem CMS. 4 níveis: ambiente (movimento sozinho),
+  reação (hover/focus), descoberta (click/tap), continuidade (o NODE reaparece).
+  Regra de densidade: nunca mais de 1–2 elementos com movimento por viewport.
+- **NODE** (`src/components/node/`): entidade visual abstrata (núcleo +
+  satélites + linhas finas, SVG inline ~0.3 kB), indigo dominante, 1 satélite
+  petrol "vivo". `Node` é presentacional e `aria-hidden` (breathing ambiente em
+  CSS, zerado por `prefers-reduced-motion`). `NodeButton` (client, ~30 linhas)
+  é a **única** instância interativa (Home): `<button>` real, `aria-label`,
+  teclado; tap abre os satélites + revela "contextos conectados". Reaparece em
+  Home (hero, featured project, knowledge), footer (todas as páginas), case
+  ("Relações"), knowledge detail — bem acima do mínimo de 3 contextos.
+- **FeaturedProject** mais reativo: coluna direita ganha profundidade discreta
+  no hover do grupo; ao focar/tocar uma integração a stack correspondente
+  acende e as outras recuam (name-match, não arquitetura); conector vertical
+  fino (`data-animate="draw-y"`, `animation-timeline`, sem JS) liga as facetas
+  ao projeto. Nada de tilt/pipeline.
+- **TrajectorySelector**: painel entra com stagger curto (`.u-stagger`, 40/80/
+  120ms); papel atual ganha ponto petrol pulsante na lista (indicador único —
+  "· Atual" no detalhe voltou a muted). Estados idle/hover/selected/current
+  visualmente distintos (§31).
+- **KnowledgeExplorer**: Node no cabeçalho do painel; painel remonta com
+  stagger a cada seleção; dim relacional em hover via `RelationalScope` +
+  `:has()` (já existia, verificado).
+- **/projects**: linhas ganham `.u-row` (fundo sutil + seta que desliza no
+  hover/focus, CSS puro).
+- **Case study**: `ProjectToc` ganhou progresso "NN/NN" + barra fina indigo
+  acompanhando a seção ativa (o IntersectionObserver já existia).
+- **Header**: item ativo com sublinhado accent que escala (`::after scale-x`),
+  hover idem — sem page transitions.
+- **Footer**: NODE grande estático/ambiente ao lado do nome.
+- **Hero grid spotlight** (`src/components/motion/HeroSpotlight.tsx`, client,
+  ~25 linhas): luz radial indigo ~12% seguindo o ponteiro, **só no Hero**, só
+  em `(hover: hover)` + motion permitido; em touch/reduced-motion não faz nada
+  e a camada fica invisível. `--sx/--sy` via `pointermove`, sem listener global.
+- **Scroll reveals**: `data-animate="rise"` (fade+translate) em alguns
+  cabeçalhos de módulo; `data-animate="draw"`/`draw-y` para conectores. Ambos
+  via `animation-timeline: view()` — **zero JS**, fallback = estado final
+  visível. Nenhum runtime global de interação.
+- **Reduced motion**: bloco estendido — remove breathing do NODE, pulse,
+  stagger, draw, spotlight (`display:none`), arrow/row transforms. Estado final
+  sempre visualmente completo.
+- **Não implementado** (conforme §4/§52/§53): WebGL/Three/canvas/D3/React
+  Flow/GSAP/Framer Motion, cursor custom, scroll hijack, parallax forte, scroll
+  snap, partículas, gamificação, chatbot/IA, analytics.
+- **Client Components novos**: 2 — `NodeButton` (estado de toggle acessível
+  para touch), `HeroSpotlight` (coordenadas de ponteiro ao vivo). Justificados,
+  escopados, ~55 linhas somadas.
+- **Gates**: typecheck, lint, **95 testes** (91 → +4: NODE a11y + teclado,
+  TrajectorySelector arrow-keys), build — verdes. Shared First Load JS
+  **103 kB — inalterado**. Home 3.5 kB / 174 kB de rota (+~1 kB dos 2 islands).

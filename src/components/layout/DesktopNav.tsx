@@ -23,10 +23,10 @@ export function DesktopNav() {
               <Link
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`u-label rounded-sm border-b pb-0.5 transition-colors ${
+                className={`u-label relative rounded-sm pb-1 transition-colors after:absolute after:inset-x-0 after:-bottom-px after:h-px after:origin-left after:bg-[var(--color-accent)] after:transition-transform after:duration-200 ${
                   active
-                    ? "text-fg border-[var(--color-accent)]"
-                    : "hover:text-fg border-transparent hover:border-[var(--color-border-strong)]"
+                    ? "text-fg after:scale-x-100"
+                    : "hover:text-fg after:scale-x-0 hover:after:scale-x-100 hover:after:bg-[var(--color-border-strong)]"
                 }`}
               >
                 {item.label}

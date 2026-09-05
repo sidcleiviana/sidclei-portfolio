@@ -37,7 +37,7 @@ export function HomeKnowledge({
   return (
     <Surface kind="paper" pad="lg">
       <Container size="wide">
-        <div className="mb-8 flex flex-wrap items-baseline justify-between gap-3">
+        <div data-animate="rise" className="mb-8 flex flex-wrap items-baseline justify-between gap-3">
           <Kicker>Conhecimento</Kicker>
           <Link
             href="/conhecimento"

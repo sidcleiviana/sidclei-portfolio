@@ -47,6 +47,17 @@ describe("TrajectorySelector — selection", () => {
       screen.getAllByRole("heading", { name: "Analista de Sistemas" }).length
     ).toBeGreaterThan(0);
   });
+
+  it("moves selection with the arrow keys", async () => {
+    const user = userEvent.setup();
+    render(<TrajectorySelector experiences={entries} />);
+    const tabs = screen.getAllByRole("tab");
+    tabs[0]!.focus();
+    await user.keyboard("{ArrowDown}");
+    expect(tabs[1]).toHaveAttribute("aria-selected", "true");
+    await user.keyboard("{ArrowUp}");
+    expect(tabs[0]).toHaveAttribute("aria-selected", "true");
+  });
 });
 
 describe("TrajectorySelector — confidentiality", () => {

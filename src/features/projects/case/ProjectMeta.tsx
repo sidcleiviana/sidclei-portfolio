@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { Node } from "@/components/node/Node";
 import { TextLink } from "@/components/ui";
 import { experienceAnchor } from "@/domain/experienceAnchor";
 import { KnowledgeBadge } from "@/features/knowledge/KnowledgeBadge";
@@ -35,7 +36,12 @@ export function ProjectMeta({ project }: { project: ProjectDetail }) {
 
   return (
     <>
-      <CaseHeading>Relações</CaseHeading>
+      <CaseHeading>
+        <span className="inline-flex items-center gap-2">
+          <Node size="sm" className="opacity-80" />
+          Relações
+        </span>
+      </CaseHeading>
       <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
         {skills.length ? (
           <div>

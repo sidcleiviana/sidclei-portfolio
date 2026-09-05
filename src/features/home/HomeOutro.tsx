@@ -28,7 +28,7 @@ export function HomeOutro({ profile }: { profile: HomeProfile | null }) {
   return (
     <Section spacing="lg">
       <Container size="wide">
-        <Kicker>Explorar</Kicker>
+        <div data-animate="rise"><Kicker>Explorar</Kicker></div>
         <ul className="border-border mt-6 grid gap-px overflow-hidden rounded-[var(--radius)] border bg-[var(--color-border)] sm:grid-cols-3">
           {ROUTES.map((r) => (
             <li key={r.href} className="bg-surface">
