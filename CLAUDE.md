@@ -1644,10 +1644,18 @@ filtro (slug privado → `notFound()`). Validação de schema impede `private` +
   (1 hop), `applyFilter` (esconde tipo + edges órfãos), `computeLayout`
   (determinístico, 3 faixas: skills / exp+proj / technologies; wrap quando
   a faixa fica apertada).
+- **Progressive enhancement**: a rota é **`ƒ` server-rendered on demand** — o
+  deep link `?node=type:slug` é lido no `searchParams` do Server Component e
+  passado como `initialNode`, **não** via `useSearchParams` (que forçava toda a
+  rota a renderizar no cliente atrás de um `Suspense fallback={null}`, deixando
+  o HTML — inclusive a lista textual de relações — vazio). Agora todo o mapa
+  (trilha, título, filtros, nós, lista textual, estado selecionado do deep
+  link) chega no HTML sem JS. A fetch do Sanity continua com cache tags →
+  revalidação por webhook intacta; só a montagem do HTML é por request.
 - **Client** (`src/features/knowledge/map/`, island de rota, fora do shared
-  bundle): `KnowledgeMap` (estado local, `?node` deep link via
-  `router.replace`, media hook desktop↔mobile, `repositionAgent()` só na
-  seleção), `KnowledgeMapCanvas` (nós HTML posicionados por `computeLayout`
+  bundle): `KnowledgeMap` (estado local, `initialNode` do servidor, `?node`
+  sincronizado via `router.replace` na forma legível `type:slug`, media hook
+  desktop↔mobile, `repositionAgent()` só na seleção), `KnowledgeMapCanvas` (nós HTML posicionados por `computeLayout`
   medido no mount — `opacity:0` até medir, sem mismatch; `ResizeObserver`
   debounced 150ms; focus = dim-in-place: `data-emphasis` base/connected/
   focus/dim, nada se move), `KnowledgeMapNode` (`<button>` real, forma por
@@ -1677,6 +1685,18 @@ filtro (slug privado → `notFound()`). Validação de schema impede `private` +
   co-ocorrência, exclusão de project privado, `connectedIds` não-transitivo,
   `computeLayout` determinístico; `knowledgeMap` component — overview,
   seleção, deep link, filtro, cadeia mobile, text map), build — verdes.
-  Shared First Load JS **103 kB — inalterado**. `/conhecimento/mapa` 5,96 kB
-  de rota / 174 kB First Load. Sem physics loop, sem RAF idle, sem
-  mousemove global. Zero overflow em 375/1440.
+  Shared First Load JS **103 kB — inalterado**. `/conhecimento/mapa` ~5,9 kB
+  de rota / 174 kB First Load (`ƒ` dynamic). Sem physics loop, sem RAF idle,
+  sem mousemove global. Zero overflow em 375/1440.
+- **Homologação em produção** (`sidclei-portfolio.vercel.app`): HTML SSR do
+  mapa traz 30 `.km-node`, 30 linhas "conecta a:", trilha, título e lista
+  "Relações em lista"; `?node=technology:python` renderiza já selecionado no
+  servidor. Selecionar a competência "Backend Development" acende **apenas**
+  2 experiências + 1 projeto — nenhuma tecnologia é nó conectado (§ regra
+  crítica verificada ao vivo); o painel mostra "Tecnologias presentes nesses
+  contextos" como bloco derivado rotulado. Focus = dim-in-place (nós não se
+  movem). Deep link atualiza para `?node=project:chatbot-…` (dois-pontos
+  legível). Mobile 375: explorer encadeado (Backend → Chatbot → Voltar),
+  `docOverflow: 0`. Rotas `/`, `/conhecimento`, `/conhecimento/mapa`,
+  `/experiencia`, `/projects`, case study e detail → 200; webhook sem
+  assinatura → 401; nenhum token no HTML.
